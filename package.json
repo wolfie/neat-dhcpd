@@ -1,13 +1,26 @@
 {
-  "name": "dhcp",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "dev": "npx -y ts-node-dev src/index"
+  "name": "neat-dhcpd",
+  "version": "0.0.0",
+  "engines": {
+    "node": "20.10.0",
+    "pnpm": ">=8"
   },
-  "author": "",
+  "private": true,
+  "scripts": {
+    "dev:dhcpd": "pnpm --filter \"@neat-dhcpd/dhcpd\" dev",
+    "dev:web-ui": "pnpm --filter \"@neat-dhcpd/web-ui\" dev",
+    "test": "pnpm run --filter ./packages/* test"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "typescript": "^5.3.3"
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
   }
 }

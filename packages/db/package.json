@@ -1,0 +1,22 @@
+{
+  "name": "@neat-dhcpd/db",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "npx -y ts-node-dev src/server",
+    "redoMigration": "npx -y ts-node src/bin/redoMigration",
+    "migrateToLatest": "npx -y ts-node src/bin/migrateToLatest"
+  },
+  "dependencies": {
+    "@trpc/server": "^10.44.1",
+    "better-sqlite3": "^9.2.2",
+    "find-package-json": "^1.2.0",
+    "kysely": "^0.26.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/find-package-json": "^1.2.6"
+  }
+}

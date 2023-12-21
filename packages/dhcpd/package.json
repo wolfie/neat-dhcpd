@@ -1,0 +1,13 @@
+{
+  "name": "@neat-dhcpd/dhcpd",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx -y ts-node-dev ./src/index",
+    "test": "npx vitest"
+  },
+  "dependencies": {
+    "@trpc/client": "^10.44.1",
+    "vitest": "*"
+  }
+}
