@@ -1,6 +1,6 @@
 // TODO get this again
-import getMacVendor from "$lib/getMacVendor";
-import trpc from "$lib/trpcClient";
+import getMacVendor from "$lib/server/getMacVendor";
+import trpc from "$lib/server/trpcClient";
 import type { Actions, PageServerLoad } from "./$types";
 import os from "node:os";
 

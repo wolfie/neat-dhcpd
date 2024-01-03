@@ -1,4 +1,4 @@
-import trpc from "$lib/trpcClient";
+import trpc from "$lib/server/trpcClient";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {
