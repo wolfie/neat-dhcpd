@@ -28,17 +28,5 @@
   .root {
     display: flex;
     height: 100%;
-
-    nav {
-      background-color: grey;
-      margin-right: 1em;
-      padding: 1em;
-
-      ol {
-        padding: 0;
-        margin: 0;
-        list-style-type: none;
-      }
-    }
   }
 </style>

@@ -14,3 +14,4 @@
 - handle DHCPINFO
 - define IP from app?
 - add Zod typings to DB level
+- common package for things like `ip.ts` etc
