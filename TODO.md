@@ -16,3 +16,4 @@
 - add Zod typings to DB level
 - common package for things like `ip.ts` etc
 - support other MAC formats than just ':'-separated
+- broadcast DHCP replies to any and all interfaces, instead of asking for a specific NIC?
