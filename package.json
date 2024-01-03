@@ -1,12 +1,15 @@
 {
   "name": "neat-dhcpd",
   "version": "0.0.0",
+  "license": "ISC",
   "engines": {
     "node": "20.10.0",
     "pnpm": ">=8"
   },
   "private": true,
   "scripts": {
+    "dev": "concurrently pnpm:dev:*",
+    "dev:db": "pnpm --filter \"@neat-dhcpd/db\" dev",
     "dev:dhcpd": "pnpm --filter \"@neat-dhcpd/dhcpd\" dev",
     "dev:web-ui": "pnpm --filter \"@neat-dhcpd/web-ui\" dev",
     "test": "pnpm run --filter ./packages/* test"
