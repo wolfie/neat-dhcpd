@@ -1,4 +1,3 @@
-import pton4I from "../lib/pton4I";
 import type { DhcpResponse } from "./createResponse";
 import { htypeForString, opForString } from "./numberStrings";
 import type { BootpMessage } from "./splitBootpMessage";
@@ -23,10 +22,10 @@ const encodeResponseMessage = (
   original.xid.copy(buffer, $(4));
   buffer.writeUInt16BE(message.secs, $(2));
   buffer.writeUInt16BE(message.broadcastFlag ? 1 : 0, $(2));
-  buffer.writeUInt32BE(pton4I(message.ciaddr), $(4));
-  buffer.writeUInt32BE(pton4I(message.yiaddr), $(4));
-  buffer.writeUInt32BE(pton4I(message.siaddr), $(4));
-  buffer.writeUInt32BE(pton4I(message.giaddr), $(4));
+  buffer.writeUInt32BE(message.ciaddr.num, $(4));
+  buffer.writeUInt32BE(message.yiaddr.num, $(4));
+  buffer.writeUInt32BE(message.siaddr.num, $(4));
+  buffer.writeUInt32BE(message.giaddr.num, $(4));
 
   const chaddr = Buffer.alloc(16);
   message.chaddr

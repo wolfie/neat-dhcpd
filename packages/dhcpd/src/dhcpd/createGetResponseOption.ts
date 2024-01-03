@@ -1,28 +1,32 @@
 import type { Config } from "packages/db/src/server";
 import type { Address } from "./createResponse";
-import pton4B from "../lib/pton4B";
-import getBroadcastAddr from "../lib/getBroadcastAddr";
+import { getBroadcastAddr, ipFromString } from "../lib/ip";
+import log from "../lib/log";
 
 const createGetResponseOption =
-  (serverAddress: Address, config: Config) => (id: number) => {
+  (serverAddress: Address, config: Config) =>
+  (id: number): Buffer | undefined => {
     switch (id) {
       case 1:
-        return pton4B(serverAddress.netmask as any); // TODO fix as any
+        return serverAddress.netmask.buf;
       case 3:
-        return pton4B(config.gateway_ip);
+        return ipFromString(config.gateway_ip)?.buf;
       case 6:
         return Buffer.concat([
-          pton4B(config.dns1),
-          pton4B(config.dns2),
-          pton4B(config.dns3),
-          pton4B(config.dns4),
+          ipFromString(config.dns1)?.buf ?? Buffer.alloc(0),
+          (config.dns2 && ipFromString(config.dns2)?.buf) || Buffer.alloc(0),
+          (config.dns3 && ipFromString(config.dns3)?.buf) || Buffer.alloc(0),
+          (config.dns4 && ipFromString(config.dns4)?.buf) || Buffer.alloc(0),
         ]); // TODO take into account if not multiple DNS configs
       case 15:
         return Buffer.from("NeatDhcpd", "ascii"); // TODO
       case 28:
-        return pton4B(
-          getBroadcastAddr(serverAddress.netmask as any, config.ip_start)
-        );
+        const ip_start = ipFromString(config.ip_start);
+        if (!ip_start) {
+          log("error", { message: "ip_start is not a valid ip", config });
+          return undefined;
+        }
+        return getBroadcastAddr(serverAddress.netmask, ip_start).buf;
     }
     return undefined;
   };

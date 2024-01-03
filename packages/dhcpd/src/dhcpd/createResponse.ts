@@ -4,6 +4,7 @@ import type { DhcpRequest } from "./parseRequestMessage";
 import type { Config } from "packages/db/src/server";
 import createOfferResponse from "./createOfferResponse";
 import createAckResponse from "./createAckResponse";
+import { Ip } from "../lib/ip";
 
 export type ResponseResult =
   | {
@@ -14,7 +15,11 @@ export type ResponseResult =
     }
   | {
       success: false;
-      error: "no-type-option" | "no-ips-left" | "not-for-me";
+      error:
+        | "no-type-option"
+        | "no-ips-left"
+        | "not-for-me"
+        | "malformatted-ip-start-or-end";
     }
   | {
       success: false;
@@ -38,8 +43,8 @@ export type DhcpResponse = Omit<DhcpMessage, "op" | "options"> & {
 };
 
 export type Address = {
-  address: `${number}.${number}.${number}.${number}`;
-  netmask: string;
+  address: Ip;
+  netmask: Ip;
 };
 
 const createResponse = async (

@@ -1,5 +1,4 @@
 import { Config } from "packages/db/src/server";
-import ntop4 from "../lib/ntop4";
 import trpc from "../trpcClient";
 import { Address, ResponseResult } from "./createResponse";
 import { isParsedRequestOption } from "./mapRequestOptions";
@@ -7,8 +6,8 @@ import { DhcpRequest } from "./parseRequestMessage";
 import createGetResponseOption from "./createGetResponseOption";
 import tap from "../lib/tap";
 import { messageTypesForString } from "./numberStrings";
-import pton4B from "../lib/pton4B";
 import log from "../lib/log";
+import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from "../lib/ip";
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -29,7 +28,10 @@ const createAckResponse = async (
   const serverIdBuffer = request.options.options.find(
     isParsedRequestOption(54)
   )?.content;
-  if (!serverIdBuffer || ntop4(serverIdBuffer) !== serverAddress.address) {
+  if (
+    !serverIdBuffer ||
+    ipFromBuffer(serverIdBuffer).num !== serverAddress.address.num
+  ) {
     const requestedIp = request.options.options.find(isParsedRequestOption(50))
       ?.value.str;
     if (requestedIp) {
@@ -94,7 +96,7 @@ const createAckResponse = async (
       return leaseTimeBuffer;
     })(),
   ]);
-  options.push([54, pton4B(serverAddress.address)]);
+  options.push([54, serverAddress.address.buf]);
   options.push([255, Buffer.alloc(0)]);
 
   // TODO insert lease
@@ -117,10 +119,10 @@ const createAckResponse = async (
       xid: request.xid,
       secs: 0,
       broadcastFlag: false,
-      ciaddr: "0.0.0.0",
-      yiaddr: assignedIp,
+      ciaddr: ZERO_ZERO_ZERO_ZERO,
+      yiaddr: ipFromString(assignedIp),
       siaddr: serverAddress.address,
-      giaddr: "0.0.0.0",
+      giaddr: ZERO_ZERO_ZERO_ZERO,
       chaddr: request.chaddr,
       file: "",
       sname: "",

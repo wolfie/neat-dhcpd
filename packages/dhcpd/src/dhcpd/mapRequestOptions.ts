@@ -1,4 +1,4 @@
-import ntop4 from "../lib/ntop4";
+import { ipFromBuffer } from "../lib/ip";
 import { htypeForNumber, messageTypesForNumber } from "./numberStrings";
 import PARAMETER_REQUEST_LIST from "./parameterRequestList";
 import { UnparsedOption } from "./parseOptions";
@@ -10,10 +10,7 @@ const OPTION_PARSER = {
   },
   50: {
     name: "Requested IP address",
-    parse: (content: Buffer) => ({
-      num: content.readUInt32BE(),
-      str: ntop4(content),
-    }),
+    parse: (content: Buffer) => ipFromBuffer(content),
   },
   51: {
     name: "IP address lease time",

@@ -5,24 +5,20 @@ import { isParsedRequestOption } from "./mapRequestOptions";
 import { messageTypesForString } from "./numberStrings";
 import tap from "../lib/tap";
 import trpc from "../trpcClient";
-import pton4I from "../lib/pton4I";
-import pton4B from "../lib/pton4B";
 import rand from "../lib/rand";
-import ntop4 from "../lib/ntop4";
 import createGetResponseOption from "./createGetResponseOption";
 import log from "../lib/log";
+import { Ip, ZERO_ZERO_ZERO_ZERO, ipFromNumber, ipFromString } from "../lib/ip";
 
 const findFreeIpN = async (
-  requestedAddress:
-    | {
-        mac: string;
-        ip: { num: number; str: string };
-      }
-    | undefined,
+  requestedAddress: { mac: string; ip: Ip } | undefined,
   config: Config
 ) => {
-  const ipStartN = pton4I(config.ip_start);
-  const ipEndN = pton4I(config.ip_end);
+  const ipStartN = ipFromString(config.ip_start);
+  const ipEndN = ipFromString(config.ip_end);
+  if (!ipStartN || !ipEndN) {
+    return "malformatted-ip-start-or-end" as const;
+  }
 
   const reservedIps = await Promise.all([
     trpc.leasesGet
@@ -35,32 +31,32 @@ const findFreeIpN = async (
 
   if (
     requestedAddress &&
-    ipStartN <= requestedAddress.ip.num &&
-    requestedAddress.ip.num <= ipEndN
+    ipStartN.num <= requestedAddress.ip.num &&
+    requestedAddress.ip.num <= ipEndN.num
   ) {
     const occupiedLease = reservedIps.find(
       (l) => l.ip === requestedAddress.ip.str
     );
     if (!occupiedLease || occupiedLease.mac === requestedAddress.mac) {
-      return requestedAddress.ip.num;
+      return requestedAddress.ip;
     }
   }
 
-  const reservedIpNs = reservedIps.map((l) => pton4I(l.ip));
+  const reservedIpNs = reservedIps.map((l) => ipFromString(l.ip).num);
 
-  let candidate: number = rand(
-    pton4I("169.254.0.0"),
-    pton4I("169.254.255.255")
+  let candidate = rand(
+    ipFromString("169.254.0.0").num,
+    ipFromString("169.254.255.255").num
   );
   let triesLeft = 5000;
   for (; triesLeft > 0; triesLeft--) {
-    candidate = rand(ipStartN, ipEndN);
+    candidate = rand(ipStartN.num, ipEndN.num);
     if (!reservedIpNs.includes(candidate)) break;
   }
   if (triesLeft <= 0) {
     return "no-ips-left" as const;
   }
-  return candidate;
+  return ipFromNumber(candidate);
 };
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
@@ -114,7 +110,7 @@ const createOfferResponse = async (
   );
 
   options.push([51, Buffer.of(leaseTimeSecs)]);
-  options.push([54, pton4B(serverAddress.address)]);
+  options.push([54, serverAddress.address.buf]);
   options.push([255, Buffer.alloc(0)]);
 
   const requestedIp = request.options.options.find(
@@ -127,10 +123,9 @@ const createOfferResponse = async (
 
   if (typeof offeredIp === "string")
     return { success: false, error: offeredIp };
-  const offeredIpString = ntop4(offeredIp);
 
   await trpc.offerAdd.mutate({
-    ip: offeredIpString,
+    ip: offeredIp.str,
     mac: request.chaddr,
     lease_time_secs: leaseTimeSecs,
   });
@@ -149,10 +144,10 @@ const createOfferResponse = async (
       xid: request.xid,
       secs: 0,
       broadcastFlag: false,
-      ciaddr: "0.0.0.0",
-      yiaddr: offeredIpString,
+      ciaddr: ZERO_ZERO_ZERO_ZERO,
+      yiaddr: offeredIp,
       siaddr: serverAddress.address,
-      giaddr: "0.0.0.0",
+      giaddr: ZERO_ZERO_ZERO_ZERO,
       chaddr: request.chaddr,
       file: "",
       sname: "",

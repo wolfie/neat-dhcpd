@@ -1,7 +1,7 @@
 import parseOptions from "./parseOptions";
-import ntop4 from "../lib/ntop4";
 import type { BootpMessage } from "./splitBootpMessage";
 import { htypeForNumber, opForNumber } from "./numberStrings";
+import { ipFromBuffer } from "../lib/ip";
 
 export type DhcpMessage = ReturnType<typeof parseMessage>;
 
@@ -20,10 +20,10 @@ export const parseMessage = (bootpMessage: BootpMessage) => {
   const secs = bootpMessage.secs.readUint16BE();
   const broadcastFlag = !!(bootpMessage.flags.readUInt8() & 128);
 
-  const ciaddr = ntop4(bootpMessage.ciaddr);
-  const yiaddr = ntop4(bootpMessage.yiaddr);
-  const siaddr = ntop4(bootpMessage.siaddr);
-  const giaddr = ntop4(bootpMessage.giaddr);
+  const ciaddr = ipFromBuffer(bootpMessage.ciaddr);
+  const yiaddr = ipFromBuffer(bootpMessage.yiaddr);
+  const siaddr = ipFromBuffer(bootpMessage.siaddr);
+  const giaddr = ipFromBuffer(bootpMessage.giaddr);
 
   const chaddr = [
     bootpMessage.chaddr.subarray(0, 1).toString("hex"),
