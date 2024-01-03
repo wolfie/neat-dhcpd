@@ -1,4 +1,4 @@
-# Neat DHCP
+# NeatDHCP
 
 "Neat" as in tidy, as in nice to use.
 
