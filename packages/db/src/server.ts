@@ -8,6 +8,7 @@ import Alias from "./models/Alias";
 import Lease from "./models/Lease";
 import Offer from "./models/Offer";
 import log from "./lib/log";
+import SeenMac from "./models/SeenMac";
 
 const zIpString = z.custom<`${number}.${number}.${number}.${number}`>(
   (val: any) =>
@@ -105,6 +106,10 @@ const appRouter = router({
     .mutation(async (ctx) => {
       await Offer.delete(ctx.input);
     }),
+  getSeenMacs: publicProcedure.query(SeenMac.getAll),
+  addSeenMac: publicProcedure
+    .input(z.object({ mac: z.string() }))
+    .mutation((ctx) => SeenMac.addSighting(ctx.input.mac)),
 });
 
 export type AppRouter = typeof appRouter;

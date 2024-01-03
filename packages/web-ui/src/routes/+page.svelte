@@ -5,11 +5,15 @@
   export let data: PageData;
 
   let logs: PageData["logs"] | undefined = undefined;
+  let seenMacs: PageData["seenMacs"] | undefined = undefined;
   onMount(() => {
     const interval = setInterval(async () => {
       fetch("/api/logs")
         .then((response) => response.json())
         .then((newLogs) => (logs = newLogs));
+      fetch("/api/seenMacs")
+        .then((response) => response.json())
+        .then((newSeenMacs) => (seenMacs = newSeenMacs));
     }, 2000);
     return () => clearInterval(interval);
   });
@@ -71,6 +75,32 @@
   </label>
   <button>Sugmit</button>
 </form>
+
+<h1>Seen Macs</h1>
+{#if seenMacs?.length || data.seenMacs.length > 0}
+  <table>
+    <thead>
+      <tr>
+        <td>MAC</td>
+        <td>Vendor</td>
+        <td>First seen</td>
+        <td>Last seen</td>
+      </tr>
+    </thead>
+    <tbody>
+      {#each seenMacs ?? data.seenMacs as seenMac (seenMac.mac)}
+        <tr>
+          <td>{seenMac.mac}</td>
+          <td>{seenMac.vendor?.["Organization Name"] || ""}</td>
+          <td>{seenMac.first_seen}</td>
+          <td>{seenMac.last_seen}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+{:else}
+  No MACs have been seen yet
+{/if}
 
 <h1>Logs</h1>
 <!-- TODO add log level filtering-->

@@ -84,6 +84,8 @@ export const createDhcpServer = async () => {
     const request = parseRequestMessage(requestMessage);
     log("log", { request, rinfo });
 
+    trpc.addSeenMac.mutate({ mac: request.chaddr });
+
     const response = await createResponse(request, currentAddress, config);
     log("log", { response });
 

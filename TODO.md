@@ -15,3 +15,4 @@
 - define IP from app?
 - add Zod typings to DB level
 - common package for things like `ip.ts` etc
+- support other MAC formats than just ':'-separated

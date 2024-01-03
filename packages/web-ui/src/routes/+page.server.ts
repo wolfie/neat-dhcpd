@@ -1,5 +1,6 @@
 // TODO get this again
 import getMacVendor from "$lib/server/getMacVendor";
+import getSeenMacs from "$lib/server/getSeenMacs";
 import trpc from "$lib/server/trpcClient";
 import type { Actions, PageServerLoad } from "./$types";
 import os from "node:os";
@@ -23,10 +24,11 @@ const IFACES = Object.entries(os.networkInterfaces()).flatMap(
 );
 
 export const load: PageServerLoad = async () => {
-  const [config, aliases, logs] = await Promise.all([
+  const [config, aliases, logs, seenMacs] = await Promise.all([
     trpc.configGet.query(),
     trpc.aliasesGet.query(),
     trpc.logsGet.query({ limit: 50, offset: 0 }),
+    getSeenMacs(),
   ]);
 
   return {
@@ -34,6 +36,7 @@ export const load: PageServerLoad = async () => {
     aliases,
     ifaces: IFACES,
     logs,
+    seenMacs,
   };
 };
 
