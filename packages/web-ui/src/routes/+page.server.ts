@@ -23,15 +23,17 @@ const IFACES = Object.entries(os.networkInterfaces()).flatMap(
 );
 
 export const load: PageServerLoad = async () => {
-  const [config, aliases] = await Promise.all([
+  const [config, aliases, logs] = await Promise.all([
     trpc.configGet.query(),
     trpc.aliasesGet.query(),
+    trpc.logsGet.query({ limit: 50, offset: 0 }),
   ]);
 
   return {
     config,
     aliases,
     ifaces: IFACES,
+    logs,
   };
 };
 

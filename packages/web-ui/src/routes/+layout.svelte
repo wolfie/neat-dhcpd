@@ -10,14 +10,6 @@
 </script>
 
 <div class="root">
-  <nav>
-    <ol>
-      <li><a href="/">Root</a></li>
-      <li><a href="/config">Config</a></li>
-      <li><a href="/logs">Logs</a></li>
-    </ol>
-  </nav>
-
   <main>
     <slot />
   </main>

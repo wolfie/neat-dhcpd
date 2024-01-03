@@ -40,13 +40,14 @@ const initializeDb = () => {
         process.exit(1);
       }
       try {
-        if (e.level === "query")
-          console.log(
-            `${new Date().toISOString()}: ${e.query.sql} @ ${JSON.stringify(
-              e.query.parameters
-            )}`
-          );
-        else {
+        if (e.level === "query") {
+          // TODO add query logging to some debug setting
+          // console.log(
+          //   `${new Date().toISOString()}: ${e.query.sql} @ ${JSON.stringify(
+          //     e.query.parameters
+          //   )}`
+          // );
+        } else {
           console.log(`${new Date().toISOString()}: writing error %j`, e);
           await db
             .insertInto("log")
