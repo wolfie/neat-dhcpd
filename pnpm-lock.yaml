@@ -61,6 +61,12 @@ importers:
 
   packages/web-ui:
     dependencies:
+      '@fontsource-variable/montserrat':
+        specifier: ^5.0.17
+        version: 5.0.17
+      '@fontsource-variable/roboto-mono':
+        specifier: ^5.0.17
+        version: 5.0.17
       '@rollup/plugin-dsv':
         specifier: ^3.0.4
         version: 3.0.4
@@ -493,6 +499,14 @@ packages:
     resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
     engines: {node: '>=14'}
     dev: true
+
+  /@fontsource-variable/montserrat@5.0.17:
+    resolution: {integrity: sha512-kRPFY+sLUPE4fGTkuHu6phebYTwizsbGVIvqYa2vysRLPKUxwoiy1lb9Z4Qul8qoVspXnl0b9zA5LSn0scD9vA==}
+    dev: false
+
+  /@fontsource-variable/roboto-mono@5.0.17:
+    resolution: {integrity: sha512-+FyoiEmO2r/kiwPnsPtATK2ROMgNwCnVSvvs+K38GMLIgLSSk4cNqU3GCqJDMSvAPHMYd0gFPGKStFh+yLqd9Q==}
+    dev: false
 
   /@jest/schemas@29.6.3:
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
