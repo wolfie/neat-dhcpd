@@ -44,6 +44,7 @@
       Broadcast CIDR
       <Select
         name="broadcastCidr"
+        value={data.config?.broadcast_cidr}
         options={data.ifaces.map((iface) => ({
           label: `${iface.nic}: ${iface.cidr}`,
           value: iface.cidr ?? "no-cidr",

@@ -1,7 +1,7 @@
 <script lang="ts">
   export let options: { label: string; value: string }[];
-  export let name: string | undefined = undefined;
-  export let value: string | undefined = undefined;
+  export let name: string | undefined | null = undefined;
+  export let value: string | undefined | null = undefined;
 </script>
 
 <select bind:value {name}>
