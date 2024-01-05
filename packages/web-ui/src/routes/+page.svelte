@@ -2,6 +2,8 @@
   import { enhance } from "$app/forms";
   import { onMount } from "svelte";
   import type { PageData } from "./$types";
+  import Alert from "$lib/components/Alert.svelte";
+  import Select from "$lib/components/Select.svelte";
   export let data: PageData;
 
   let logs: PageData["logs"] | undefined = undefined;
@@ -30,7 +32,20 @@
 >
   <section style:margin-bottom="4px">
     <h2>Config</h2>
-    <!-- TODO show error if current NIC is not in `data.ifaces` -->
+    {#if !data.config?.broadcast_cidr}
+      <Alert>No boardcast CIDR set!</Alert>
+    {:else if data.ifaces.every((iface) => iface.cidr !== data.config?.broadcast_cidr)}
+      <Alert>
+        {data.config.broadcast_cidr} does not match an existing interface
+      </Alert>
+    {/if}
+    <Select
+      name="broadcastCidr"
+      options={data.ifaces.map((iface) => ({
+        label: `${iface.nic}: ${iface.cidr}`,
+        value: iface.cidr ?? "no-cidr",
+      }))}
+    />
     <table>
       <thead>
         <tr><th>Interface name</th><th>CIDR</th></tr>
