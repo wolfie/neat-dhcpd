@@ -30,7 +30,7 @@
     ({ update }) =>
       update({ reset: false })}
 >
-  <section style:margin-bottom="4px">
+  <section>
     <h2>Config</h2>
     {#if !data.config?.broadcast_cidr}
       <Alert>No boardcast CIDR set!</Alert>
@@ -39,38 +39,17 @@
         {data.config.broadcast_cidr} does not match an existing interface
       </Alert>
     {/if}
-    <Select
-      name="broadcastCidr"
-      options={data.ifaces.map((iface) => ({
-        label: `${iface.nic}: ${iface.cidr}`,
-        value: iface.cidr ?? "no-cidr",
-      }))}
-    />
-    <table>
-      <thead>
-        <tr><th>Interface name</th><th>CIDR</th></tr>
-      </thead>
-      <tbody>
-        {#each data.ifaces as iface}
-          <tr>
-            <td>
-              <label>
-                <input
-                  type="radio"
-                  name="broadcastCidr"
-                  value={iface.cidr}
-                  checked={data.config?.broadcast_cidr === iface.cidr}
-                />{iface.nic}
-              </label>
-            </td>
-            <td><pre>{iface.cidr}</pre></td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </section>
-
-  <section>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label>
+      Broadcast CIDR
+      <Select
+        name="broadcastCidr"
+        options={data.ifaces.map((iface) => ({
+          label: `${iface.nic}: ${iface.cidr}`,
+          value: iface.cidr ?? "no-cidr",
+        }))}
+      />
+    </label>
     <label>Start <input name="ipStart" value={data.config?.ip_start} /></label>
     <label>End <input name="ipEnd" value={data.config?.ip_end} /></label>
     <label>
