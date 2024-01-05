@@ -7,6 +7,7 @@
   import Input from "$lib/components/Input.svelte";
   import Label from "$lib/components/Label.svelte";
   import Checkbox from "$lib/components/Checkbox.svelte";
+  import Button from "$lib/components/Button.svelte";
   export let data: PageData;
 
   let logs: PageData["logs"] | undefined = undefined;
@@ -97,7 +98,7 @@
         checked={!!data.config?.send_replies}
       />
     </Label>
-    <button>Sugmit</button>
+    <Button>Sugmit</Button>
   </section>
 </form>
 
