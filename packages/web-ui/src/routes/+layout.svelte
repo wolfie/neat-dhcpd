@@ -41,6 +41,10 @@
     padding: 0;
   }
 
+  :global(*) {
+    box-sizing: border-box;
+  }
+
   :global(pre) {
     margin: 0;
     font-family: "Roboto Mono Variable", monospace;

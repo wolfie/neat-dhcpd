@@ -4,6 +4,9 @@
   import type { PageData } from "./$types";
   import Alert from "$lib/components/Alert.svelte";
   import Select from "$lib/components/Select.svelte";
+  import Input from "$lib/components/Input.svelte";
+  import Label from "$lib/components/Label.svelte";
+  import Checkbox from "$lib/components/Checkbox.svelte";
   export let data: PageData;
 
   let logs: PageData["logs"] | undefined = undefined;
@@ -39,41 +42,61 @@
         {data.config.broadcast_cidr} does not match an existing interface
       </Alert>
     {/if}
-    <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label>
-      Broadcast CIDR
-      <Select
-        name="broadcastCidr"
-        value={data.config?.broadcast_cidr}
-        options={data.ifaces.map((iface) => ({
-          label: `${iface.nic}: ${iface.cidr}`,
-          value: iface.cidr ?? "no-cidr",
-        }))}
-      />
-    </label>
-    <label>Start <input name="ipStart" value={data.config?.ip_start} /></label>
-    <label>End <input name="ipEnd" value={data.config?.ip_end} /></label>
-    <label>
-      Leasetime <input
-        name="leaseTimeMinutes"
-        type="number"
-        value={data.config?.lease_time_minutes}
-      />
-    </label>
-    <label>
-      Gateway <input name="gatewayIp" value={data.config?.gateway_ip} />
-    </label>
-    <label>DNS1 <input name="dns1" value={data.config?.dns1} /></label>
-    <label>DNS2 <input name="dns2" value={data.config?.dns2} /></label>
-    <label>DNS3 <input name="dns3" value={data.config?.dns3} /></label>
-    <label>DNS4 <input name="dns4" value={data.config?.dns4} /></label>
-    <label>
-      Send replies <input
+    <div class="container">
+      <div>
+        <Label>
+          Broadcast CIDR
+          <Select
+            name="broadcastCidr"
+            value={data.config?.broadcast_cidr}
+            options={data.ifaces.map((iface) => ({
+              label: `${iface.nic}: ${iface.cidr}`,
+              value: iface.cidr ?? "no-cidr",
+            }))}
+          />
+        </Label>
+      </div>
+      <div>
+        <Label>
+          Start <Input name="ipStart" value={data.config?.ip_start} />
+        </Label>
+        <Label>
+          End <Input name="ipEnd" value={data.config?.ip_end} />
+        </Label>
+      </div>
+      <div>
+        <Label>
+          Leasetime <Input
+            name="leaseTimeMinutes"
+            type="number"
+            value={data.config?.lease_time_minutes}
+          />
+        </Label>
+        <Label>
+          Gateway <Input name="gatewayIp" value={data.config?.gateway_ip} />
+        </Label>
+      </div>
+      <ul class="dnsList">
+        <li>
+          <Label>DNS1 <Input name="dns1" value={data.config?.dns1} /></Label>
+        </li>
+        <li>
+          <Label>DNS2 <Input name="dns2" value={data.config?.dns2} /></Label>
+        </li>
+        <li>
+          <Label>DNS3 <Input name="dns3" value={data.config?.dns3} /></Label>
+        </li>
+        <li>
+          <Label>DNS4 <Input name="dns4" value={data.config?.dns4} /></Label>
+        </li>
+      </ul>
+    </div>
+    <Label>
+      Send replies <Checkbox
         name="sendReplies"
-        type="checkbox"
         checked={!!data.config?.send_replies}
       />
-    </label>
+    </Label>
     <button>Sugmit</button>
   </section>
 </form>
@@ -130,6 +153,18 @@
 </section>
 
 <style lang="scss">
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--size-unit) * 2);
+  }
+
+  .dnsList {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
   td.timestamp {
     white-space: nowrap;
   }
