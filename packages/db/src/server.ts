@@ -74,12 +74,14 @@ const appRouter = router({
       await Config.set(opts.input);
     }),
   configGet: publicProcedure.query(Config.get),
-  aliasesGet: publicProcedure.query(Alias.get),
   aliasSet: publicProcedure
     .input(z.object({ mac: z.string(), alias: z.string() }))
     .mutation(async (opts) => {
       await Alias.set(opts.input.mac, opts.input.alias);
     }),
+  aliasDelete: publicProcedure.input(z.string()).mutation(async (opts) => {
+    await Alias.delete(opts.input);
+  }),
   leasesGet: publicProcedure.query(() =>
     Lease.getAll().then(z.array(zLease).parse)
   ),
@@ -106,7 +108,7 @@ const appRouter = router({
     .mutation(async (ctx) => {
       await Offer.delete(ctx.input);
     }),
-  getSeenMacs: publicProcedure.query(SeenMac.getAll),
+  getSeenMacs: publicProcedure.query(SeenMac.getAllWithAliases),
   addSeenMac: publicProcedure
     .input(z.object({ mac: z.string() }))
     .mutation((ctx) => SeenMac.addSighting(ctx.input.mac)),

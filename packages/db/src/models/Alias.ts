@@ -10,6 +10,8 @@ const Alias = {
         oc.column("mac").doUpdateSet({ alias }).where("mac", "=", mac)
       )
       .execute(),
+  delete: (mac: string) =>
+    db.deleteFrom("alias").where("mac", "=", mac).limit(1).execute(),
 };
 
 export default Alias;

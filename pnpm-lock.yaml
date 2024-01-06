@@ -11,6 +11,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
     devDependencies:
       '@types/node':
         specifier: ^20.10.0
@@ -40,7 +43,7 @@ importers:
         specifier: ^0.26.3
         version: 0.26.3
       zod:
-        specifier: ^3.22.4
+        specifier: '*'
         version: 3.22.4
     devDependencies:
       '@types/better-sqlite3':
@@ -101,6 +104,9 @@ importers:
       vite:
         specifier: ^4.4.2
         version: 4.5.1(@types/node@20.10.5)(sass@1.69.5)
+      zod:
+        specifier: '*'
+        version: 3.22.4
 
 packages:
 
@@ -2390,4 +2396,3 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-    dev: false

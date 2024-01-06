@@ -5,8 +5,7 @@
 - secure DB tRPC from non-localhost queries
 - use client id instead of mac as primary key
 - Check if trpc could talk over sockets instead of HTTP
-- reintroduce aliases
-- store hostname and vendor class identifiers as a fallback for aliases
+- store hostname as a fallback for aliases
 - run migrations on startup
 - add "log level" config, and don't write anything in e.g. debug
 - make sure that db service runs first
@@ -18,3 +17,4 @@
 - support other MAC formats than just ':'-separated
 - broadcast DHCP replies to any and all interfaces, instead of asking for a specific NIC?
 - responsive design (for mobile phone)
+- support handling aliases for macs that aren't in the logs (adding and/or removing)

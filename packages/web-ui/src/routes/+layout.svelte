@@ -80,7 +80,7 @@
     border-radius: size(4);
     padding: size(4);
     overflow: auto;
-    max-width: 1000px;
+    max-width: 1200px;
     box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.05);
     border: 2px solid rgba(0, 0, 0, 0.15);
     margin-bottom: size(8);

@@ -13,7 +13,7 @@
     "better-sqlite3": "^9.2.2",
     "find-package-json": "^1.2.0",
     "kysely": "^0.26.3",
-    "zod": "^3.22.4"
+    "zod": "*"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.8",

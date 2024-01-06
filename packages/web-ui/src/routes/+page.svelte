@@ -9,6 +9,8 @@
   import Label from "$lib/components/Label.svelte";
   import Checkbox from "$lib/components/Checkbox.svelte";
   import Button from "$lib/components/Button.svelte";
+  import type { AliasPutBody } from "./api/alias/+server";
+
   export let data: PageData;
 
   let logs: PageData["logs"] | undefined = undefined;
@@ -24,6 +26,26 @@
     }, 2000);
     return () => clearInterval(interval);
   });
+
+  let savingAlias = false;
+  const setAlias =
+    (mac: string, oldValue: string | null) =>
+    (e: CustomEvent<{ alias: string }>) => {
+      const newValue = e.detail.alias.trim();
+      if (newValue === (oldValue || "")) return;
+      savingAlias = true;
+      // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
+      fetch("/api/alias", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mac,
+          alias: e.detail.alias,
+        } satisfies AliasPutBody),
+      }).finally(() => {
+        savingAlias = false;
+      });
+    };
 </script>
 
 <h1>NeatDHCP</h1>
@@ -111,6 +133,7 @@
         <tr>
           <th>MAC</th>
           <th>Vendor</th>
+          <th>Alias</th>
           <th>First seen</th>
           <th>Last seen</th>
         </tr>
@@ -120,11 +143,20 @@
           <tr>
             <td><pre>{seenMac.mac}</pre></td>
             <td>{seenMac.vendor?.["Organization Name"] || ""}</td>
-            <td title={seenMac.first_seen}>
+            <td>
+              <!-- TODO: setAlias doesn't work properly - `oldValue` does not get updated after save -->
+              <Input
+                small
+                disabled={savingAlias}
+                value={seenMac.alias}
+                on:blurOrEnter={setAlias(seenMac.mac, seenMac.alias)}
+              />
+            </td>
+            <td title={seenMac.first_seen} class="nowrap">
               <!-- TODO make a tooltip component-->
               {formatRelative(seenMac.first_seen, Date.now())}
             </td>
-            <td title={seenMac.last_seen}>
+            <td title={seenMac.last_seen} class="nowrap">
               {formatRelative(seenMac.last_seen, Date.now())}
             </td>
           </tr>
@@ -160,6 +192,10 @@
 </section>
 
 <style lang="scss">
+  .nowrap {
+    white-space: nowrap;
+  }
+
   .container {
     display: flex;
     flex-direction: column;

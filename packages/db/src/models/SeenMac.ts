@@ -2,8 +2,19 @@ import db from "../db";
 import CURRENT_TIMESTAMP_WITH_MILLIS from "../lib/currentTimestamp";
 
 const SeenMac = {
-  getAll: () =>
-    db.selectFrom("seen_mac").selectAll().orderBy("last_seen desc").execute(),
+  getAllWithAliases: () =>
+    db
+      .selectFrom("seen_mac")
+      .leftJoin("alias", "seen_mac.mac", "alias.mac")
+      .orderBy("last_seen desc")
+      .select([
+        "seen_mac.mac",
+        "seen_mac.first_seen",
+        "seen_mac.last_seen",
+        "alias.alias",
+        "alias.added_at",
+      ])
+      .execute(),
   addSighting: (mac: string) =>
     db
       .insertInto("seen_mac")
