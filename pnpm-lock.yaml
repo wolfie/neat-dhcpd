@@ -73,6 +73,9 @@ importers:
       '@trpc/client':
         specifier: ^10.44.1
         version: 10.44.1(@trpc/server@10.44.1)
+      date-fns:
+        specifier: ^3.1.0
+        version: 3.1.0
       lucide-svelte:
         specifier: ^0.305.0
         version: 0.305.0(svelte@4.2.8)
@@ -1082,6 +1085,10 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.6
     dev: true
+
+  /date-fns@3.1.0:
+    resolution: {integrity: sha512-ZO7yefXV/wCWzd3I9haCHmfzlfA3i1a2HHO7ZXjtJrRjXt8FULKJ2Vl8wji3XYF4dQ0ZJ/tokXDZeYlFvgms9Q==}
+    dev: false
 
   /debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}

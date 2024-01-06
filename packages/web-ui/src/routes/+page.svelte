@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
   import { onMount } from "svelte";
+  import { enhance } from "$app/forms";
+  import { formatRelative } from "date-fns/formatRelative";
   import type { PageData } from "./$types";
   import Alert from "$lib/components/Alert.svelte";
   import Select from "$lib/components/Select.svelte";
@@ -119,8 +120,13 @@
           <tr>
             <td><pre>{seenMac.mac}</pre></td>
             <td>{seenMac.vendor?.["Organization Name"] || ""}</td>
-            <td><pre>{seenMac.first_seen}</pre></td>
-            <td><pre>{seenMac.last_seen}</pre></td>
+            <td title={seenMac.first_seen}>
+              <!-- TODO make a tooltip component-->
+              {formatRelative(seenMac.first_seen, Date.now())}
+            </td>
+            <td title={seenMac.last_seen}>
+              {formatRelative(seenMac.last_seen, Date.now())}
+            </td>
           </tr>
         {/each}
       </tbody>
@@ -171,6 +177,6 @@
   }
 
   .logs {
-    max-height: 20em;
+    max-height: 30em;
   }
 </style>
