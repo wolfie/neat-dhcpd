@@ -1,10 +1,10 @@
-import type { DhcpMessage } from "./parseMessage";
-import type { ParsedRequestOption } from "./mapRequestOptions";
-import type { DhcpRequest } from "./parseRequestMessage";
-import type { Config } from "@neat-dhcpd/db";
-import createOfferResponse from "./createOfferResponse";
-import createAckResponse from "./createAckResponse";
-import type { Ip } from "../lib/ip";
+import type { DhcpMessage } from './parseMessage';
+import type { ParsedRequestOption } from './mapRequestOptions';
+import type { DhcpRequest } from './parseRequestMessage';
+import type { Config } from '@neat-dhcpd/db';
+import createOfferResponse from './createOfferResponse';
+import createAckResponse from './createAckResponse';
+import type { Ip } from '../lib/ip';
 
 export type ResponseResult =
   | {
@@ -15,27 +15,23 @@ export type ResponseResult =
     }
   | {
       success: false;
-      error:
-        | "no-type-option"
-        | "no-ips-left"
-        | "not-for-me"
-        | "malformatted-ip-start-or-end";
+      error: 'no-type-option' | 'no-ips-left' | 'not-for-me' | 'malformatted-ip-start-or-end';
     }
   | {
       success: false;
-      error: "unhandled-type-option";
-      id: ParsedRequestOption<53>["value"];
+      error: 'unhandled-type-option';
+      id: ParsedRequestOption<53>['value'];
     }
   | {
       success: false;
-      error: "requested-invalid-ip";
+      error: 'requested-invalid-ip';
       requestedIp: string | undefined;
       offeredIp: string | undefined;
       leasedIp: string | undefined;
     };
 
-export type DhcpResponse = Omit<DhcpMessage, "op" | "options"> & {
-  op: "BOOTREPLY";
+export type DhcpResponse = Omit<DhcpMessage, 'op' | 'options'> & {
+  op: 'BOOTREPLY';
   options: {
     magicCookie: string;
     options: Array<[number, Buffer]>;
@@ -53,20 +49,19 @@ const createResponse = async (
   config: Config
 ): Promise<ResponseResult> => {
   const typeOption = request.options.options.find(
-    (o): o is ParsedRequestOption<53> =>
-      o.isParsed && o.name === "DHCP Message Type"
+    (o): o is ParsedRequestOption<53> => o.isParsed && o.name === 'DHCP Message Type'
   );
-  if (!typeOption) return { success: false, error: "no-type-option" } as const;
+  if (!typeOption) return { success: false, error: 'no-type-option' } as const;
 
   switch (typeOption.value) {
-    case "DHCPDISCOVER":
+    case 'DHCPDISCOVER':
       return createOfferResponse(request, serverAddress, config);
-    case "DHCPREQUEST":
+    case 'DHCPREQUEST':
       return createAckResponse(request, serverAddress, config);
     default:
       return {
         success: false,
-        error: "unhandled-type-option",
+        error: 'unhandled-type-option',
         id: typeOption.value,
       };
   }

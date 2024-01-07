@@ -1,18 +1,17 @@
-import { z } from "zod";
-import { publicProcedure, router } from "./trpc";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import type { inferRouterOutputs } from "@trpc/server";
-import Log from "./models/Log";
-import Config from "./models/Config";
-import Alias from "./models/Alias";
-import Lease from "./models/Lease";
-import Offer from "./models/Offer";
-import log from "./lib/log";
-import SeenMac from "./models/SeenMac";
+import { z } from 'zod';
+import { publicProcedure, router } from './trpc';
+import { createHTTPServer } from '@trpc/server/adapters/standalone';
+import type { inferRouterOutputs } from '@trpc/server';
+import Log from './models/Log';
+import Config from './models/Config';
+import Alias from './models/Alias';
+import Lease from './models/Lease';
+import Offer from './models/Offer';
+import log from './lib/log';
+import SeenMac from './models/SeenMac';
 
 const zIpString = z.custom<`${number}.${number}.${number}.${number}`>(
-  (val: unknown) =>
-    typeof val === "string" && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val)
+  (val: unknown) => typeof val === 'string' && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val)
 );
 
 const zLease = z.object({
@@ -30,11 +29,7 @@ const zOffers = z.array(
   })
 );
 
-const zLogLevel = z.union([
-  z.literal("log"),
-  z.literal("error"),
-  z.literal("debug"),
-]);
+const zLogLevel = z.union([z.literal('log'), z.literal('error'), z.literal('debug')]);
 
 const appRouter = router({
   logsGet: publicProcedure
@@ -83,9 +78,7 @@ const appRouter = router({
   aliasDelete: publicProcedure.input(z.string()).mutation(async (opts) => {
     await Alias.delete(opts.input);
   }),
-  leasesGet: publicProcedure.query(() =>
-    Lease.getAll().then(z.array(zLease).parse)
-  ),
+  leasesGet: publicProcedure.query(() => Lease.getAll().then(z.array(zLease).parse)),
   leaseGet: publicProcedure
     .input(z.object({ mac: z.string() }))
     .query((ctx) => Lease.get(ctx.input)),
@@ -119,7 +112,7 @@ export type AppRouter = typeof appRouter;
 // type RouterInput = inferRouterInputs<AppRouter>;
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
-export type Config = NonNullable<RouterOutput["configGet"]>;
+export type Config = NonNullable<RouterOutput['configGet']>;
 
 const server = createHTTPServer({
   router: appRouter,

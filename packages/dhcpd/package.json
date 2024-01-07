@@ -6,7 +6,7 @@
     "dev": "npx -y ts-node-dev ./src/index",
     "build": "rm -rf build && tsc -b",
     "test": "npx vitest",
-    "lint": "eslint ."
+    "lint": "eslint . && prettier --check src/**/*.ts"
   },
   "dependencies": {
     "@trpc/client": "^10.45.0",

@@ -1,31 +1,31 @@
-import { ipFromBuffer } from "../lib/ip";
-import { htypeForNumber, messageTypesForNumber } from "./numberStrings";
-import PARAMETER_REQUEST_LIST from "./parameterRequestList";
-import type { UnparsedOption } from "./parseOptions";
+import { ipFromBuffer } from '../lib/ip';
+import { htypeForNumber, messageTypesForNumber } from './numberStrings';
+import PARAMETER_REQUEST_LIST from './parameterRequestList';
+import type { UnparsedOption } from './parseOptions';
 
 const OPTION_PARSER = {
   12: {
-    name: "Host Name",
-    parse: (content: Buffer) => content.toString("ascii"),
+    name: 'Host Name',
+    parse: (content: Buffer) => content.toString('ascii'),
   },
   50: {
-    name: "Requested IP address",
+    name: 'Requested IP address',
     parse: (content: Buffer) => ipFromBuffer(content),
   },
   51: {
-    name: "IP address lease time",
+    name: 'IP address lease time',
     parse: (content: Buffer) => ({ seconds: content.readUint32BE() }),
   },
   53: {
-    name: "DHCP Message Type",
+    name: 'DHCP Message Type',
     parse: (content: Buffer) => messageTypesForNumber(content.readUint8()),
   },
   54: {
-    name: "Server Identifier",
-    parse: (content: Buffer) => content.toString("hex"),
+    name: 'Server Identifier',
+    parse: (content: Buffer) => content.toString('hex'),
   },
   55: {
-    name: "Parameter Request List",
+    name: 'Parameter Request List',
     parse: (content: Buffer) => {
       const data: {
         id: number;
@@ -42,27 +42,27 @@ const OPTION_PARSER = {
     },
   },
   57: {
-    name: "Maximum DHCP message size",
+    name: 'Maximum DHCP message size',
     parse: (content: Buffer) => content.readUint16BE(),
   },
   60: {
-    name: "Vendor class identifier",
-    parse: (content: Buffer) => content.toString("ascii"),
+    name: 'Vendor class identifier',
+    parse: (content: Buffer) => content.toString('ascii'),
   },
   61: {
-    name: "Client identifier",
+    name: 'Client identifier',
     parse: (content: Buffer) => ({
       type: htypeForNumber(content.readUInt8()),
-      content: content.subarray(1).toString("hex"),
+      content: content.subarray(1).toString('hex'),
     }),
   },
   80: {
-    name: "Rapid Commit",
+    name: 'Rapid Commit',
     parse: () => true,
   },
   81: {
     // https://www.rfc-editor.org/rfc/rfc4702.txt
-    name: "Client FQDN",
+    name: 'Client FQDN',
     parse: (content: Buffer) => {
       const flags = content.readUint8(0);
       const n = !!(flags & 0b00001000);
@@ -71,7 +71,7 @@ const OPTION_PARSER = {
       const s = !!(flags & 0b00000001);
       const rcode1 = content.readUint8(1);
       const rcode2 = content.readUint8(2);
-      const domainname = content.subarray(3).toString("ascii");
+      const domainname = content.subarray(3).toString('ascii');
 
       return {
         flags: { n, e, o, s },
@@ -82,37 +82,31 @@ const OPTION_PARSER = {
   },
 } as const;
 
-const KNOWN_OPTION_IDS = Object.keys(OPTION_PARSER).map((key) =>
-  parseInt(key)
-) as Array<keyof typeof OPTION_PARSER>;
+const KNOWN_OPTION_IDS = Object.keys(OPTION_PARSER).map((key) => parseInt(key)) as Array<
+  keyof typeof OPTION_PARSER
+>;
 export type KnownRequestOptionId = (typeof KNOWN_OPTION_IDS)[number];
 
-export type ParsedRequestOption__<
-  T extends KnownRequestOptionId = KnownRequestOptionId
-> = {
+export type ParsedRequestOption__<T extends KnownRequestOptionId = KnownRequestOptionId> = {
   isParsed: true;
   optionCode: T;
   hex: string;
   content: Buffer;
-  name: (typeof OPTION_PARSER)[T]["name"];
-  value: ReturnType<(typeof OPTION_PARSER)[T]["parse"]>;
+  name: (typeof OPTION_PARSER)[T]['name'];
+  value: ReturnType<(typeof OPTION_PARSER)[T]['parse']>;
 };
 // somehow this tricks the TS type system to properly split the types
-export type ParsedRequestOption<T = KnownRequestOptionId> =
-  T extends KnownRequestOptionId ? ParsedRequestOption__<T> : never;
+export type ParsedRequestOption<T = KnownRequestOptionId> = T extends KnownRequestOptionId
+  ? ParsedRequestOption__<T>
+  : never;
 
 export const isParsedRequestOption =
   <T extends KnownRequestOptionId = KnownRequestOptionId>(id?: T) =>
-  (
-    option: ParsedRequestOption | UnparsedOption
-  ): option is ParsedRequestOption<T> =>
-    option.isParsed && (typeof id === "undefined" || option.optionCode === id);
+  (option: ParsedRequestOption | UnparsedOption): option is ParsedRequestOption<T> =>
+    option.isParsed && (typeof id === 'undefined' || option.optionCode === id);
 
-const mapRequestOption = <T extends UnparsedOption>(
-  option: T
-): T | ParsedRequestOption => {
-  if (!KNOWN_OPTION_IDS.includes(option.optionCode as KnownRequestOptionId))
-    return option;
+const mapRequestOption = <T extends UnparsedOption>(option: T): T | ParsedRequestOption => {
+  if (!KNOWN_OPTION_IDS.includes(option.optionCode as KnownRequestOptionId)) return option;
   const id = option.optionCode as KnownRequestOptionId;
   return {
     ...option,

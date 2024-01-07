@@ -9,7 +9,7 @@ declare global {
     // interface Platform {}
   }
 
-  declare module "*.csv" {
+  declare module '*.csv' {
     const content: Record<string, string>[];
     export default content;
   }

@@ -1,7 +1,7 @@
-import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import z from "zod";
-import trpc from "$lib/server/trpcClient";
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import z from 'zod';
+import trpc from '$lib/server/trpcClient';
 
 const AliasPutBody = z.object({ mac: z.string(), alias: z.string() });
 export type AliasPutBody = z.TypeOf<typeof AliasPutBody>;

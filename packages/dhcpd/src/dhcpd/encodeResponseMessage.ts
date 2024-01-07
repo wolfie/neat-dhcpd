@@ -1,6 +1,6 @@
-import type { DhcpResponse } from "./createResponse";
-import { htypeForString, opForString } from "./numberStrings";
-import type { BootpMessage } from "./splitBootpMessage";
+import type { DhcpResponse } from './createResponse';
+import { htypeForString, opForString } from './numberStrings';
+import type { BootpMessage } from './splitBootpMessage';
 
 const encodeResponseMessage = (
   message: DhcpResponse,
@@ -15,7 +15,7 @@ const encodeResponseMessage = (
     return prev;
   };
 
-  buffer.writeUInt8(opForString("BOOTREPLY"), $(1));
+  buffer.writeUInt8(opForString('BOOTREPLY'), $(1));
   buffer.writeUInt8(htypeForString(message.htype), $(1));
   buffer.writeUInt8(message.hlen, $(1));
   buffer.writeUInt8(0, $(1)); // hops
@@ -29,7 +29,7 @@ const encodeResponseMessage = (
 
   const chaddr = Buffer.alloc(16);
   message.chaddr
-    .split(":")
+    .split(':')
     .map((x) => parseInt(x, 16))
     .forEach((n, i) => chaddr.writeUInt8(n, i));
   chaddr.copy(buffer, $(16));

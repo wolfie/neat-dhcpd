@@ -1,7 +1,7 @@
-import type { Config } from "@neat-dhcpd/db";
-import type { Address } from "./createResponse";
-import { getBroadcastAddr, ipFromString } from "../lib/ip";
-import log from "../lib/log";
+import type { Config } from '@neat-dhcpd/db';
+import type { Address } from './createResponse';
+import { getBroadcastAddr, ipFromString } from '../lib/ip';
+import log from '../lib/log';
 
 const createGetResponseOption =
   (serverAddress: Address, config: Config) =>
@@ -19,11 +19,11 @@ const createGetResponseOption =
           (config.dns4 && ipFromString(config.dns4)?.buf) || Buffer.alloc(0),
         ]); // TODO take into account if not multiple DNS configs
       case 15:
-        return Buffer.from("NeatDhcpd", "ascii"); // TODO
+        return Buffer.from('NeatDhcpd', 'ascii'); // TODO
       case 28:
         const ip_start = ipFromString(config.ip_start);
         if (!ip_start) {
-          log("error", { message: "ip_start is not a valid ip", config });
+          log('error', { message: 'ip_start is not a valid ip', config });
           return undefined;
         }
         return getBroadcastAddr(serverAddress.netmask, ip_start).buf;

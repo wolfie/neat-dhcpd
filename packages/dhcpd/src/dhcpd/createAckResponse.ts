@@ -1,13 +1,13 @@
-import type { Config } from "@neat-dhcpd/db";
-import trpc from "../trpcClient";
-import type { Address, ResponseResult } from "./createResponse";
-import { isParsedRequestOption } from "./mapRequestOptions";
-import type { DhcpRequest } from "./parseRequestMessage";
-import createGetResponseOption from "./createGetResponseOption";
-import tap from "../lib/tap";
-import { messageTypesForString } from "./numberStrings";
-import log from "../lib/log";
-import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from "../lib/ip";
+import type { Config } from '@neat-dhcpd/db';
+import trpc from '../trpcClient';
+import type { Address, ResponseResult } from './createResponse';
+import { isParsedRequestOption } from './mapRequestOptions';
+import type { DhcpRequest } from './parseRequestMessage';
+import createGetResponseOption from './createGetResponseOption';
+import tap from '../lib/tap';
+import { messageTypesForString } from './numberStrings';
+import log from '../lib/log';
+import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from '../lib/ip';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -16,24 +16,13 @@ const createAckResponse = async (
   serverAddress: Address,
   config: Config
 ): Promise<ResponseResult> => {
-  if (
-    request.options.options.find(isParsedRequestOption(53))?.value !==
-    "DHCPREQUEST"
-  ) {
-    throw new Error(
-      "Unexpected option 53, expected DHCPREQUEST: " + JSON.stringify(request)
-    );
+  if (request.options.options.find(isParsedRequestOption(53))?.value !== 'DHCPREQUEST') {
+    throw new Error('Unexpected option 53, expected DHCPREQUEST: ' + JSON.stringify(request));
   }
 
-  const serverIdBuffer = request.options.options.find(
-    isParsedRequestOption(54)
-  )?.content;
-  if (
-    !serverIdBuffer ||
-    ipFromBuffer(serverIdBuffer).num !== serverAddress.address.num
-  ) {
-    const requestedIp = request.options.options.find(isParsedRequestOption(50))
-      ?.value.str;
+  const serverIdBuffer = request.options.options.find(isParsedRequestOption(54))?.content;
+  if (!serverIdBuffer || ipFromBuffer(serverIdBuffer).num !== serverAddress.address.num) {
+    const requestedIp = request.options.options.find(isParsedRequestOption(50))?.value.str;
     if (requestedIp) {
       trpc.offerDelete.mutate({
         ip: requestedIp,
@@ -41,12 +30,10 @@ const createAckResponse = async (
       });
     }
 
-    return { success: false, error: "not-for-me" };
+    return { success: false, error: 'not-for-me' };
   }
 
-  const requestedIp = request.options.options.find(
-    isParsedRequestOption(50)
-  )?.value;
+  const requestedIp = request.options.options.find(isParsedRequestOption(50))?.value;
   // TODO renew lease if a valid lease already exists
   const [offer, existingLease] = await Promise.all([
     trpc.offerGet.query({ mac: request.chaddr }),
@@ -58,13 +45,13 @@ const createAckResponse = async (
     (requestedIp.str === offer?.ip
       ? offer.ip
       : requestedIp.str === existingLease?.ip
-      ? existingLease.ip
-      : undefined);
+        ? existingLease.ip
+        : undefined);
 
   if (!assignedIp) {
     return {
       success: false,
-      error: "requested-invalid-ip",
+      error: 'requested-invalid-ip',
       requestedIp: requestedIp?.str,
       offeredIp: offer?.ip,
       leasedIp: existingLease?.mac,
@@ -79,20 +66,18 @@ const createAckResponse = async (
       .map(
         tap(
           (options) =>
-            typeof options[1] === "undefined" &&
-            log("debug", "unfulfilled requested option " + options[0])
+            typeof options[1] === 'undefined' &&
+            log('debug', 'unfulfilled requested option ' + options[0])
         )
       )
-      .filter((t): t is [number, Buffer] => typeof t[1] !== "undefined") ?? [];
-  options.unshift([53, Buffer.of(messageTypesForString("DHCPACK"))]);
+      .filter((t): t is [number, Buffer] => typeof t[1] !== 'undefined') ?? [];
+  options.unshift([53, Buffer.of(messageTypesForString('DHCPACK'))]);
 
   options.push([
     51,
     (() => {
       const leaseTimeBuffer = Buffer.alloc(4);
-      leaseTimeBuffer.writeUInt32BE(
-        offer?.lease_time_secs ?? config.lease_time_minutes * 60
-      );
+      leaseTimeBuffer.writeUInt32BE(offer?.lease_time_secs ?? config.lease_time_minutes * 60);
       return leaseTimeBuffer;
     })(),
   ]);
@@ -102,17 +87,15 @@ const createAckResponse = async (
   // TODO insert lease
 
   const maxMessageLength =
-    request.options.options.find(isParsedRequestOption(57))?.value ??
-    DEFAULT_MAX_MESSAGE_LENGTH;
+    request.options.options.find(isParsedRequestOption(57))?.value ?? DEFAULT_MAX_MESSAGE_LENGTH;
 
   return {
     success: true,
     maxMessageLength,
     responseIp:
-      request.options.options.find(isParsedRequestOption(50))?.value.str ??
-      "255.255.255.255",
+      request.options.options.find(isParsedRequestOption(50))?.value.str ?? '255.255.255.255',
     message: {
-      op: "BOOTREPLY",
+      op: 'BOOTREPLY',
       htype: request.htype,
       hlen: request.hlen,
       hops: 0,
@@ -124,8 +107,8 @@ const createAckResponse = async (
       siaddr: serverAddress.address,
       giaddr: ZERO_ZERO_ZERO_ZERO,
       chaddr: request.chaddr,
-      file: "",
-      sname: "",
+      file: '',
+      sname: '',
       options: {
         magicCookie: request.options.magicCookie,
         options,

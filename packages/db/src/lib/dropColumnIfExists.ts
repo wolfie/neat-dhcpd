@@ -1,11 +1,7 @@
-import type { Kysely } from "kysely";
-import { sql } from "kysely";
+import type { Kysely } from 'kysely';
+import { sql } from 'kysely';
 
-const dropColumnIfExists = async (
-  db: Kysely<unknown>,
-  tableName: string,
-  columnName: string
-) => {
+const dropColumnIfExists = async (db: Kysely<unknown>, tableName: string, columnName: string) => {
   const columnExists = await sql<{
     exists: number;
   }>`select count(*) as 'exists' from pragma_table_info(${sql.lit(

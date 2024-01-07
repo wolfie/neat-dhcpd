@@ -1,5 +1,5 @@
-import getMacVendor from "./getMacVendor";
-import trpc from "./trpcClient";
+import getMacVendor from './getMacVendor';
+import trpc from './trpcClient';
 
 const getSeenMacs = async () => {
   const seenMacs = await trpc.getSeenMacs.query();

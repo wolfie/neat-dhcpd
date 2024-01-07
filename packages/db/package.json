@@ -12,7 +12,7 @@
     "redoMigration": "npx -y ts-node src/bin/redoMigration",
     "migrateToLatest": "npx -y ts-node src/bin/migrateToLatest",
     "build": "rm -rf build && tsc -b",
-    "lint": "eslint ."
+    "lint": "eslint . && prettier --check src/**/*.ts"
   },
   "dependencies": {
     "@trpc/server": "^10.45.0",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.8",
-    "@types/find-package-json": "^1.2.6"
+    "@types/find-package-json": "^1.2.6",
+    "prettier": "*"
   }
 }

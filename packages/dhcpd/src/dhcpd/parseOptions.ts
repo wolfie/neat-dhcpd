@@ -5,9 +5,7 @@ export type UnparsedOption = {
   content: Buffer;
 };
 
-function* generateOptions(
-  buffer: Buffer
-): Generator<UnparsedOption, void, unknown> {
+function* generateOptions(buffer: Buffer): Generator<UnparsedOption, void, unknown> {
   let offset = 0;
   while (offset <= buffer.length) {
     const optionCode = buffer.readUint8(offset);
@@ -15,7 +13,7 @@ function* generateOptions(
 
     const length = buffer.readUint8(offset + 1);
     const content = buffer.subarray(offset + 2, offset + 2 + length);
-    const hex = content.toString("hex");
+    const hex = content.toString('hex');
 
     yield {
       isParsed: false,
@@ -29,10 +27,9 @@ function* generateOptions(
 }
 
 const parseOptions = (option: Buffer) => {
-  const magicCookie = "0x" + option.subarray(0, 4).toString("hex");
+  const magicCookie = '0x' + option.subarray(0, 4).toString('hex');
   const options: UnparsedOption[] = [];
-  if (magicCookie !== "0x63825363")
-    throw new Error("unexpected magic cookie " + magicCookie);
+  if (magicCookie !== '0x63825363') throw new Error('unexpected magic cookie ' + magicCookie);
 
   const optionsBuffer = option.subarray(4);
   for (const option of generateOptions(optionsBuffer)) {

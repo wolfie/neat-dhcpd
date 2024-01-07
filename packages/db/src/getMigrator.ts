@@ -1,10 +1,10 @@
-import { __disableLogging } from "./lib/log";
+import { __disableLogging } from './lib/log';
 __disableLogging();
 
-import { FileMigrationProvider, Migrator } from "kysely";
-import db from "./db";
-import path from "path";
-import fs from "fs/promises";
+import { FileMigrationProvider, Migrator } from 'kysely';
+import db from './db';
+import path from 'path';
+import fs from 'fs/promises';
 
 const getMigrator = () =>
   new Migrator({
@@ -12,7 +12,7 @@ const getMigrator = () =>
     provider: new FileMigrationProvider({
       path,
       fs,
-      migrationFolder: path.resolve(__dirname, "migrations"),
+      migrationFolder: path.resolve(__dirname, 'migrations'),
     }),
   });
 

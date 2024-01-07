@@ -3,6 +3,5 @@
   "compilerOptions": {
     "outDir": "build",
     "baseUrl": "src"
-  },
-  "references": [{ "path": "../db" }]
+  }
 }
