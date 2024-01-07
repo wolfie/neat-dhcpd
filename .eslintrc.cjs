@@ -24,5 +24,5 @@ module.exports = {
       },
     ],
   },
-  ignorePatterns: ["build"],
+  ignorePatterns: ["build", "*.js"],
 };

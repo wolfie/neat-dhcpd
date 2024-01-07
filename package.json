@@ -8,13 +8,17 @@
   },
   "private": true,
   "scripts": {
-    "dev": "concurrently pnpm:dev:*",
+    "dev": "echo \"you should run each package separately, first db and then the two others\" && exit 1",
     "dev:db": "pnpm --filter \"@neat-dhcpd/db\" dev",
     "dev:dhcpd": "pnpm --filter \"@neat-dhcpd/dhcpd\" dev",
     "dev:web-ui": "pnpm --filter \"@neat-dhcpd/web-ui\" dev",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "start": "pnpm --filter \"@neat-dhcpd/db\" migrateToLatest && concurrently pnpm:start:*",
+    "start:db": "pnpm --filter \"@neat-dhcpd/db\" start",
+    "start:dhcpd": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/dhcpd\" start",
+    "start:web-ui": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/web-ui\" start"
   },
   "workspaces": [
     "packages/*"

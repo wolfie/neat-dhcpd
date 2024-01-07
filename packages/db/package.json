@@ -12,7 +12,8 @@
     "redoMigration": "npx -y ts-node src/bin/redoMigration",
     "migrateToLatest": "npx -y ts-node src/bin/migrateToLatest",
     "build": "rm -rf build && tsc -b",
-    "lint": "eslint . && prettier --check src/**/*.ts"
+    "lint": "eslint . && prettier --check src/**/*.ts",
+    "start": "node build"
   },
   "dependencies": {
     "@trpc/server": "^10.45.0",

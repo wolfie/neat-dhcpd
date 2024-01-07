@@ -9,6 +9,8 @@ import Lease from './models/Lease';
 import Offer from './models/Offer';
 import log from './lib/log';
 import SeenMac from './models/SeenMac';
+import db from './db';
+import CURRENT_TIMESTAMP_WITH_MILLIS from './lib/currentTimestamp';
 
 const zIpString = z.custom<`${number}.${number}.${number}.${number}`>(
   (val: unknown) => typeof val === 'string' && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val)
@@ -118,4 +120,19 @@ const server = createHTTPServer({
   router: appRouter,
 });
 
-server.listen(3000);
+const env = z.object({ TPRC_SERVER_PORT: z.coerce.number().default(3000) }).parse(process.env);
+const connection = server.listen(env.TPRC_SERVER_PORT);
+console.log(`Starting tRPC server on port ${connection.port}`);
+
+(async () => {
+  // poke the db file so that other processes know that the file has been updated
+  const { length } = await db.selectFrom('meta').selectAll().execute();
+  if (length === 1) {
+    await db.updateTable('meta').set({ last_startup: new Date().toISOString() }).execute();
+  } else {
+    if (length > 1) {
+      await db.deleteFrom('meta').execute();
+    }
+    await db.insertInto('meta').values({ last_startup: CURRENT_TIMESTAMP_WITH_MILLIS }).execute();
+  }
+})();

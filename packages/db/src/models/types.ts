@@ -46,6 +46,10 @@ export type SeenMacTable = {
   last_seen: Generated<string>;
 };
 
+export type MetaTable = {
+  last_startup: string;
+};
+
 export type Database = {
   log: LogTable;
   config: ConfigTable;
@@ -53,4 +57,5 @@ export type Database = {
   alias: AliasTable;
   offer: OfferTable;
   seen_mac: SeenMacTable;
+  meta: MetaTable;
 };
