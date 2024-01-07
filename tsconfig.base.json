@@ -4,8 +4,8 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
     "strict": true,
-    "skipLibCheck": true,
-    "baseUrl": "."
+    "skipLibCheck": true
   }
 }

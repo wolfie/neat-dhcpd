@@ -9,7 +9,8 @@ import parseRequestMessage from "./parseRequestMessage";
 import encodeResponseMessage from "./encodeResponseMessage";
 import log from "../lib/log";
 import { format } from "node:util";
-import { Ip, getBroadcastAddr, ipFromString } from "../lib/ip";
+import type { Ip} from "../lib/ip";
+import { getBroadcastAddr, ipFromString } from "../lib/ip";
 
 const hasPropWithValue =
   <T extends object, K extends keyof T, const V extends T[K]>(

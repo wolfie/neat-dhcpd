@@ -1,5 +1,3 @@
-// TODO get this again
-import getMacVendor from "$lib/server/getMacVendor";
 import getSeenMacs from "$lib/server/getSeenMacs";
 import trpc from "$lib/server/trpcClient";
 import type { Actions, PageServerLoad } from "./$types";

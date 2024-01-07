@@ -1,6 +1,7 @@
-import { Kysely } from "kysely";
+import type { Kysely } from "kysely";
 import CURRENT_TIMESTAMP_WITH_MILLIS from "../lib/currentTimestamp";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const up = async (db: Kysely<any>): Promise<void> => {
   await db.schema
     .createTable("config")
@@ -78,6 +79,7 @@ export const up = async (db: Kysely<any>): Promise<void> => {
     .execute();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const down = async (db: Kysely<any>): Promise<void> => {
   await db.schema.dropTable("aliases").ifExists().execute();
   await db.schema.dropTable("leases").ifExists().execute();

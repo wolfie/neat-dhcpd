@@ -1,5 +1,5 @@
-import { InsertObject } from "kysely";
-import { Database } from "./types";
+import type { InsertObject } from "kysely";
+import type { Database } from "./types";
 import db from "../db";
 
 const Config = {

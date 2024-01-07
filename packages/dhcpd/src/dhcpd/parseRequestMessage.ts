@@ -1,6 +1,7 @@
-import mapRequestOption, { ParsedRequestOption } from "./mapRequestOptions";
+import type { ParsedRequestOption } from "./mapRequestOptions";
+import mapRequestOption from "./mapRequestOptions";
 import type { DhcpMessage } from "./parseMessage";
-import { UnparsedOption } from "./parseOptions";
+import type { UnparsedOption } from "./parseOptions";
 
 export type DhcpRequest = Omit<DhcpMessage, "op" | "options"> & {
   op: "BOOTREQUEST";

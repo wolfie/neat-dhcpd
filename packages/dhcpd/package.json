@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "npx -y ts-node-dev ./src/index",
-    "test": "npx vitest"
+    "build": "rm -rf build && tsc -b",
+    "test": "npx vitest",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@trpc/client": "^10.44.1",
+    "@trpc/client": "^10.45.0",
+    "@neat-dhcpd/db": "workspace:*",
     "vitest": "*"
   }
 }

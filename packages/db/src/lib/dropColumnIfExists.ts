@@ -1,4 +1,5 @@
-import { Kysely, sql } from "kysely";
+import type { Kysely } from "kysely";
+import { sql } from "kysely";
 
 const dropColumnIfExists = async (
   db: Kysely<unknown>,

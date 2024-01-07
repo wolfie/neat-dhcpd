@@ -1,4 +1,4 @@
-import type { Config } from "packages/db/src/server";
+import type { Config } from "@neat-dhcpd/db";
 import type { Address } from "./createResponse";
 import { getBroadcastAddr, ipFromString } from "../lib/ip";
 import log from "../lib/log";

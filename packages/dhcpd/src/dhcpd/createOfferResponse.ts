@@ -1,4 +1,4 @@
-import type { Config } from "packages/db/src/server";
+import type { Config } from "@neat-dhcpd/db";
 import type { Address, ResponseResult } from "./createResponse";
 import type { DhcpRequest } from "./parseRequestMessage";
 import { isParsedRequestOption } from "./mapRequestOptions";
@@ -8,7 +8,8 @@ import trpc from "../trpcClient";
 import rand from "../lib/rand";
 import createGetResponseOption from "./createGetResponseOption";
 import log from "../lib/log";
-import { Ip, ZERO_ZERO_ZERO_ZERO, ipFromNumber, ipFromString } from "../lib/ip";
+import type { Ip } from "../lib/ip";
+import { ZERO_ZERO_ZERO_ZERO, ipFromNumber, ipFromString } from "../lib/ip";
 
 const findFreeIpN = async (
   requestedAddress: { mac: string; ip: Ip } | undefined,
@@ -75,6 +76,7 @@ const createOfferResponse = async (
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const clientIdentifier = (() => {
     const cid = request.options.options.find(isParsedRequestOption(61));
     return cid ? `${cid.value.type}:${cid.value.content}` : request.chaddr;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+import type { inferRouterOutputs } from "@trpc/server";
 import Log from "./models/Log";
 import Config from "./models/Config";
 import Alias from "./models/Alias";
@@ -11,7 +11,7 @@ import log from "./lib/log";
 import SeenMac from "./models/SeenMac";
 
 const zIpString = z.custom<`${number}.${number}.${number}.${number}`>(
-  (val: any) =>
+  (val: unknown) =>
     typeof val === "string" && /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val)
 );
 
@@ -53,7 +53,7 @@ const appRouter = router({
         system: opts.input.system,
         level: opts.input.level,
         json: opts.input.json,
-      })
+      }).then(() => true)
     ),
   configSave: publicProcedure
     .input(
@@ -72,6 +72,7 @@ const appRouter = router({
     )
     .mutation(async (opts) => {
       await Config.set(opts.input);
+      return true;
     }),
   configGet: publicProcedure.query(Config.get),
   aliasSet: publicProcedure
@@ -115,7 +116,7 @@ const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
-type RouterInput = inferRouterInputs<AppRouter>;
+// type RouterInput = inferRouterInputs<AppRouter>;
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export type Config = NonNullable<RouterOutput["configGet"]>;

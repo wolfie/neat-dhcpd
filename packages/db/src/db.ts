@@ -1,10 +1,10 @@
 import SqliteDatabase from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
 import path from "path";
-import { Database } from "./models/types";
+import type { Database } from "./models/types";
 import findPackageJson from "find-package-json";
 
-let loopDetection = [0];
+const loopDetection = [0];
 const LOOP_DETECTION_LIMIT = 2;
 
 const initializeDb = () => {

@@ -1,10 +1,10 @@
 import type { DhcpMessage } from "./parseMessage";
 import type { ParsedRequestOption } from "./mapRequestOptions";
 import type { DhcpRequest } from "./parseRequestMessage";
-import type { Config } from "packages/db/src/server";
+import type { Config } from "@neat-dhcpd/db";
 import createOfferResponse from "./createOfferResponse";
 import createAckResponse from "./createAckResponse";
-import { Ip } from "../lib/ip";
+import type { Ip } from "../lib/ip";
 
 export type ResponseResult =
   | {

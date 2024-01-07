@@ -1,7 +1,6 @@
 # Things I might do but mainly offloaded from my brain
 
 - sensible ENV configs (address and netmask)
-- eslint & https://typescript-eslint.io/rules/consistent-type-imports/
 - secure DB tRPC from non-localhost queries
 - use client id instead of mac as primary key
 - Check if trpc could talk over sockets instead of HTTP

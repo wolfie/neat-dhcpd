@@ -1,7 +1,7 @@
 import { ipFromBuffer } from "../lib/ip";
 import { htypeForNumber, messageTypesForNumber } from "./numberStrings";
 import PARAMETER_REQUEST_LIST from "./parameterRequestList";
-import { UnparsedOption } from "./parseOptions";
+import type { UnparsedOption } from "./parseOptions";
 
 const OPTION_PARSER = {
   12: {
@@ -111,7 +111,8 @@ export const isParsedRequestOption =
 const mapRequestOption = <T extends UnparsedOption>(
   option: T
 ): T | ParsedRequestOption => {
-  if (!KNOWN_OPTION_IDS.includes(option.optionCode as any)) return option;
+  if (!KNOWN_OPTION_IDS.includes(option.optionCode as KnownRequestOptionId))
+    return option;
   const id = option.optionCode as KnownRequestOptionId;
   return {
     ...option,
