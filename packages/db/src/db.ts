@@ -2,21 +2,15 @@ import SqliteDatabase from 'better-sqlite3';
 import { Kysely, SqliteDialect } from 'kysely';
 import path from 'path';
 import type { Database } from './models/types';
-import findPackageJson from 'find-package-json';
+import { z } from 'zod';
+
+const env = z.object({ SQLITE_PATH: z.string().default('../../db.sqlite') }).parse(process.env);
 
 const loopDetection = [0];
 const LOOP_DETECTION_LIMIT = 2;
 
 const initializeDb = () => {
-  let projectRoot = '';
-  for (const pj of findPackageJson(process.cwd())) {
-    if (pj.name !== 'neat-dhcpd') continue;
-    projectRoot = path.dirname(pj.__path);
-    break;
-  }
-  if (!projectRoot) throw new Error('Could not find root project');
-
-  const DB_PATH = path.resolve(projectRoot, 'db.sqlite');
+  const DB_PATH = path.resolve(env.SQLITE_PATH);
   console.log(`sqlite path: ${DB_PATH}`);
 
   const dialect = new SqliteDialect({

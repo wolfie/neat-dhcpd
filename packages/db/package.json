@@ -8,17 +8,16 @@
     "build/**/*"
   ],
   "scripts": {
-    "dev": "npx -y ts-node-dev src",
+    "dev": "npx -y ts-node-dev -r dotenv/config src",
     "redoMigration": "npx -y ts-node src/bin/redoMigration",
     "migrateToLatest": "npx -y ts-node src/bin/migrateToLatest",
     "build": "rm -rf build && tsc -b",
     "lint": "eslint . && prettier --check src/**/*.ts",
-    "start": "node build"
+    "start": "node -r dotenv/config build"
   },
   "dependencies": {
     "@trpc/server": "^10.45.0",
     "better-sqlite3": "^9.2.2",
-    "find-package-json": "^1.2.0",
     "kysely": "^0.26.3",
     "zod": "*"
   },

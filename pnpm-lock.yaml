@@ -51,9 +51,6 @@ importers:
       better-sqlite3:
         specifier: ^9.2.2
         version: 9.2.2
-      find-package-json:
-        specifier: ^1.2.0
-        version: 1.2.0
       kysely:
         specifier: ^0.26.3
         version: 0.26.3
@@ -1536,10 +1533,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       to-regex-range: 5.0.1
-
-  /find-package-json@1.2.0:
-    resolution: {integrity: sha512-+SOGcLGYDJHtyqHd87ysBhmaeQ95oWspDKnMXBrnQ9Eq4OkLNqejgoaD8xVWu6GPa0B6roa6KinCMEMcVeqONw==}
-    dev: false
 
   /find-up@5.0.0:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
