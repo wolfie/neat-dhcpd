@@ -17,3 +17,5 @@
 - broadcast DHCP replies to any and all interfaces, instead of asking for a specific NIC?
 - responsive design (for mobile phone)
 - support handling aliases for macs that aren't in the logs (adding and/or removing)
+- authentication and authorization
+- resolve the `server-address` for `ORIGIN=http://<server-address> ./startWithAutobind.sh`

@@ -4,6 +4,30 @@
 
 I made this because I wanted to assign known IPs to my home network, but all DHCP servers come bundled with an entire firewall ecosystem, and I didn't want it to be like that.
 
+# Installing and Running
+
+```bash
+# get repo
+> git clone https://github.com/wolfie/neat-dhcpd.git
+> cd neat-dhcpd
+
+# make sure we're running the expected Node version
+> nvm install
+
+# make sure `pnpm` is accessible
+> corepack enable
+
+# build the project
+> pnpm install
+> pnpm build
+
+# on Linux, use autobind to run the application with current user, but on privileged ports
+> ORIGIN=http://<server-address> ./startWithAutobind.sh
+
+# ...but on Windows, you can just run it no sweat
+> pnpm start
+```
+
 ## Why did you...?
 
 ### ...Deploy the sqlite behind trpc instead of a library?
