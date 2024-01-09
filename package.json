@@ -15,7 +15,7 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
-    "start": "pnpm --filter \"@neat-dhcpd/db\" migrateToLatest && concurrently pnpm:start:*",
+    "start": "pnpm --filter \"@neat-dhcpd/db\" migrateToLatest && concurrently --kill-others --prefix-colors auto pnpm:start:*",
     "start:db": "pnpm --filter \"@neat-dhcpd/db\" start",
     "start:dhcpd": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/dhcpd\" start",
     "start:web-ui": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/web-ui\" start"
