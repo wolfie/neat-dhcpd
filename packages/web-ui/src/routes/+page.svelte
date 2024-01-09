@@ -48,7 +48,7 @@
     };
 </script>
 
-<h1>NeatDHCP</h1>
+<h1>NeatDHCPD</h1>
 
 <form
   method="POST"
