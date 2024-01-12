@@ -22,7 +22,7 @@ I made this because I wanted to assign known IPs to my home network, but all DHC
 > pnpm build
 
 # on Linux, use autobind to run the application with current user, but on privileged ports
-> ORIGIN=http://<server-address> ./startWithAuthbind.sh
+> ./startWithAuthbind.sh
 
 # ...but on Windows, you can just run it no sweat
 > pnpm start

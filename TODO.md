@@ -18,4 +18,5 @@
 - responsive design (for mobile phone)
 - support handling aliases for macs that aren't in the logs (adding and/or removing)
 - authentication and authorization
-- resolve the `server-address` for `ORIGIN=http://<server-address> ./startWithAutobind.sh`
+- add mDNS for easy access to aliased computers
+- either fix the "report db errors into db" bug, or remove it completely
