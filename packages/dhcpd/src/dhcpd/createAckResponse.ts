@@ -16,8 +16,14 @@ const createAckResponse = async (
   serverAddress: Address,
   config: Config
 ): Promise<ResponseResult> => {
-  if (request.options.options.find(isParsedRequestOption(53))?.value !== 'DHCPREQUEST') {
-    throw new Error('Unexpected option 53, expected DHCPREQUEST: ' + JSON.stringify(request));
+  const option53Value = request.options.options.find(isParsedRequestOption(53))?.value;
+  if (option53Value !== 'DHCPREQUEST') {
+    return {
+      success: false,
+      error: 'unexpected-option-53',
+      expected: 'DHCPREQUEST',
+      value: option53Value,
+    };
   }
 
   const serverIdBuffer = request.options.options.find(isParsedRequestOption(54))?.content;

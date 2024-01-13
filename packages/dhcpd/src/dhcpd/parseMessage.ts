@@ -1,18 +1,61 @@
-import parseOptions from './parseOptions';
+import type { MagicCookie, UnparsedOption } from './parseOptions';
 import type { BootpMessage } from './splitBootpMessage';
+import type { HType } from './numberStrings';
+import type { Ip } from '../lib/ip';
+import parseOptions from './parseOptions';
 import { htypeForNumber, opForNumber } from './numberStrings';
 import { ipFromBuffer } from '../lib/ip';
 
-export type DhcpMessage = ReturnType<typeof parseMessage>;
+export type DhcpMessage = {
+  op: 'BOOTREQUEST' | 'BOOTREPLY';
+  htype: HType;
+  hlen: number;
+  hops: number;
+  xid: string;
+  secs: number;
+  broadcastFlag: boolean;
+  ciaddr: Ip;
+  yiaddr: Ip;
+  siaddr: Ip;
+  giaddr: Ip;
+  chaddr: string;
+  sname: string;
+  file: string;
+  options: { magicCookie: MagicCookie; options: UnparsedOption[] };
+};
 
-export const parseMessage = (bootpMessage: BootpMessage) => {
+export const parseMessage = (
+  bootpMessage: BootpMessage
+):
+  | { success: false; errorField: 'op' | 'htype' | 'hlen'; value: number; buffer: Buffer }
+  | { success: false; errorField: 'options.magic-cookie'; value: `0x${string}`; buffer: Buffer }
+  | { success: true; message: DhcpMessage } => {
   const op = opForNumber(bootpMessage.op.readUInt8());
-  if (typeof op === 'undefined') throw new Error('Unexpected op ' + bootpMessage.op.readUint8());
+  if (typeof op === 'undefined')
+    return {
+      success: false,
+      errorField: 'op',
+      value: bootpMessage.op.readUint8(),
+      buffer: bootpMessage.__original,
+    };
+
   const htype = htypeForNumber(bootpMessage.htype.readUInt8());
   if (typeof htype === 'undefined')
-    throw new Error('Unexpected htype ' + bootpMessage.htype.readUint8());
+    return {
+      success: false,
+      errorField: 'htype',
+      value: bootpMessage.htype.readUint8(),
+      buffer: bootpMessage.__original,
+    };
+
   const hlen = bootpMessage.hlen.readUInt8();
-  if (hlen !== 6) throw new Error('Unexpected hlen: ' + hlen);
+  if (hlen !== 6)
+    return {
+      success: false,
+      errorField: 'hlen',
+      value: hlen,
+      buffer: bootpMessage.__original,
+    };
 
   const hops = bootpMessage.hops.readUint8();
   const xid = '0x' + bootpMessage.xid.toString('hex');
@@ -38,21 +81,32 @@ export const parseMessage = (bootpMessage: BootpMessage) => {
 
   const options = parseOptions(bootpMessage.options);
 
+  if (!options.success)
+    return {
+      success: false,
+      errorField: 'options.magic-cookie',
+      value: options.value,
+      buffer: bootpMessage.__original,
+    };
+
   return {
-    op,
-    htype,
-    hlen,
-    hops,
-    xid,
-    secs,
-    broadcastFlag,
-    ciaddr,
-    yiaddr,
-    siaddr,
-    giaddr,
-    chaddr,
-    sname,
-    file,
-    options,
-  } as const;
+    success: true,
+    message: {
+      op,
+      htype,
+      hlen,
+      hops,
+      xid,
+      secs,
+      broadcastFlag,
+      ciaddr,
+      yiaddr,
+      siaddr,
+      giaddr,
+      chaddr,
+      sname,
+      file,
+      options,
+    },
+  };
 };

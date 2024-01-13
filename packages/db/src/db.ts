@@ -30,6 +30,7 @@ const initializeDb = () => {
         loopDetection[0] = 0;
         process.exit(1);
       }
+      // eslint-disable-next-line functional/no-try-statements
       try {
         if (e.level === 'query') {
           // TODO add query logging to some debug setting

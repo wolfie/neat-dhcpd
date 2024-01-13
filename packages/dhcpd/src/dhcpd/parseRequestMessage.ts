@@ -10,18 +10,23 @@ export type DhcpRequest = Omit<DhcpMessage, 'op' | 'options'> & {
   };
 };
 
-const parseRequestMessage = (msg: DhcpMessage): DhcpRequest => {
+const parseRequestMessage = (
+  msg: DhcpMessage
+): { success: false; error: 'unexpected-op-value' } | { success: true; request: DhcpRequest } => {
   const op = msg.op;
-  if (op !== 'BOOTREQUEST') throw new Error(`Unexpected op: ${JSON.stringify(msg)}`);
+  if (op !== 'BOOTREQUEST') return { success: false, error: 'unexpected-op-value' };
 
   return {
-    ...msg,
-    op,
-    options: {
-      magicCookie: msg.options.magicCookie,
-      options: msg.options.options.map(mapRequestOption) satisfies Array<
-        UnparsedOption | ParsedRequestOption
-      >,
+    success: true,
+    request: {
+      ...msg,
+      op,
+      options: {
+        magicCookie: msg.options.magicCookie,
+        options: msg.options.options.map(mapRequestOption) satisfies Array<
+          UnparsedOption | ParsedRequestOption
+        >,
+      },
     },
   };
 };

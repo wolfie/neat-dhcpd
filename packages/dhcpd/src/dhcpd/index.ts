@@ -43,6 +43,7 @@ const findCurrentIp = async () => {
     )
     .filter(isDefined);
 
+  // eslint-disable-next-line functional/no-throw-statements
   if (foundIpv4Addresses.length === 0) throw new Error('No external IPv4 addresses found');
 
   const usedAddress =
@@ -75,10 +76,13 @@ export const createDhcpServer = async () => {
     log('debug', { msg: msg.toString('base64') });
     const requestBootp = splitBootpMessage(msg);
     log('debug', { requestBootp });
-    const requestMessage = parseMessage(requestBootp);
-    log('debug', { requestMessage });
-    const request = parseRequestMessage(requestMessage);
-    log('log', { request, rinfo });
+    const messageParseResult = parseMessage(requestBootp);
+    log('debug', { requestParseResult: messageParseResult });
+    if (!messageParseResult.success) return; // logged above, should be enough
+    const requestParseResult = parseRequestMessage(messageParseResult.message);
+    log('log', { requestParseResult, rinfo });
+    if (!requestParseResult.success) return; // logged above, should be enough
+    const request = requestParseResult.request;
 
     trpc.addSeenMac.mutate({ mac: request.chaddr });
 

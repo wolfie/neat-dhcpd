@@ -26,17 +26,23 @@ function* generateOptions(buffer: Buffer): Generator<UnparsedOption, void, unkno
   }
 }
 
-const parseOptions = (option: Buffer) => {
-  const magicCookie = '0x' + option.subarray(0, 4).toString('hex');
+export type MagicCookie = '0x63825363';
+const parseOptions = (
+  option: Buffer
+):
+  | { success: true; magicCookie: MagicCookie; options: UnparsedOption[] }
+  | { success: false; error: 'unexpected-magic-cookie'; value: `0x${string}` } => {
+  const magicCookie = ('0x' + option.subarray(0, 4).toString('hex')) as MagicCookie;
   const options: UnparsedOption[] = [];
-  if (magicCookie !== '0x63825363') throw new Error('unexpected magic cookie ' + magicCookie);
+  if (magicCookie !== '0x63825363')
+    return { success: false, error: 'unexpected-magic-cookie', value: magicCookie };
 
   const optionsBuffer = option.subarray(4);
   for (const option of generateOptions(optionsBuffer)) {
     options.push(option);
   }
 
-  return { magicCookie, options };
+  return { success: true, magicCookie, options };
 };
 
 export default parseOptions;

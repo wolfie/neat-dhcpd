@@ -1,8 +1,12 @@
+type TypeOf<T extends Readonly<Array<Readonly<[number, string]>>>> = T[number][1];
+
+export type Op = TypeOf<typeof OP>;
 const OP = [
   [1, 'BOOTREQUEST'],
   [2, 'BOOTREPLY'],
 ] as const;
 
+export type HType = TypeOf<typeof HTYPE>;
 const HTYPE = [
   [1, 'Ethernet (10 Mb)'],
   [6, 'IEEE 802 Networks'],

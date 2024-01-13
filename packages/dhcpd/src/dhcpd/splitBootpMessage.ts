@@ -2,6 +2,7 @@ export type BootpMessage = ReturnType<typeof splitBootpMessage>;
 export const splitBootpMessage = (buffer: Buffer) => {
   let i = 0;
   return {
+    __original: buffer,
     op: buffer.subarray(i, (i += 1)),
     htype: buffer.subarray(i, (i += 1)),
     hlen: buffer.subarray(i, (i += 1)),

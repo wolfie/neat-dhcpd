@@ -58,8 +58,14 @@ const createOfferResponse = async (
   serverAddress: Address,
   config: Config
 ): Promise<ResponseResult> => {
-  if (request.options.options.find(isParsedRequestOption(53))?.value !== 'DHCPDISCOVER') {
-    throw new Error('Unexpected option 53, expected DHCPDISCOVER: ' + JSON.stringify(request));
+  const option53Value = request.options.options.find(isParsedRequestOption(53))?.value;
+  if (option53Value !== 'DHCPREQUEST') {
+    return {
+      success: false,
+      error: 'unexpected-option-53',
+      expected: 'DHCPDISCOVER',
+      value: option53Value,
+    };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

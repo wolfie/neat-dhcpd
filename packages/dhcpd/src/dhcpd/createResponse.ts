@@ -28,6 +28,12 @@ export type ResponseResult =
       requestedIp: string | undefined;
       offeredIp: string | undefined;
       leasedIp: string | undefined;
+    }
+  | {
+      success: false;
+      error: 'unexpected-option-53';
+      expected: ParsedRequestOption<53>['value'];
+      value: string | undefined;
     };
 
 export type DhcpResponse = Omit<DhcpMessage, 'op' | 'options'> & {
@@ -55,9 +61,9 @@ const createResponse = async (
 
   switch (typeOption.value) {
     case 'DHCPDISCOVER':
-      return createOfferResponse(request, serverAddress, config);
+      return await createOfferResponse(request, serverAddress, config);
     case 'DHCPREQUEST':
-      return createAckResponse(request, serverAddress, config);
+      return await createAckResponse(request, serverAddress, config);
     default:
       return {
         success: false,

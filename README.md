@@ -4,7 +4,7 @@
 
 I made this because I wanted to assign known IPs to my home network, but all DHCP servers come bundled with an entire firewall ecosystem, and I didn't want it to be like that.
 
-# Installing and Running
+## Installing and Running
 
 ```bash
 # get repo
@@ -27,6 +27,10 @@ I made this because I wanted to assign known IPs to my home network, but all DHC
 # ...but on Windows, you can just run it no sweat
 > pnpm start
 ```
+
+## ⚠️ Won't build on a RPi 3
+
+It seems like the Raspberry Pi 3b+ is unable to build the web UI without grinding to a halt. Presumably this is due to lack of sufficient RAM. I have not tested on a RPi4 2gb (or better) yet.
 
 ## Why did you...?
 
