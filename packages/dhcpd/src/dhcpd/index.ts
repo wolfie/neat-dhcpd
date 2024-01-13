@@ -123,5 +123,5 @@ export const createDhcpServer = async () => {
   socket.on('error', (e) => {
     log('error', ['socket error', e]);
   });
-  socket.bind(67, currentAddress.address.str);
+  socket.bind(67);
 };
