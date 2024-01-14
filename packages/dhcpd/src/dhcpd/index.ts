@@ -11,6 +11,7 @@ import log from '../lib/log';
 import { format } from 'node:util';
 import type { Ip } from '../lib/ip';
 import { getBroadcastAddr, ipFromString } from '../lib/ip';
+import omit from 'lib/omit';
 
 const hasPropWithValue =
   <T extends object, K extends keyof T, const V extends T[K]>(key: K, value: V) =>
@@ -75,7 +76,7 @@ export const createDhcpServer = async () => {
 
     log('debug', { msg: msg.toString('base64') });
     const requestBootp = splitBootpMessage(msg);
-    log('debug', { requestBootp });
+    log('debug', { requestBootp: omit(requestBootp, '__original') });
     const messageParseResult = parseMessage(requestBootp);
     log('debug', { requestParseResult: messageParseResult });
     if (!messageParseResult.success) return; // logged above, should be enough
