@@ -15,7 +15,7 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
-    "start": "pnpm --filter \"@neat-dhcpd/db\" migrateToLatest && concurrently --kill-others --prefix-colors auto pnpm:start:*",
+    "start": "pnpm --filter \"@neat-dhcpd/db\" start:migrateToLatest && concurrently --kill-others --prefix-colors auto pnpm:start:*",
     "start:db": "pnpm --filter \"@neat-dhcpd/db\" start",
     "start:dhcpd": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/dhcpd\" start",
     "start:web-ui": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/web-ui\" start"
@@ -25,13 +25,13 @@
   ],
   "dependencies": {
     "dotenv": "^16.3.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "concurrently": "^8.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^6.18.0",
     "@typescript-eslint/parser": "^6.18.0",
-    "concurrently": "^8.2.2",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-functional": "6.0.0",

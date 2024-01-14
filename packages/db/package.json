@@ -13,7 +13,8 @@
     "migrateToLatest": "npx -y ts-node src/bin/migrateToLatest",
     "build": "rm -rf build && tsc -b",
     "lint": "eslint . && prettier --check src/**/*.ts",
-    "start": "node -r dotenv/config build"
+    "start": "node -r dotenv/config build",
+    "start:migrateToLatest": "node build/bin/migrateToLatest"
   },
   "dependencies": {
     "@trpc/server": "^10.45.0",

@@ -32,6 +32,8 @@ I made this because I wanted to assign known IPs to my home network, but all DHC
 
 It seems like the Raspberry Pi 3b+ is unable to build the web UI without grinding to a halt. Presumably this is due to lack of sufficient RAM. I have not tested on a RPi4 2gb (or better) yet.
 
+**However!** You can run `./buildRelease.sh` on a _more capable_ machine to build the project then copy the result over to a Raspberry.
+
 ## Why did you...?
 
 ### ...Deploy the sqlite behind trpc instead of a library?
