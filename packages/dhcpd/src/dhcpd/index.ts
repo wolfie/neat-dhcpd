@@ -11,7 +11,7 @@ import log from '../lib/log';
 import { format } from 'node:util';
 import type { Ip } from '../lib/ip';
 import { getBroadcastAddr, ipFromString } from '../lib/ip';
-import omit from 'lib/omit';
+import omit from '../lib/omit';
 
 const hasPropWithValue =
   <T extends object, K extends keyof T, const V extends T[K]>(key: K, value: V) =>
