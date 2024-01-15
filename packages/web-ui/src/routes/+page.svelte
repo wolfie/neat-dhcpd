@@ -12,6 +12,7 @@
   import type { AliasPutBody } from './api/alias/+server';
   import { ipFromString } from '@neat-dhcpd/common';
   import Textarea from '$lib/components/Textarea.svelte';
+  import NetworkDevice from '$lib/components/NetworkDevice.svelte';
 
   export let data: PageData;
 
@@ -70,6 +71,10 @@
       });
     };
 </script>
+
+<svelte:head>
+  <title>NeatDHCPD</title>
+</svelte:head>
 
 <h1>NeatDHCPD</h1>
 
@@ -150,46 +155,22 @@
 </form>
 
 <section>
-  <h2>Seen Macs</h2>
-  {#if seenMacs?.length || data.seenMacs.length > 0}
-    <table>
-      <thead>
-        <tr>
-          <th>MAC</th>
-          <th>Vendor</th>
-          <th>Alias</th>
-          <th>First seen</th>
-          <th>Last seen</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each seenMacs ?? data.seenMacs as seenMac (seenMac.mac)}
-          <tr>
-            <td><pre>{seenMac.mac}</pre></td>
-            <td>{seenMac.vendor?.['Organization Name'] || ''}</td>
-            <td>
-              <!-- TODO: setAlias doesn't work properly - `oldValue` does not get updated after save -->
-              <Input
-                small
-                disabled={savingAlias}
-                value={seenMac.alias}
-                on:blurOrEnter={setAlias(seenMac.mac, seenMac.alias)}
-              />
-            </td>
-            <td title={seenMac.first_seen} class="nowrap">
-              <!-- TODO make a tooltip component-->
-              {formatRelative(seenMac.first_seen, Date.now())}
-            </td>
-            <td title={seenMac.last_seen} class="nowrap">
-              {formatRelative(seenMac.last_seen, Date.now())}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  {:else}
-    No MACs have been seen yet
-  {/if}
+  <h2>Seen MAC addresses</h2>
+  <div class="network-devices">
+    {#if (seenMacs ?? data.seenMacs).length === 0}
+      No MAC addresses seen yet
+    {/if}
+    {#each seenMacs ?? data.seenMacs as seenMac (seenMac.mac)}
+      <NetworkDevice
+        mac={seenMac.mac}
+        vendor={seenMac.vendor}
+        alias={seenMac.alias}
+        firstSeen={seenMac.first_seen}
+        lastSeen={seenMac.last_seen}
+        on:aliasChanged={setAlias(seenMac.mac, seenMac.alias)}
+      />
+    {/each}
+  </div>
 </section>
 
 <section class="logs">
@@ -216,6 +197,13 @@
 </section>
 
 <style lang="scss">
+  .network-devices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+  }
+
   .nowrap {
     white-space: nowrap;
   }
@@ -224,12 +212,6 @@
     display: flex;
     flex-direction: column;
     gap: calc(var(--size-unit) * 2);
-  }
-
-  .dnsList {
-    padding: 0;
-    margin: 0;
-    list-style: none;
   }
 
   td.timestamp {

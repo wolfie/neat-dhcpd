@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from 'svelte';
 
   export let name: string | undefined = undefined;
   export let value: string | number | null | undefined = undefined;
   export let disabled: boolean = false; // TODO: this is not good - it should allow focus but disallow editing.
-  export let type: "text" | "number" = "text";
+  export let type: 'text' | 'number' = 'text';
   export let small: boolean = false;
+  export let placeholder: string | undefined = undefined;
 
   const dispatch = createEventDispatcher<{ blurOrEnter: { alias: string } }>();
 
-  const EMPTY_VALUE = { text: "", number: 0 };
-  const valueOrEmpty =
-    value !== null && typeof value !== "undefined" ? value : EMPTY_VALUE[type];
+  const EMPTY_VALUE = { text: '', number: 0 };
+  const valueOrEmpty = value !== null && typeof value !== 'undefined' ? value : EMPTY_VALUE[type];
 </script>
 
 <input
@@ -19,14 +19,15 @@
   value={valueOrEmpty}
   {type}
   {disabled}
+  {placeholder}
   class:small
-  on:keydown={(e) => e.code === "Enter" && e.currentTarget.blur()}
-  on:blur={(e) => dispatch("blurOrEnter", { alias: e.currentTarget.value })}
+  on:keydown={(e) => e.code === 'Enter' && e.currentTarget.blur()}
+  on:blur={(e) => dispatch('blurOrEnter', { alias: e.currentTarget.value })}
 />
 
 <style lang="scss">
   input {
-    font-family: "Montserrat Variable", sans-serif;
+    font-family: 'Montserrat Variable', sans-serif;
     height: 2.5em;
     font-weight: 500;
     padding-left: 1em;

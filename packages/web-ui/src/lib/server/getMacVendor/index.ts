@@ -2,7 +2,7 @@ import oui from './oui.csv';
 import mam from './mam.csv';
 import oui36 from './oui36.csv';
 
-type MacVendor = {
+export type MacVendor = {
   Registry: string;
   Assignment: string;
   'Organization Name': string;
