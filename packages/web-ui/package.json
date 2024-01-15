@@ -20,7 +20,8 @@
     "tslib": "^2.6.2",
     "vite": "^5.0.11",
     "zod": "^3.22.4",
-    "@neat-dhcpd/db": "workspace:*"
+    "@neat-dhcpd/db": "workspace:*",
+    "@neat-dhcpd/common": "workspace:*"
   },
   "type": "module",
   "dependencies": {

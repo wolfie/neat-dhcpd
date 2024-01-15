@@ -38,6 +38,17 @@ cp -vr \
   "$DB/package.json" \
   "$TARGET/$DB"
 
+COMMON="packages/common"
+echo
+echo "Creating DB directory"
+mkdir -vp "$TARGET/$COMMON"
+echo
+echo "Copying DB files"
+cp -vr \
+  "$COMMON/build" \
+  "$COMMON/package.json" \
+  "$TARGET/$COMMON"
+
 DHCPD="packages/dhcpd"
 echo
 echo "Creating DHCPD directory"

@@ -1,10 +1,10 @@
 import type { MagicCookie, UnparsedOption } from './parseOptions';
 import type { BootpMessage } from './splitBootpMessage';
 import type { HType } from './numberStrings';
-import type { Ip } from '../lib/ip';
+import type { Ip } from '@neat-dhcpd/common';
+import { ipFromBuffer } from '@neat-dhcpd/common';
 import parseOptions from './parseOptions';
 import { htypeForNumber, opForNumber } from './numberStrings';
-import { ipFromBuffer } from '../lib/ip';
 
 export type DhcpMessage = {
   op: 'BOOTREQUEST' | 'BOOTREPLY';

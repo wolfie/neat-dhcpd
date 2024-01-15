@@ -24,6 +24,9 @@ const config = {
     csrf: {
       checkOrigin: false,
     },
+    alias: {
+      '@neat-dhcpd/common': '../common/src',
+    },
   },
 };
 

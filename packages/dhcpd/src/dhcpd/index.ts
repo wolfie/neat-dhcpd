@@ -9,22 +9,13 @@ import parseRequestMessage from './parseRequestMessage';
 import encodeResponseMessage from './encodeResponseMessage';
 import log from '../lib/log';
 import { format } from 'node:util';
-import type { Ip } from '../lib/ip';
-import { getBroadcastAddr, ipFromString } from '../lib/ip';
+import { getBroadcastAddr, ipFromString, isLanIp } from '@neat-dhcpd/common';
 import omit from '../lib/omit';
 
 const hasPropWithValue =
   <T extends object, K extends keyof T, const V extends T[K]>(key: K, value: V) =>
   (obj: T): obj is T & Record<K, V> =>
     obj[key] === value;
-
-const LAN_ADDRESSES = [
-  [ipFromString('192.168.0.0'), ipFromString('192.168.255.255')],
-  [ipFromString('10.0.0.0'), ipFromString('10.255.255.255')],
-  [ipFromString('172.16.0.0'), ipFromString('172.31.255.255')],
-] as [Ip, Ip][];
-const isLanIp = (ip: Ip) =>
-  LAN_ADDRESSES.flatMap(([from, to]) => from.num <= ip.num && ip.num <= to.num);
 
 const findCurrentIp = async () => {
   const configPromise = await trpc.configGet.query();

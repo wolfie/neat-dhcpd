@@ -8,8 +8,8 @@ import trpc from '../trpcClient';
 import rand from '../lib/rand';
 import createGetResponseOption from './createGetResponseOption';
 import log from '../lib/log';
-import type { Ip } from '../lib/ip';
-import { ZERO_ZERO_ZERO_ZERO, ipFromNumber, ipFromString } from '../lib/ip';
+import type { Ip } from '@neat-dhcpd/common';
+import { ZERO_ZERO_ZERO_ZERO, ipFromNumber, ipFromString } from '@neat-dhcpd/common';
 
 const findFreeIpN = async (
   requestedAddress: { mac: string; ip: Ip } | undefined,

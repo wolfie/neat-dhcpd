@@ -68,3 +68,11 @@ export function getBroadcastAddr(a: Ip | string, ipAddress?: Ip): Ip | undefined
 }
 
 export const ZERO_ZERO_ZERO_ZERO = Object.freeze(ipFromString('0.0.0.0'));
+
+const LAN_ADDRESSES = [
+  [ipFromString('192.168.0.0'), ipFromString('192.168.255.255')],
+  [ipFromString('10.0.0.0'), ipFromString('10.255.255.255')],
+  [ipFromString('172.16.0.0'), ipFromString('172.31.255.255')],
+] as [Ip, Ip][];
+export const isLanIp = (ip: Ip) =>
+  LAN_ADDRESSES.flatMap(([from, to]) => from.num <= ip.num && ip.num <= to.num).some(Boolean);

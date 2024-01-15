@@ -1,6 +1,6 @@
 import type { Config } from '@neat-dhcpd/db';
 import type { Address } from './createResponse';
-import { getBroadcastAddr, ipFromString } from '../lib/ip';
+import { getBroadcastAddr, ipFromString } from '@neat-dhcpd/common';
 import log from '../lib/log';
 
 const createGetResponseOption =

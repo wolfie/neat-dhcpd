@@ -12,6 +12,7 @@
   "dependencies": {
     "@trpc/client": "^10.45.0",
     "@neat-dhcpd/db": "workspace:*",
+    "@neat-dhcpd/common": "workspace:*",
     "vitest": "*"
   }
 }

@@ -1,4 +1,4 @@
-import { ipFromBuffer } from '../lib/ip';
+import { ipFromBuffer } from '@neat-dhcpd/common';
 import { htypeForNumber, messageTypesForNumber } from './numberStrings';
 import PARAMETER_REQUEST_LIST from './parameterRequestList';
 import type { UnparsedOption } from './parseOptions';

@@ -7,7 +7,7 @@ import createGetResponseOption from './createGetResponseOption';
 import tap from '../lib/tap';
 import { messageTypesForString } from './numberStrings';
 import log from '../lib/log';
-import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from '../lib/ip';
+import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from '@neat-dhcpd/common';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 

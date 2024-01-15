@@ -4,7 +4,7 @@ import type { DhcpRequest } from './parseRequestMessage';
 import type { Config } from '@neat-dhcpd/db';
 import createOfferResponse from './createOfferResponse';
 import createAckResponse from './createAckResponse';
-import type { Ip } from '../lib/ip';
+import type { Ip } from '@neat-dhcpd/common';
 
 export type ResponseResult =
   | {

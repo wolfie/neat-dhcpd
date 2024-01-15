@@ -46,6 +46,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(@types/node@20.10.5)
 
+  packages/common: {}
+
   packages/db:
     dependencies:
       '@trpc/server':
@@ -73,6 +75,9 @@ importers:
 
   packages/dhcpd:
     dependencies:
+      '@neat-dhcpd/common':
+        specifier: workspace:*
+        version: link:../common
       '@neat-dhcpd/db':
         specifier: workspace:*
         version: link:../db
@@ -107,6 +112,9 @@ importers:
         specifier: ^1.69.7
         version: 1.69.7
     devDependencies:
+      '@neat-dhcpd/common':
+        specifier: workspace:*
+        version: link:../common
       '@neat-dhcpd/db':
         specifier: workspace:*
         version: link:../db

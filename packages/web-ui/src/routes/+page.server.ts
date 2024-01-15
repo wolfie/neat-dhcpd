@@ -2,6 +2,7 @@ import getSeenMacs from '$lib/server/getSeenMacs';
 import trpc from '$lib/server/trpcClient';
 import type { Actions, PageServerLoad } from './$types';
 import os from 'node:os';
+import { ipFromString, isLanIp } from '@neat-dhcpd/common';
 
 const IFACES = Object.entries(os.networkInterfaces()).flatMap(
   ([nic, ifaces]) =>
@@ -12,12 +13,10 @@ const IFACES = Object.entries(os.networkInterfaces()).flatMap(
         <T extends os.NetworkInterfaceInfo>(iface: T): iface is T & os.NetworkInterfaceInfoIPv4 =>
           iface.family === 'IPv4'
       )
-      .filter(
-        (iface) =>
-          iface.address.startsWith('192.168.') ||
-          iface.address.startsWith('10.') ||
-          iface.address.startsWith('172.') // TODO: 172.16.0.0/12
-      ) ?? []
+      .filter((iface) => {
+        const ip = ipFromString(iface.address);
+        return ip && isLanIp(ip);
+      }) ?? []
 );
 
 export const load: PageServerLoad = async () => {

@@ -7,11 +7,15 @@
     "pnpm": ">=8.14"
   },
   "private": true,
+  "keywords": [
+    "dhcpd"
+  ],
   "scripts": {
-    "dev": "echo \"you should run each package separately, first db and then the two others\" && exit 1",
+    "dev": "concurrently --kill-others --prefix-colors auto pnpm:dev:*",
     "dev:db": "pnpm --filter \"@neat-dhcpd/db\" dev",
-    "dev:dhcpd": "pnpm --filter \"@neat-dhcpd/dhcpd\" dev",
-    "dev:web-ui": "pnpm --filter \"@neat-dhcpd/web-ui\" dev",
+    "dev:common": "pnpm --filter \"@neat-dhcpd/common\" dev",
+    "dev:dhcpd": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/dhcpd\" dev",
+    "dev:web-ui": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/web-ui\" dev",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
