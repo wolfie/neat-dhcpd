@@ -82,7 +82,7 @@ const createOfferResponse = async (
   const options =
     request.options.options
       .find(isParsedRequestOption(55))
-      ?.value.map<[number, Buffer | undefined]>(({ id }) => [id, getOption(id)])
+      ?.value.map<[number, Uint8Array | undefined]>(({ id }) => [id, getOption(id)])
       .map(
         tap(
           (options) =>
@@ -90,7 +90,7 @@ const createOfferResponse = async (
             log('debug', 'unfulfilled requested option ' + options[0])
         )
       )
-      .filter((t): t is [number, Buffer] => typeof t[1] !== 'undefined') ?? [];
+      .filter((t): t is [number, Uint8Array] => typeof t[1] !== 'undefined') ?? [];
 
   // TODO make sure option 1 is ordered before option 3
 

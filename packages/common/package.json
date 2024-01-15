@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -b --watch --preserveWatchOutput",
-    "lint": "eslint . && prettier --check src/**/*.ts"
+    "lint": "eslint . && prettier --check src/**/*.ts",
+    "test": "vitest"
   }
 }

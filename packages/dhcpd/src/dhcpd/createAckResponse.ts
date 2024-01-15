@@ -68,7 +68,7 @@ const createAckResponse = async (
   const options =
     request.options.options
       .find(isParsedRequestOption(55))
-      ?.value.map<[number, Buffer | undefined]>(({ id }) => [id, getOption(id)])
+      ?.value.map<[number, Uint8Array | undefined]>(({ id }) => [id, getOption(id)])
       .map(
         tap(
           (options) =>
@@ -76,7 +76,7 @@ const createAckResponse = async (
             log('debug', 'unfulfilled requested option ' + options[0])
         )
       )
-      .filter((t): t is [number, Buffer] => typeof t[1] !== 'undefined') ?? [];
+      .filter((t): t is [number, Uint8Array] => typeof t[1] !== 'undefined') ?? [];
   options.unshift([53, Buffer.of(messageTypesForString('DHCPACK'))]);
 
   options.push([

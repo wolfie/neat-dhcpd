@@ -41,7 +41,7 @@ const encodeResponseMessage = (
   message.options.options.forEach(([optionCode, optionBuffer]) => {
     buffer.writeUInt8(optionCode, $(1));
     buffer.writeUInt8(optionBuffer.length, $(1));
-    optionBuffer.copy(buffer, $(optionBuffer.length));
+    for (let j = 0; j < optionBuffer.length; j++) buffer.writeUint8(optionBuffer[j], $(1));
   });
 
   return buffer.subarray(0, i);

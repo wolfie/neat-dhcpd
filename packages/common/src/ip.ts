@@ -1,8 +1,24 @@
-type IpString = `${number}.${number}.${number}.${number}`;
+export type IpString = `${number}.${number}.${number}.${number}`;
+
+export const writeUint32BE = (arr: Uint8Array, n: number) => {
+  arr[0] = (n & 0xff000000) / 0x1000000;
+  arr[1] = (n & 0x00ff0000) / 0x10000;
+  arr[2] = (n & 0x0000ff00) / 0x100;
+  arr[3] = (n & 0x000000ff) / 0x1;
+};
+
+export const readUint32BE = (arr: Uint8Array) => {
+  let n = 0;
+  n += arr[0] * 0x1000000;
+  n += arr[1] * 0x10000;
+  n += arr[2] * 0x100;
+  n += arr[3] * 0x1;
+  return n;
+};
 
 export type Ip = {
   num: number;
-  buf: Buffer;
+  buf: Uint8Array;
   str: IpString;
 };
 
@@ -12,11 +28,9 @@ export const isCidr = (str: string): str is `${IpString}/${number}` =>
   !!str.match(/^\d+\.\d+\.\d+\.\d+\/\d+$/);
 
 export const ipFromNumber = (num: number): Ip => {
-  const buf = Buffer.alloc(4);
-  buf.writeUint32BE(num);
-  const str = [buf.readUint8(0), buf.readUint8(1), buf.readUint8(2), buf.readUint8(3)].join(
-    '.'
-  ) as IpString;
+  const buf = new Uint8Array(4);
+  writeUint32BE(buf, num);
+  const str = [buf[0], buf[1], buf[2], buf[3]].join('.') as IpString;
   return { buf, num, str };
 };
 
@@ -26,21 +40,18 @@ export function ipFromString(str: string): Ip | undefined {
   const match = str.match(/^\d+\.\d+\.\d+\.\d+$/);
   if (!match) return undefined;
   const [a, b, c, d] = str.split('.').map((x) => parseInt(x));
-  const buf = Buffer.alloc(4);
-  buf.writeUint8(a, 0);
-  buf.writeUint8(b, 1);
-  buf.writeUint8(c, 2);
-  buf.writeUint8(d, 3);
-  const num = buf.readUInt32BE();
+  const buf = new Uint8Array(4);
+  buf[0] = a;
+  buf[1] = b;
+  buf[2] = c;
+  buf[3] = d;
+  const num = readUint32BE(buf);
   return { buf, num, str: str as IpString };
 }
 
-export function ipFromBuffer(buf: Buffer): Ip {
-  const num = buf.readUInt32BE();
-  const str = [buf.readUint8(0), buf.readUint8(1), buf.readUint8(2), buf.readUint8(3)].join(
-    '.'
-  ) as IpString;
-
+export function ipFromBuffer(buf: Uint8Array): Ip {
+  const num = readUint32BE(buf);
+  const str = [buf[0], buf[1], buf[2], buf[3]].join('.') as IpString;
   return { buf: buf.subarray(0, 4), num, str };
 }
 
@@ -61,10 +72,8 @@ export function getBroadcastAddr(a: Ip | string, ipAddress?: Ip): Ip | undefined
     ipAddress = ipAddress!;
   }
   const inverseNetmask = netmask.buf.map((n) => 255 - n);
-  const broadcastArray = ipAddress.buf.map(
-    (n, i) => (n & netmask.buf.readUint8(i)) | inverseNetmask[i]
-  );
-  return ipFromBuffer(Buffer.from(broadcastArray));
+  const broadcastArray = ipAddress.buf.map((n, i) => (n & netmask.buf[i]) | inverseNetmask[i]);
+  return ipFromBuffer(Uint8Array.from(broadcastArray));
 }
 
 export const ZERO_ZERO_ZERO_ZERO = Object.freeze(ipFromString('0.0.0.0'));

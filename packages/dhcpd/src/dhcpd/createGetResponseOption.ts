@@ -5,7 +5,7 @@ import log from '../lib/log';
 
 const createGetResponseOption =
   (serverAddress: Address, config: Config) =>
-  (id: number): Buffer | undefined => {
+  (id: number): Uint8Array | undefined => {
     switch (id) {
       case 1:
         return serverAddress.netmask.buf;

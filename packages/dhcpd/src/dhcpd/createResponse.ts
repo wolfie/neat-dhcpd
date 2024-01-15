@@ -40,7 +40,7 @@ export type DhcpResponse = Omit<DhcpMessage, 'op' | 'options'> & {
   op: 'BOOTREPLY';
   options: {
     magicCookie: string;
-    options: Array<[number, Buffer]>;
+    options: Array<[number, Uint8Array]>;
   };
 };
 
