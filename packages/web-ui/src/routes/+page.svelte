@@ -1,43 +1,66 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { enhance } from "$app/forms";
-  import { formatRelative } from "date-fns/formatRelative";
-  import type { PageData } from "./$types";
-  import Alert from "$lib/components/Alert.svelte";
-  import Select from "$lib/components/Select.svelte";
-  import Input from "$lib/components/Input.svelte";
-  import Label from "$lib/components/Label.svelte";
-  import Checkbox from "$lib/components/Checkbox.svelte";
-  import Button from "$lib/components/Button.svelte";
-  import type { AliasPutBody } from "./api/alias/+server";
+  import { onMount } from 'svelte';
+  import { enhance } from '$app/forms';
+  import { formatRelative } from 'date-fns/formatRelative';
+  import type { PageData } from './$types';
+  import Alert from '$lib/components/Alert.svelte';
+  import Select from '$lib/components/Select.svelte';
+  import Input from '$lib/components/Input.svelte';
+  import Label from '$lib/components/Label.svelte';
+  import Checkbox from '$lib/components/Checkbox.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import type { AliasPutBody } from './api/alias/+server';
+  import { ipFromString } from '@neat-dhcpd/common';
+  import Textarea from '$lib/components/Textarea.svelte';
 
   export let data: PageData;
 
-  let logs: PageData["logs"] | undefined = undefined;
-  let seenMacs: PageData["seenMacs"] | undefined = undefined;
+  const dns = typeof data.config?.dns1 !== 'undefined' ? ipFromString(data.config.dns1) : undefined;
+
+  let logs: PageData['logs'] | undefined = undefined;
+  let seenMacs: PageData['seenMacs'] | undefined = undefined;
   onMount(() => {
     const interval = setInterval(async () => {
-      fetch("/api/logs")
+      fetch('/api/logs')
         .then((response) => response.json())
         .then((newLogs) => (logs = newLogs));
-      fetch("/api/seenMacs")
+      fetch('/api/seenMacs')
         .then((response) => response.json())
         .then((newSeenMacs) => (seenMacs = newSeenMacs));
     }, 2000);
     return () => clearInterval(interval);
   });
 
+  let dnsValidationErrors: string[] = [];
+  const validateDns = (text: string) => {
+    dnsValidationErrors = [];
+    const validatedDnses = text
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .map((dnsLine) => [dnsLine, ipFromString(dnsLine.trim())] as const);
+    const invalidDnses = validatedDnses
+      .filter(([_, ip]) => typeof ip === 'undefined')
+      .map(([dns]) => dns);
+    const validDnses = validatedDnses
+      .filter(([_, ip]) => typeof ip !== 'undefined')
+      .map(([dns]) => dns);
+
+    if (invalidDnses.length > 0)
+      dnsValidationErrors.push(`Invalid DNS value(s): ${invalidDnses.join(', ')}`);
+    if (validDnses.length === 0) dnsValidationErrors.push('At least one valid DNS required');
+  };
+
   let savingAlias = false;
   const setAlias =
-    (mac: string, oldValue: string | null) =>
-    (e: CustomEvent<{ alias: string }>) => {
+    (mac: string, oldValue: string | null) => (e: CustomEvent<{ alias: string }>) => {
       const newValue = e.detail.alias.trim();
-      if (newValue === (oldValue || "")) return;
+      if (newValue === (oldValue || '')) return;
       savingAlias = true;
       // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
-      fetch("/api/alias", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      fetch('/api/alias', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mac,
           alias: e.detail.alias,
@@ -75,7 +98,7 @@
             value={data.config?.broadcast_cidr}
             options={data.ifaces.map((iface) => ({
               label: `${iface.nic}: ${iface.cidr}`,
-              value: iface.cidr ?? "no-cidr",
+              value: iface.cidr ?? 'no-cidr',
             }))}
           />
         </Label>
@@ -100,28 +123,29 @@
           Gateway <Input name="gatewayIp" value={data.config?.gateway_ip} />
         </Label>
       </div>
-      <ul class="dnsList">
-        <li>
-          <Label>DNS1 <Input name="dns1" value={data.config?.dns1} /></Label>
-        </li>
-        <li>
-          <Label>DNS2 <Input name="dns2" value={data.config?.dns2} /></Label>
-        </li>
-        <li>
-          <Label>DNS3 <Input name="dns3" value={data.config?.dns3} /></Label>
-        </li>
-        <li>
-          <Label>DNS4 <Input name="dns4" value={data.config?.dns4} /></Label>
-        </li>
-      </ul>
+      {#if dnsValidationErrors.length > 0}
+        <Alert
+          >{#each dnsValidationErrors as error}
+            <div>{error}</div>
+          {/each}</Alert
+        >
+      {/if}
+      <Label>
+        DNS (4 max) <!-- TODO remove limit by handling options "differently" (see TODO.md)-->
+        <Textarea
+          rows={4}
+          name="dns"
+          on:blur={(e) => validateDns(e.detail)}
+          value={[data.config?.dns1, data.config?.dns2, data.config?.dns3, data.config?.dns4]
+            .filter(Boolean)
+            .join('\n')}
+        />
+      </Label>
     </div>
     <Label>
-      Send replies <Checkbox
-        name="sendReplies"
-        checked={!!data.config?.send_replies}
-      />
+      Send replies <Checkbox name="sendReplies" checked={!!data.config?.send_replies} />
     </Label>
-    <Button>Sugmit</Button>
+    <Button disabled={dnsValidationErrors.length > 0}>Sugmit</Button>
   </section>
 </form>
 
@@ -142,7 +166,7 @@
         {#each seenMacs ?? data.seenMacs as seenMac (seenMac.mac)}
           <tr>
             <td><pre>{seenMac.mac}</pre></td>
-            <td>{seenMac.vendor?.["Organization Name"] || ""}</td>
+            <td>{seenMac.vendor?.['Organization Name'] || ''}</td>
             <td>
               <!-- TODO: setAlias doesn't work properly - `oldValue` does not get updated after save -->
               <Input

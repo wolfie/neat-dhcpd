@@ -1,8 +1,11 @@
 <script lang="ts">
-  import AlertTriangle from "lucide-svelte/icons/alert-triangle";
+  import AlertTriangle from 'lucide-svelte/icons/alert-triangle';
 </script>
 
-<div class="alert"><AlertTriangle /><slot /></div>
+<div class="alert">
+  <AlertTriangle />
+  <div><slot /></div>
+</div>
 
 <style lang="scss">
   .alert {

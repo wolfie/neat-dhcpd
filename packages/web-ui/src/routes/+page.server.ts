@@ -2,6 +2,7 @@ import getSeenMacs from '$lib/server/getSeenMacs';
 import trpc from '$lib/server/trpcClient';
 import type { Actions, PageServerLoad } from './$types';
 import os from 'node:os';
+import type { IpString } from '@neat-dhcpd/common';
 import { ipFromString, isLanIp } from '@neat-dhcpd/common';
 
 const IFACES = Object.entries(os.networkInterfaces()).flatMap(
@@ -37,16 +38,15 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
   config: async (event) => {
     const formdata = await event.request.formData();
-    const ipStart = formdata.get('ipStart') as `${number}.${number}.${number}.${number}`;
-    const ipEnd = formdata.get('ipEnd') as `${number}.${number}.${number}.${number}`;
+    const ipStart = formdata.get('ipStart') as IpString;
+    const ipEnd = formdata.get('ipEnd') as IpString;
     const leaseTimeMinutes = parseInt(formdata.get('leaseTimeMinutes') as string);
-    const gatewayIp = formdata.get('gatewayIp') as `${number}.${number}.${number}.${number}`;
-    const dns1 = formdata.get('dns1') as `${number}.${number}.${number}.${number}`;
-    const dns2 = formdata.get('dns2') as `${number}.${number}.${number}.${number}`;
-    const dns3 = formdata.get('dns3') as `${number}.${number}.${number}.${number}`;
-    const dns4 = formdata.get('dns4') as `${number}.${number}.${number}.${number}`;
+    const gatewayIp = formdata.get('gatewayIp') as IpString;
+    const dns = formdata.get('dns') as string;
     const sendReplies = formdata.get('sendReplies') === 'on';
     const broadcastCidr = (formdata.get('broadcastCidr') as string) || null;
+
+    const [dns1, dns2, dns3, dns4] = dns.split(/\r\n|\n/, 4) as IpString[];
 
     await trpc.configSave.mutate({
       ip_start: ipStart,
