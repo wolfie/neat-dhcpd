@@ -24,7 +24,7 @@ cp -v \
 
 echo
 echo "Building project"
-#pnpm build
+pnpm build
 
 DB="packages/db"
 echo
