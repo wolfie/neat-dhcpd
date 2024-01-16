@@ -2,14 +2,15 @@ import { z } from 'zod';
 import { router } from './trpc';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import type { inferRouterOutputs } from '@trpc/server';
+import db from './db';
+import CURRENT_TIMESTAMP_WITH_MILLIS from './lib/currentTimestamp';
 import logRouter from './models/Log';
 import configRouter from './models/Config';
 import aliasRouter from './models/Alias';
 import leaseRouter from './models/Lease';
 import offerRouter from './models/Offer';
 import seenMacRouter from './models/SeenMac';
-import db from './db';
-import CURRENT_TIMESTAMP_WITH_MILLIS from './lib/currentTimestamp';
+import seenHostnameRouter from './models/SeenHostname';
 
 const appRouter = router({
   log: logRouter,
@@ -17,7 +18,8 @@ const appRouter = router({
   alias: aliasRouter,
   lease: leaseRouter,
   offer: offerRouter,
-  seenMacs: seenMacRouter,
+  seenMac: seenMacRouter,
+  seenHostname: seenHostnameRouter,
 });
 
 export type AppRouter = typeof appRouter;

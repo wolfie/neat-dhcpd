@@ -17,7 +17,9 @@ const get = ({ mac }: { mac: string }) =>
     .selectAll()
     .executeTakeFirst();
 
-export default router({
+const leaseRouter = router({
   getAll: publicProcedure.query(getAll),
   get: publicProcedure.input(z.object({ mac: z.string() })).query((ctx) => get(ctx.input)),
 });
+
+export default leaseRouter;

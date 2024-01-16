@@ -51,6 +51,12 @@ export type MetaTable = {
   last_startup: string;
 };
 
+export type SeenHostnameTable = {
+  mac: string;
+  hostname: string;
+  last_updated: Generated<string>;
+};
+
 export type Database = {
   log: LogTable;
   config: ConfigTable;
@@ -59,4 +65,5 @@ export type Database = {
   offer: OfferTable;
   seen_mac: SeenMacTable;
   meta: MetaTable;
+  seen_hostname: SeenHostnameTable;
 };

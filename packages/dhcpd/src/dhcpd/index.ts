@@ -11,6 +11,7 @@ import log from '../lib/log';
 import { format } from 'node:util';
 import { getBroadcastAddr, ipFromString, isLanIp } from '@neat-dhcpd/common';
 import omit from '../lib/omit';
+import { isParsedRequestOption } from './mapRequestOptions';
 
 const hasPropWithValue =
   <T extends object, K extends keyof T, const V extends T[K]>(key: K, value: V) =>
@@ -76,7 +77,9 @@ export const createDhcpServer = async () => {
     if (!requestParseResult.success) return; // logged above, should be enough
     const request = requestParseResult.request;
 
-    trpc.seenMacs.add.mutate({ mac: request.chaddr });
+    trpc.seenMac.add.mutate({ mac: request.chaddr });
+    const hostname = request.options.options.find(isParsedRequestOption(12))?.value;
+    if (hostname) trpc.seenHostname.set.mutate({ mac: request.chaddr, hostname });
 
     const response = await createResponse(request, currentAddress, config);
     log('log', { response });

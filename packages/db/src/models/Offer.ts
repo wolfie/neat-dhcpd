@@ -63,9 +63,10 @@ const del = ({ mac, ip }: DeleteInput) =>
     .execute()
     .then(() => undefined);
 
-export default router({
+const offerRouter = router({
   getAll: publicProcedure.query(getAll),
   get: publicProcedure.input(GetInput).query((ctx) => get(ctx.input)),
   add: publicProcedure.input(AddInput).mutation((ctx) => add(ctx.input)),
   delete: publicProcedure.input(DeleteInput).mutation((ctx) => del(ctx.input)),
 });
+export default offerRouter;

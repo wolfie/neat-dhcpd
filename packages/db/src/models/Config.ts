@@ -24,7 +24,9 @@ const set = async (values: InsertObject<Database, 'config'>) => {
 };
 const get = () => db.selectFrom('config').selectAll().executeTakeFirst();
 
-export default router({
+const configRouter = router({
   set: publicProcedure.input(Config).mutation((ctx) => set(ctx.input)),
   get: publicProcedure.query(get),
 });
+
+export default configRouter;

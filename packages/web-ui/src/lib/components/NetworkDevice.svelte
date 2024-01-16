@@ -11,6 +11,7 @@
   export let alias: string | null;
   export let firstSeen: string;
   export let lastSeen: string;
+  export let hostname: string | null = null;
 
   let editing = false;
 
@@ -34,7 +35,8 @@
     {/if}
   </div>
   <div class="mac">{mac}</div>
-  {#if vendor}<div>({vendor['Organization Name']})</div>{/if}
+  {#if vendor}<div>MAC Vendor: {vendor['Organization Name']}</div>{/if}
+  {#if hostname}<div>Hostname: {hostname}</div>{/if}
   <div>Last seen: {formatRelative(lastSeen, Date.now())}</div>
   <div>First seen: {formatRelative(firstSeen, Date.now())}</div>
   <div class="editing-panel" class:editing>

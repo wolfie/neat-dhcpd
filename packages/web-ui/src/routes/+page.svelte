@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { enhance } from '$app/forms';
-  import { formatRelative } from 'date-fns/formatRelative';
   import type { PageData } from './$types';
   import Alert from '$lib/components/Alert.svelte';
   import Select from '$lib/components/Select.svelte';
@@ -167,6 +166,7 @@
         alias={seenMac.alias}
         firstSeen={seenMac.first_seen}
         lastSeen={seenMac.last_seen}
+        hostname={seenMac.hostname}
         on:aliasChanged={setAlias(seenMac.mac, seenMac.alias)}
       />
     {/each}

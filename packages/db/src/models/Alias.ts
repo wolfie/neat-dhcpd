@@ -24,8 +24,9 @@ const del = ({ mac }: DeleteInput) =>
     .execute()
     .then(() => undefined);
 
-export default router({
+const aliasRouter = router({
   getAll: publicProcedure.query(getAll),
   set: publicProcedure.input(SetInput).mutation((ctx) => set(ctx.input)),
   delete: publicProcedure.input(DeleteInput).mutation((ctx) => del(ctx.input)),
 });
+export default aliasRouter;

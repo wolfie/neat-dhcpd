@@ -12,7 +12,7 @@ const insert = (values: InsertObject<Database, 'log'>) =>
 const get = ({ offset, limit }: { offset: number; limit: number }) =>
   db.selectFrom('log').orderBy('timestamp desc').offset(offset).limit(limit).selectAll().execute();
 
-export default router({
+const logRouter = router({
   insert: publicProcedure
     .input(
       z.object({
@@ -29,3 +29,5 @@ export default router({
     .input(z.object({ offset: z.number(), limit: z.number() }))
     .query((ctx) => get(ctx.input)),
 });
+
+export default logRouter;
