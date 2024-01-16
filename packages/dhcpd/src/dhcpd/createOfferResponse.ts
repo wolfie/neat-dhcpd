@@ -59,7 +59,7 @@ const createOfferResponse = async (
   config: Config
 ): Promise<ResponseResult> => {
   const option53Value = request.options.options.find(isParsedRequestOption(53))?.value;
-  if (option53Value !== 'DHCPREQUEST') {
+  if (option53Value !== 'DHCPDISCOVER') {
     return {
       success: false,
       error: 'unexpected-option-53',
