@@ -22,8 +22,8 @@ const findFreeIpN = async (
   }
 
   const reservedIps = await Promise.all([
-    trpc.leasesGet.query().then((leases) => leases.map((l) => ({ mac: l.mac, ip: l.ip }))),
-    trpc.offersGet.query().then((offers) => offers.map((o) => ({ mac: o.mac, ip: o.ip }))),
+    trpc.lease.getAll.query().then((leases) => leases.map((l) => ({ mac: l.mac, ip: l.ip }))),
+    trpc.offer.getAll.query().then((offers) => offers.map((o) => ({ mac: o.mac, ip: o.ip }))),
   ]).then(([leases, offers]) => leases.concat(offers));
 
   if (
@@ -114,7 +114,7 @@ const createOfferResponse = async (
 
   if (typeof offeredIp === 'string') return { success: false, error: offeredIp };
 
-  await trpc.offerAdd.mutate({
+  await trpc.offer.add.mutate({
     ip: offeredIp.str,
     mac: request.chaddr,
     lease_time_secs: leaseTimeSecs,

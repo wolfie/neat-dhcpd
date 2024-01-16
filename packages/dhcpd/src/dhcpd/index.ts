@@ -18,7 +18,7 @@ const hasPropWithValue =
     obj[key] === value;
 
 const findCurrentIp = async () => {
-  const configPromise = await trpc.configGet.query();
+  const configPromise = await trpc.config.get.query();
   const foundIpv4Addresses = Object.entries(os.networkInterfaces())
     .flatMap(
       ([nic, ifaces]) =>
@@ -55,7 +55,7 @@ export const createDhcpServer = async () => {
 
   const socket = dgram.createSocket({ type: 'udp4' });
   socket.on('message', async (msg, rinfo) => {
-    const config = await trpc.configGet.query();
+    const config = await trpc.config.get.query();
     if (!config) {
       log('error', 'No config found');
       return;
@@ -69,14 +69,14 @@ export const createDhcpServer = async () => {
     const requestBootp = splitBootpMessage(msg);
     log('debug', { requestBootp: omit(requestBootp, '__original') });
     const messageParseResult = parseMessage(requestBootp);
-    log('debug', { requestParseResult: messageParseResult });
+    log('debug', { messageParseResult });
     if (!messageParseResult.success) return; // logged above, should be enough
     const requestParseResult = parseRequestMessage(messageParseResult.message);
     log('log', { requestParseResult, rinfo });
     if (!requestParseResult.success) return; // logged above, should be enough
     const request = requestParseResult.request;
 
-    trpc.addSeenMac.mutate({ mac: request.chaddr });
+    trpc.seenMacs.add.mutate({ mac: request.chaddr });
 
     const response = await createResponse(request, currentAddress, config);
     log('log', { response });

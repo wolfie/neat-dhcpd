@@ -22,8 +22,8 @@ const IFACES = Object.entries(os.networkInterfaces()).flatMap(
 
 export const load: PageServerLoad = async () => {
   const [config, logs, seenMacs] = await Promise.all([
-    trpc.configGet.query(),
-    trpc.logsGet.query({ limit: 50, offset: 0 }),
+    trpc.config.get.query(),
+    trpc.log.get.query({ limit: 50, offset: 0 }),
     getSeenMacs(),
   ]);
 
@@ -48,7 +48,7 @@ export const actions: Actions = {
 
     const [dns1, dns2, dns3, dns4] = dns.split(/\r\n|\n/, 4) as IpString[];
 
-    await trpc.configSave.mutate({
+    await trpc.config.set.mutate({
       ip_start: ipStart,
       ip_end: ipEnd,
       lease_time_minutes: leaseTimeMinutes,
@@ -70,7 +70,7 @@ export const actions: Actions = {
     for (const [key, alias] of formData.entries()) {
       if (!key.startsWith('name:') || typeof alias !== 'string' || !alias) continue;
       const mac = key.substring(5);
-      await trpc.aliasSet.mutate({ mac, alias });
+      await trpc.alias.set.mutate({ mac, alias });
     }
 
     return { success: true };

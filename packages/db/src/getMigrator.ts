@@ -1,6 +1,3 @@
-import { __disableLogging } from './lib/log';
-__disableLogging();
-
 import { FileMigrationProvider, Migrator } from 'kysely';
 import db from './db';
 import path from 'path';

@@ -1,4 +1,5 @@
 import type { Generated } from 'kysely';
+import type { ZIpString } from '../lib/zIpString';
 
 export type LogTable = {
   timestamp: Generated<string>;
@@ -8,21 +9,21 @@ export type LogTable = {
 };
 
 export type ConfigTable = {
-  ip_start: string;
-  ip_end: string;
+  ip_start: ZIpString;
+  ip_end: ZIpString;
   lease_time_minutes: number;
-  gateway_ip: string;
-  dns1: string;
-  dns2: string | null;
-  dns3: string | null;
-  dns4: string | null;
+  gateway_ip: ZIpString;
+  dns1: ZIpString;
+  dns2: ZIpString | null;
+  dns3: ZIpString | null;
+  dns4: ZIpString | null;
   send_replies: number;
   broadcast_cidr: string | null;
 };
 
 export type OfferTable = {
   mac: string;
-  ip: string;
+  ip: ZIpString;
   expires_at: string;
   offered_at: Generated<string>;
   lease_time_secs: number;
@@ -30,7 +31,7 @@ export type OfferTable = {
 
 export type LeaseTable = {
   mac: string;
-  ip: string;
+  ip: ZIpString;
   expires_at: string;
 };
 

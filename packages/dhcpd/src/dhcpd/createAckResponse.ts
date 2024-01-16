@@ -30,7 +30,7 @@ const createAckResponse = async (
   if (!serverIdBuffer || ipFromBuffer(serverIdBuffer).num !== serverAddress.address.num) {
     const requestedIp = request.options.options.find(isParsedRequestOption(50))?.value.str;
     if (requestedIp) {
-      trpc.offerDelete.mutate({
+      trpc.offer.delete.mutate({
         ip: requestedIp,
         mac: request.chaddr,
       });
@@ -42,8 +42,8 @@ const createAckResponse = async (
   const requestedIp = request.options.options.find(isParsedRequestOption(50))?.value;
   // TODO renew lease if a valid lease already exists
   const [offer, existingLease] = await Promise.all([
-    trpc.offerGet.query({ mac: request.chaddr }),
-    trpc.leaseGet.query({ mac: request.chaddr }),
+    trpc.offer.get.query({ mac: request.chaddr }),
+    trpc.lease.get.query({ mac: request.chaddr }),
   ]);
 
   const assignedIp =

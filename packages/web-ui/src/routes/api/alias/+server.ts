@@ -10,9 +10,9 @@ export const PUT: RequestHandler = async ({ request }) => {
   const body = await request.json().then(AliasPutBody.parse);
 
   if (body.alias) {
-    trpc.aliasSet.mutate(body);
+    trpc.alias.set.mutate(body);
   } else {
-    trpc.aliasDelete.mutate(body.mac);
+    trpc.alias.delete.mutate({ mac: body.mac });
   }
 
   return json({ ok: true });
