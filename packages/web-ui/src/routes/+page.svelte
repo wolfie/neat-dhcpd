@@ -204,10 +204,6 @@
     grid-row-gap: 1em;
   }
 
-  .nowrap {
-    white-space: nowrap;
-  }
-
   .container {
     display: flex;
     flex-direction: column;
