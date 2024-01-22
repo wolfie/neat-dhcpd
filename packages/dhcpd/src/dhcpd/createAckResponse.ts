@@ -27,9 +27,9 @@ const createAckResponse = async (
     };
   }
 
-  const serverIdBuffer = request.options.options.find(isParsedRequestOption(54))?.content;
+  const serverIdBuffer = request.options.options.find(isParsedRequestOption(54))?.content; // seems like not everyone sends this back
   const requestedIp = request.options.options.find(isParsedRequestOption(50))?.value;
-  if (!serverIdBuffer || ipFromBuffer(serverIdBuffer).num !== serverAddress.address.num) {
+  if (serverIdBuffer && ipFromBuffer(serverIdBuffer).num !== serverAddress.address.num) {
     if (requestedIp) {
       log('debug', { deletingOfferFor: request.chaddr });
       await trpc.offer.delete.mutate({
