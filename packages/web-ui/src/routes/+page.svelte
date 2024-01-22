@@ -148,9 +148,24 @@
         />
       </Label>
     </div>
-    <Label>
-      Send replies <Checkbox name="sendReplies" checked={!!data.config?.send_replies} />
-    </Label>
+    <div>
+      <Label>
+        Send replies <Checkbox name="sendReplies" checked={!!data.config?.send_replies} />
+      </Label>
+    </div>
+    <div>
+      <Label>
+        Log level <Select
+          name="logLevel"
+          value={data.config?.log_level ?? 'log'}
+          options={[
+            { label: 'Error', value: 'error' },
+            { label: 'Log', value: 'log' },
+            { label: 'Debug', value: 'debug' },
+          ]}
+        />
+      </Label>
+    </div>
     <Button disabled={dnsValidationErrors.length > 0}>Sugmit</Button>
   </section>
 </form>
@@ -242,7 +257,11 @@
     </thead>
     <tbody>
       {#each latestData.logs as log (log.timestamp)}
-        <tr>
+        <tr
+          class:error={log.level === 'error'}
+          class:log={log.level === 'log'}
+          class:debug={log.level === 'debug'}
+        >
           <td class="timestamp"><pre>{log.timestamp}</pre></td>
           <td>{log.system}</td>
           <td><pre>{log.json}</pre></td>
@@ -272,5 +291,13 @@
 
   .logs {
     max-height: 30em;
+
+    .error {
+      background-color: red;
+    }
+
+    .debug {
+      opacity: 0.5;
+    }
   }
 </style>

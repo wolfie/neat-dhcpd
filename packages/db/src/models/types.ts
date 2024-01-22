@@ -19,6 +19,7 @@ export type ConfigTable = {
   dns4: ZIpString | null;
   send_replies: number;
   broadcast_cidr: string | null;
+  log_level: string;
 };
 
 export type OfferTable = {

@@ -40,6 +40,7 @@ export const actions: Actions = {
     const dns = formdata.get('dns') as string;
     const sendReplies = formdata.get('sendReplies') === 'on';
     const broadcastCidr = (formdata.get('broadcastCidr') as string) || null;
+    const logLevel = formdata.get('logLevel') as 'log' | 'error' | 'debug';
 
     const [dns1, dns2, dns3, dns4] = dns.split(/\r\n|\n/, 4) as IpString[];
 
@@ -54,6 +55,7 @@ export const actions: Actions = {
       dns4,
       send_replies: sendReplies,
       broadcast_cidr: broadcastCidr,
+      log_level: logLevel,
     });
 
     return { success: true };

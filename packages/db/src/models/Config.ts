@@ -4,6 +4,7 @@ import db from '../db';
 import { publicProcedure, router } from '../trpc';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString';
+import { zLogLevel } from './Log';
 
 const Config = z.object({
   ip_start: zIpString,
@@ -16,13 +17,21 @@ const Config = z.object({
   dns4: z.nullable(zIpString),
   send_replies: z.boolean().transform((b) => (b ? 1 : 0)),
   broadcast_cidr: z.nullable(z.string()),
+  log_level: zLogLevel,
 });
 
 const set = async (values: InsertObject<Database, 'config'>) => {
   await db.deleteFrom('config').execute();
   await db.insertInto('config').values(values).execute();
 };
-const get = () => db.selectFrom('config').selectAll().executeTakeFirst();
+const get = () =>
+  db
+    .selectFrom('config')
+    .selectAll()
+    .executeTakeFirst()
+    .then(
+      (result) => result && Config.parse({ ...result, send_replies: Boolean(result.send_replies) })
+    );
 
 const configRouter = router({
   set: publicProcedure.input(Config).mutation((ctx) => set(ctx.input)),
