@@ -68,7 +68,7 @@
       });
     };
 
-  const sortedLeases = latestData.leases
+  $: sortedLeases = latestData.leases
     .map((lease) => ({ ...lease, ip: ipFromString(lease.ip) }))
     .toSorted((a, b) => a.ip.num - b.ip.num);
 </script>

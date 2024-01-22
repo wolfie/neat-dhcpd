@@ -25,7 +25,8 @@ export type ResponseResult =
   | {
       success: false;
       error: 'requested-invalid-ip';
-      requestedIp: string | undefined;
+      details?: string;
+      requestedIp?: string;
       offeredIp: string | undefined;
       leasedIp: string | undefined;
     }

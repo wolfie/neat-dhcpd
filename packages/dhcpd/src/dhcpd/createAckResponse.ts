@@ -7,8 +7,10 @@ import createGetResponseOption from './createGetResponseOption';
 import tap from '../lib/tap';
 import { messageTypesForString } from './numberStrings';
 import log from '../lib/log';
+import type { IpString } from '@neat-dhcpd/common';
 import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from '@neat-dhcpd/common';
 import { addSeconds } from 'date-fns';
+import findFreeIp from '../lib/findFreeIp';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -47,22 +49,34 @@ const createAckResponse = async (
   ]);
   log('debug', { ipsOnOffer: { offer, existingLease } });
 
-  const assignedIp =
-    requestedIp &&
-    (requestedIp.str === offer?.ip
-      ? offer.ip
-      : requestedIp.str === existingLease?.ip
-        ? existingLease.ip
-        : undefined);
-
-  if (!assignedIp) {
+  let assignedIp: IpString;
+  if (requestedIp) {
+    if (requestedIp.str === offer?.ip) assignedIp = requestedIp.str;
+    else
+      return {
+        success: false,
+        error: 'requested-invalid-ip',
+        details:
+          `Client requested ${requestedIp.str}, but was ` +
+          (offer ? `previously offered ${offer.ip}.` : 'not offered anything before.'),
+        requestedIp: requestedIp?.str,
+        offeredIp: offer?.ip,
+        leasedIp: existingLease?.ip,
+      };
+  } else if (offer) {
     return {
       success: false,
       error: 'requested-invalid-ip',
-      requestedIp: requestedIp?.str,
+      details: `Client didn't have a requested IP - was previously offered ${offer.ip}.`,
       offeredIp: offer?.ip,
-      leasedIp: existingLease?.mac,
+      leasedIp: existingLease?.ip,
     };
+  } else {
+    const freeIp = await findFreeIp(undefined, config);
+    if (freeIp === 'no-ips-left') return { success: false, error: 'no-ips-left' };
+    if (freeIp === 'malformatted-ip-start-or-end')
+      return { success: false, error: 'malformatted-ip-start-or-end' };
+    assignedIp = freeIp.str;
   }
 
   const getOption = createGetResponseOption(serverAddress, config);
@@ -92,14 +106,16 @@ const createAckResponse = async (
   options.push([54, serverAddress.address.buf]);
   options.push([255, Buffer.alloc(0)]);
 
-  await Promise.all([
-    trpc.offer.delete.mutate({ mac: request.chaddr }),
-    trpc.lease.set.mutate({
-      ip: assignedIp,
-      expires_at: addSeconds(Date.now(), leaseTimeSeconds).toISOString(),
-      mac: request.chaddr,
-    }),
-  ]);
+  if (config.send_replies) {
+    await Promise.all([
+      trpc.offer.delete.mutate({ mac: request.chaddr }),
+      trpc.lease.set.mutate({
+        ip: assignedIp,
+        expires_at: addSeconds(Date.now(), leaseTimeSeconds).toISOString(),
+        mac: request.chaddr,
+      }),
+    ]);
+  }
 
   const maxMessageLength =
     request.options.options.find(isParsedRequestOption(57))?.value ?? DEFAULT_MAX_MESSAGE_LENGTH;
