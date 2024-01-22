@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { beforeNavigate } from "$app/navigation";
-  import { updated } from "$app/stores";
-  import "@fontsource-variable/montserrat";
-  import "@fontsource-variable/roboto-mono";
+  import { beforeNavigate } from '$app/navigation';
+  import { updated } from '$app/stores';
+  import '@fontsource-variable/montserrat';
+  import '@fontsource-variable/roboto-mono';
 
   beforeNavigate(({ willUnload, to }) => {
     if ($updated && !willUnload && to?.url) {
@@ -18,7 +18,7 @@
 </div>
 
 <style lang="scss">
-  @use "sass:color";
+  @use 'sass:color';
 
   @function size($a) {
     @return calc(var(--size-unit) * $a);
@@ -36,7 +36,7 @@
 
     background-color: rgb(228, 226, 222);
     color: rgb(39, 39, 39);
-    font-family: "Montserrat Variable", sans-serif;
+    font-family: 'Montserrat Variable', sans-serif;
     margin: 0;
     padding: 0;
   }
@@ -47,7 +47,7 @@
 
   :global(pre) {
     margin: 0;
-    font-family: "Roboto Mono Variable", monospace;
+    font-family: 'Roboto Mono Variable', monospace;
   }
 
   :global(body) {
@@ -61,10 +61,7 @@
     margin-top: size(12);
     margin-left: size(24);
     /* padding */
-    background: -webkit-linear-gradient(
-      color.adjust($colorTomato, $lightness: 16%),
-      $colorTomato
-    );
+    background: -webkit-linear-gradient(color.adjust($colorTomato, $lightness: 16%), $colorTomato);
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 4px 4px 1px rgba(0, 0, 0, 0.1);
@@ -84,6 +81,35 @@
     box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.05);
     border: 2px solid rgba(0, 0, 0, 0.15);
     margin-bottom: size(8);
+  }
+
+  :global(table) {
+    border-collapse: collapse;
+
+    :global(thead th) {
+      padding-bottom: 0.5em;
+    }
+
+    :global(td),
+    :global(th) {
+      padding: 0 0.5em;
+      border-color: rgb(170, 170, 170);
+      border-style: solid;
+      border-width: 0 1px;
+
+      &:first-of-type {
+        padding-left: 0;
+        border-left-width: 0;
+      }
+      &:last-of-type {
+        padding-right: 0;
+        border-right-width: 0;
+      }
+    }
+
+    :global(tbody tr:hover) {
+      background-color: rgb(238, 238, 238);
+    }
   }
 
   .root {

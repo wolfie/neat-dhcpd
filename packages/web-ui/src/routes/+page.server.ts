@@ -1,9 +1,9 @@
-import getSeenMacs from '$lib/server/getSeenMacs';
 import trpc from '$lib/server/trpcClient';
 import type { Actions, PageServerLoad } from './$types';
 import os from 'node:os';
 import type { IpString } from '@neat-dhcpd/common';
 import { ipFromString, isLanIp } from '@neat-dhcpd/common';
+import getPolledData from '$lib/server/getPolledData';
 
 const IFACES = Object.entries(os.networkInterfaces()).flatMap(
   ([nic, ifaces]) =>
@@ -21,17 +21,12 @@ const IFACES = Object.entries(os.networkInterfaces()).flatMap(
 );
 
 export const load: PageServerLoad = async () => {
-  const [config, logs, seenMacs] = await Promise.all([
-    trpc.config.get.query(),
-    trpc.log.get.query({ limit: 50, offset: 0 }),
-    getSeenMacs(),
-  ]);
+  const [config, polledData] = await Promise.all([trpc.config.get.query(), getPolledData()]);
 
   return {
     config,
     ifaces: IFACES,
-    logs,
-    seenMacs,
+    ...polledData,
   };
 };
 

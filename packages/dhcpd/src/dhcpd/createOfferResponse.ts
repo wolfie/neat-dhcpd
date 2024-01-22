@@ -96,10 +96,10 @@ const createOfferResponse = async (
 
   options.unshift([53, Buffer.of(messageTypesForString('DHCPOFFER'))]);
 
+  const configLeaseTimeSecs = config.lease_time_minutes * 60;
   const leaseTimeSecs = Math.min(
-    config.lease_time_minutes,
-    request.options.options.find(isParsedRequestOption(51))?.value.seconds ??
-      config.lease_time_minutes
+    configLeaseTimeSecs,
+    request.options.options.find(isParsedRequestOption(51))?.value.seconds ?? configLeaseTimeSecs
   );
 
   options.push([51, Buffer.of(leaseTimeSecs)]);
@@ -114,6 +114,9 @@ const createOfferResponse = async (
 
   if (typeof offeredIp === 'string') return { success: false, error: offeredIp };
 
+  log('debug', {
+    storingOffer: { ip: offeredIp.str, mac: request.chaddr, lease_time_secs: leaseTimeSecs },
+  });
   await trpc.offer.add.mutate({
     ip: offeredIp.str,
     mac: request.chaddr,

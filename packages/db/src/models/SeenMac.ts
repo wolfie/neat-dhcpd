@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import db from '../db';
-import CURRENT_TIMESTAMP_WITH_MILLIS from '../lib/currentTimestamp';
+import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps';
 import { publicProcedure, router } from '../trpc';
 
 const getAllWithAliases = () =>

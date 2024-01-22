@@ -27,6 +27,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^6.18.0
         version: 6.18.0(eslint@8.56.0)(typescript@5.3.3)
+      date-fns:
+        specifier: ^3.1.0
+        version: 3.1.0
       eslint:
         specifier: 8.56.0
         version: 8.56.0
@@ -91,6 +94,9 @@ importers:
       '@trpc/client':
         specifier: ^10.45.0
         version: 10.45.0(@trpc/server@10.45.0)
+      date-fns:
+        specifier: ^3.1.0
+        version: 3.1.0
       vitest:
         specifier: '*'
         version: 1.1.0(@types/node@20.10.5)
@@ -110,7 +116,7 @@ importers:
         specifier: ^10.45.0
         version: 10.45.0(@trpc/server@10.45.0)
       date-fns:
-        specifier: ^3.1.0
+        specifier: '*'
         version: 3.1.0
       lucide-svelte:
         specifier: ^0.305.0
@@ -1237,7 +1243,6 @@ packages:
 
   /date-fns@3.1.0:
     resolution: {integrity: sha512-ZO7yefXV/wCWzd3I9haCHmfzlfA3i1a2HHO7ZXjtJrRjXt8FULKJ2Vl8wji3XYF4dQ0ZJ/tokXDZeYlFvgms9Q==}
-    dev: false
 
   /debug@4.3.4(supports-color@5.5.0):
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}

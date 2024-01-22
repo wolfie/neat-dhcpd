@@ -32,6 +32,7 @@ export type OfferTable = {
 export type LeaseTable = {
   mac: string;
   ip: ZIpString;
+  leased_at: Generated<string>;
   expires_at: string;
 };
 

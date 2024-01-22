@@ -1,6 +1,5 @@
-import { sql } from 'kysely';
 import db from '../db';
-import CURRENT_TIMESTAMP_WITH_MILLIS from '../lib/currentTimestamp';
+import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampAfter } from '../lib/sqlTimestamps';
 import { publicProcedure, router } from '../trpc';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString';
@@ -10,7 +9,7 @@ const DEFAULT_OFFER_DURATION_MINS = 5;
 // TODO run only if an offer has been added within the last DEFAULT_OFFER_DURATION_MINS
 setInterval(async () => {
   db.deleteFrom('offer')
-    .where('expires_at', '<', sql`datetime('now')`)
+    .where('expires_at', '<', CURRENT_TIMESTAMP_WITH_MILLIS)
     .execute()
     .then((result) => result.reduce((sum, r) => sum + r.numDeletedRows, 0n))
     .then((deletedRows) => {
@@ -22,7 +21,7 @@ setInterval(async () => {
 const getAll = () =>
   db
     .selectFrom('offer')
-    .where('expires_at', '<', CURRENT_TIMESTAMP_WITH_MILLIS)
+    .where('expires_at', '>', CURRENT_TIMESTAMP_WITH_MILLIS)
     .selectAll()
     .execute();
 
@@ -32,7 +31,7 @@ const get = ({ mac }: GetInput) =>
   db
     .selectFrom('offer')
     .where('mac', '=', mac)
-    .where('expires_at', '<', CURRENT_TIMESTAMP_WITH_MILLIS)
+    .where('expires_at', '>', CURRENT_TIMESTAMP_WITH_MILLIS)
     .selectAll()
     .executeTakeFirst();
 
@@ -44,22 +43,19 @@ const add = ({ mac, ip, lease_time_secs }: AddInput) =>
     .values({
       mac,
       ip,
-      expires_at: sql`datetime('now', '+${sql.lit(DEFAULT_OFFER_DURATION_MINS)} minutes')`,
+      expires_at: timestampAfter(DEFAULT_OFFER_DURATION_MINS, 'minutes'),
       lease_time_secs,
     })
-    .onConflict((oc) =>
-      oc.column('mac').doUpdateSet({ ip, lease_time_secs }).where('mac', '=', mac)
-    )
+    .onConflict((oc) => oc.column('mac').doUpdateSet({ ip, lease_time_secs }))
     .execute()
     .then(() => undefined);
 
-const DeleteInput = z.object({ mac: z.string(), ip: zIpString });
+const DeleteInput = z.object({ mac: z.string() });
 type DeleteInput = z.TypeOf<typeof DeleteInput>;
-const del = ({ mac, ip }: DeleteInput) =>
+const del = ({ mac }: DeleteInput) =>
   db
     .deleteFrom('offer')
     .where('mac', '=', mac)
-    .where('ip', '=', ip)
     .execute()
     .then(() => undefined);
 

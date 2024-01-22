@@ -82,7 +82,7 @@ ls -lha build.tar.bz2
 echo
 echo "NEXT STEPS:"
 echo "1: ssh <user>@<server> 'mkdir neat-dhcpd'  # ...if dir doesn't exist yet"
-echo "2: scp build.tar.bz2 <user>@<server>:~/neat-dhcpd/build.tar.bz2"
+echo "2: scp build.tar.bz2 <user>@<server>:~/neat-dhcpd"
 echo "3: ssh <user>@<server>"
 echo "4: cd neat-dhcpd && tar -xzf build.tar.bz2 && cd build"
 echo "5: pnpm i -P"

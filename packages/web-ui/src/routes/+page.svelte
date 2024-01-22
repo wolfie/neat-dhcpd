@@ -12,22 +12,20 @@
   import { ipFromString } from '@neat-dhcpd/common';
   import Textarea from '$lib/components/Textarea.svelte';
   import NetworkDevice from '$lib/components/NetworkDevice.svelte';
+  import type { PolledData } from '$lib/server/getPolledData';
 
   export let data: PageData;
 
-  const dns = typeof data.config?.dns1 !== 'undefined' ? ipFromString(data.config.dns1) : undefined;
+  let latestData: Pick<PageData, 'leases' | 'logs' | 'offers' | 'seenMacs'> = data;
 
-  let logs: PageData['logs'] | undefined = undefined;
-  let seenMacs: PageData['seenMacs'] | undefined = undefined;
   onMount(() => {
     const interval = setInterval(async () => {
-      fetch('/api/logs')
+      fetch('/api/updates')
         .then((response) => response.json())
-        .then((newLogs) => (logs = newLogs));
-      fetch('/api/seenMacs')
-        .then((response) => response.json())
-        .then((newSeenMacs) => (seenMacs = newSeenMacs));
-    }, 2000);
+        .then((json: PolledData) => {
+          latestData = json;
+        });
+    }, 10_000);
     return () => clearInterval(interval);
   });
 
@@ -69,6 +67,10 @@
         savingAlias = false;
       });
     };
+
+  const sortedLeases = latestData.leases
+    .map((lease) => ({ ...lease, ip: ipFromString(lease.ip) }))
+    .toSorted((a, b) => a.ip.num - b.ip.num);
 </script>
 
 <svelte:head>
@@ -154,12 +156,66 @@
 </form>
 
 <section>
+  <h2>Current offers</h2>
+  {#if latestData.offers.length === 0}
+    No DHCP offers active
+  {:else}
+    <table>
+      <thead>
+        <tr>
+          <th>Mac</th>
+          <th>IP</th>
+          <th>Offered at</th>
+          <th>Expires at</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each latestData.offers as offer (offer.mac)}
+          <tr>
+            <td><pre>{offer.mac}</pre></td>
+            <td><pre>{offer.ip}</pre></td>
+            <td class="timestamp">{offer.offered_at}</td>
+            <td class="timestamp">{offer.expires_at}</td>
+          </tr>{/each}
+      </tbody>
+    </table>
+  {/if}
+</section>
+
+<section>
+  <h2>Active leases</h2>
+  {#if sortedLeases.length === 0}
+    No DHCP leases active
+  {:else}
+    <table>
+      <thead>
+        <tr>
+          <th>Mac</th>
+          <th>IP</th>
+          <th>Leased at</th>
+          <th>Expires at</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each sortedLeases as lease (lease.mac)}
+          <tr>
+            <td><pre>{lease.mac}</pre></td>
+            <td><pre>{lease.ip.str}</pre></td>
+            <td class="timestamp">{lease.leased_at}</td>
+            <td class="timestamp">{lease.expires_at}</td>
+          </tr>{/each}
+      </tbody>
+    </table>
+  {/if}
+</section>
+
+<section>
   <h2>Seen MAC addresses</h2>
   <div class="network-devices">
-    {#if (seenMacs ?? data.seenMacs).length === 0}
+    {#if latestData.seenMacs.length === 0}
       No MAC addresses seen yet
     {/if}
-    {#each seenMacs ?? data.seenMacs as seenMac (seenMac.mac)}
+    {#each latestData.seenMacs as seenMac (seenMac.mac)}
       <NetworkDevice
         mac={seenMac.mac}
         vendor={seenMac.vendor}
@@ -185,7 +241,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each logs ?? data.logs as log (log.timestamp)}
+      {#each latestData.logs as log (log.timestamp)}
         <tr>
           <td class="timestamp"><pre>{log.timestamp}</pre></td>
           <td>{log.system}</td>

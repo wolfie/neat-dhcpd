@@ -99,7 +99,7 @@ export const createDhcpServer = async () => {
     log('debug', { broadcastAddress });
 
     if (config.send_replies) {
-      log('debug', `replying to ${broadcastAddress}:68: ${responseBuffer.toString('base64')}`);
+      log('debug', `replying to ${broadcastAddress.str}:68: ${responseBuffer.toString('base64')}`);
       socket.send(
         responseBuffer,
         0,

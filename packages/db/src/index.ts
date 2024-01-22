@@ -3,7 +3,7 @@ import { router } from './trpc';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import type { inferRouterOutputs } from '@trpc/server';
 import db from './db';
-import CURRENT_TIMESTAMP_WITH_MILLIS from './lib/currentTimestamp';
+import { CURRENT_TIMESTAMP_WITH_MILLIS } from './lib/sqlTimestamps';
 import logRouter from './models/Log';
 import configRouter from './models/Config';
 import aliasRouter from './models/Alias';
