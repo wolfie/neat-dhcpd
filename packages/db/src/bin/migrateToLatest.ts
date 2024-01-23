@@ -1,10 +1,10 @@
-import getMigrator from '../getMigrator';
+import getMigrator from '../getMigrator.js';
 
 const handleMigration = async () => {
   const migrator = getMigrator();
   const migrations = await migrator.migrateToLatest();
   const resultStrings = migrations.results
-    ?.filter((r) => r.status === 'Error')
+    ?.filter((r) => r.status !== 'Error')
     .map((r) => `[${r.status}] [${r.direction}] ${r.migrationName}`);
   if (migrations.error) {
     console.error('DB migration failed');

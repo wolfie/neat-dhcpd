@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { forNumber__TESTING, forString__TESTING } from './numberStrings';
+import { forNumber__TESTING, forString__TESTING } from './numberStrings.js';
 
 const VALUES = [
   [1, 'ONE'],

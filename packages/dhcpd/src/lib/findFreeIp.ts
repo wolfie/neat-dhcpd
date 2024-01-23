@@ -1,8 +1,8 @@
 import type { Ip } from '@neat-dhcpd/common';
 import { ipFromNumber, ipFromString } from '@neat-dhcpd/common';
 import type { Config } from '@neat-dhcpd/db';
-import rand from './rand';
-import trpc from '../trpcClient';
+import rand from './rand.js';
+import trpc from '../trpcClient.js';
 
 const findFreeIp = async (
   requestedAddress: { mac: string; ip: Ip } | undefined,

@@ -1,5 +1,5 @@
 import type { Generated } from 'kysely';
-import type { ZIpString } from '../lib/zIpString';
+import type { ZIpString } from '../lib/zIpString.js';
 
 export type LogTable = {
   timestamp: Generated<string>;

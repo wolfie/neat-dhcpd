@@ -1,7 +1,7 @@
 import { ipFromBuffer } from '@neat-dhcpd/common';
-import { htypeForNumber, messageTypesForNumber } from './numberStrings';
-import PARAMETER_REQUEST_LIST from './parameterRequestList';
-import type { UnparsedOption } from './parseOptions';
+import { htypeForNumber, messageTypesForNumber } from './numberStrings.js';
+import PARAMETER_REQUEST_LIST from './parameterRequestList.js';
+import type { UnparsedOption } from './parseOptions.js';
 
 const OPTION_PARSER = {
   12: {

@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import db from '../db';
-import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps';
-import { publicProcedure, router } from '../trpc';
+import db from '../db.js';
+import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
+import { publicProcedure, router } from '../trpc.js';
 
 const UpsertInput = z.object({ mac: z.string(), hostname: z.string() });
 type UpsertInput = z.TypeOf<typeof UpsertInput>;

@@ -1,5 +1,5 @@
 import type { Kysely } from 'kysely';
-import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps';
+import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const up = async (db: Kysely<any>) => {

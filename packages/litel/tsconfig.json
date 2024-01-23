@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "ES2020",
     "rootDir": "src",
+    "declaration": true,
     "outDir": "build",
-    "declaration": true
+    "module": "ES2020"
   }
 }

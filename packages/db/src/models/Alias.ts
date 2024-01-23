@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import db from '../db';
-import { publicProcedure, router } from '../trpc';
+import db from '../db.js';
+import { publicProcedure, router } from '../trpc.js';
 
 const getAll = () => db.selectFrom('alias').selectAll().execute();
 

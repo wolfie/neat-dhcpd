@@ -7,7 +7,12 @@ const env = z
   .parse(process.env);
 
 const trpc = createTRPCProxyClient<AppRouter>({
-  links: [httpBatchLink({ url: env.TRPC_SERVER })],
+  links: [
+    httpBatchLink({
+      url: env.TRPC_SERVER,
+      // TODO: gather and send trace ids automatically
+    }),
+  ],
 });
 console.log(`Using ${env.TRPC_SERVER} to connect with tRPC client`);
 

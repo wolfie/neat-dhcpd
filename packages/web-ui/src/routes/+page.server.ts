@@ -1,5 +1,5 @@
 import trpc from '$lib/server/trpcClient';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types.js';
 import os from 'node:os';
 import type { IpString } from '@neat-dhcpd/common';
 import { ipFromString, isLanIp } from '@neat-dhcpd/common';

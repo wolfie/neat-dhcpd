@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import db from '../db';
-import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps';
-import { publicProcedure, router } from '../trpc';
-import zIpString from '../lib/zIpString';
+import db from '../db.js';
+import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
+import { publicProcedure, router } from '../trpc.js';
+import zIpString from '../lib/zIpString.js';
 
 // TODO run only if an offer has been added within the last DEFAULT_OFFER_DURATION_MINS
 setInterval(async () => {

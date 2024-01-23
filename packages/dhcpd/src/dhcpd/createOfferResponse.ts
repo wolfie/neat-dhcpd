@@ -1,14 +1,14 @@
 import type { Config } from '@neat-dhcpd/db';
-import type { Address, ResponseResult } from './createResponse';
-import type { DhcpRequest } from './parseRequestMessage';
-import { isParsedRequestOption } from './mapRequestOptions';
-import { messageTypesForString } from './numberStrings';
-import tap from '../lib/tap';
-import trpc from '../trpcClient';
-import createGetResponseOption from './createGetResponseOption';
-import log from '../lib/log';
+import type { Address, ResponseResult } from './createResponse.js';
+import type { DhcpRequest } from './parseRequestMessage.js';
+import { isParsedRequestOption } from './mapRequestOptions.js';
+import { messageTypesForString } from './numberStrings.js';
+import tap from '../lib/tap.js';
+import trpc from '../trpcClient.js';
+import createGetResponseOption from './createGetResponseOption.js';
+import log from '../lib/log.js';
 import { ZERO_ZERO_ZERO_ZERO } from '@neat-dhcpd/common';
-import findFreeIp from '../lib/findFreeIp';
+import findFreeIp from '../lib/findFreeIp.js';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 

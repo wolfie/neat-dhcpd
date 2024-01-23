@@ -1,10 +1,10 @@
-import type { MagicCookie, UnparsedOption } from './parseOptions';
-import type { BootpMessage } from './splitBootpMessage';
-import type { HType } from './numberStrings';
+import type { MagicCookie, UnparsedOption } from './parseOptions.js';
+import type { BootpMessage } from './splitBootpMessage.js';
+import type { HType } from './numberStrings.js';
 import type { Ip } from '@neat-dhcpd/common';
 import { ipFromBuffer } from '@neat-dhcpd/common';
-import parseOptions from './parseOptions';
-import { htypeForNumber, opForNumber } from './numberStrings';
+import parseOptions from './parseOptions.js';
+import { htypeForNumber, opForNumber } from './numberStrings.js';
 
 export type DhcpMessage = {
   op: 'BOOTREQUEST' | 'BOOTREPLY';
@@ -24,7 +24,7 @@ export type DhcpMessage = {
   options: { magicCookie: MagicCookie; options: UnparsedOption[] };
 };
 
-export const parseMessage = (
+const parseMessage = (
   bootpMessage: BootpMessage
 ):
   | { success: false; errorField: 'op' | 'htype' | 'hlen'; value: number; buffer: Buffer }
@@ -110,3 +110,5 @@ export const parseMessage = (
     },
   };
 };
+
+export default parseMessage;

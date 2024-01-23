@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "build",
-    "rootDir": "src"
-  }
+    "module": "ES6",
+    "rootDir": "src",
+    "outDir": "build"
+  },
+  "ts-node": { "esm": true }
 }

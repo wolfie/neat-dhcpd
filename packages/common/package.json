@@ -8,7 +8,7 @@
     "build/**/*"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "cross-env NODE_ENV=production tsc -b",
     "dev": "tsc -b --watch --preserveWatchOutput",
     "lint": "eslint . && prettier --check src/**/*.ts",
     "test": "vitest --run"

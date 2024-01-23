@@ -1,9 +1,9 @@
-import type { DhcpMessage } from './parseMessage';
-import type { ParsedRequestOption } from './mapRequestOptions';
-import type { DhcpRequest } from './parseRequestMessage';
+import type { DhcpMessage } from './parseMessage.js';
+import type { ParsedRequestOption } from './mapRequestOptions.js';
+import type { DhcpRequest } from './parseRequestMessage.js';
 import type { Config } from '@neat-dhcpd/db';
-import createOfferResponse from './createOfferResponse';
-import createAckResponse from './createAckResponse';
+import createOfferResponse from './createOfferResponse.js';
+import createAckResponse from './createAckResponse.js';
 import type { Ip } from '@neat-dhcpd/common';
 
 export type ResponseResult =

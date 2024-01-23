@@ -9,16 +9,17 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint . && prettier --check src/**/*.ts",
-    "start": "node -r dotenv/config build"
+    "start": "cross-env NODE_ENV=production node -r dotenv/config build"
   },
   "devDependencies": {
     "@neat-dhcpd/common": "workspace:*",
     "@neat-dhcpd/db": "workspace:*",
+    "@neat-dhcpd/litel": "workspace:*",
     "@sveltejs/adapter-node": "^2.1.2",
     "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
-    "svelte": "^4.2.9",
     "svelte-check": "^3.6.3",
+    "svelte": "^4.2.9",
     "tslib": "^2.6.2",
     "vite": "^5.0.12",
     "zod": "^3.22.4"

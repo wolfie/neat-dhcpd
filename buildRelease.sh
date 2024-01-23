@@ -26,6 +26,28 @@ echo
 echo "Building project"
 pnpm build
 
+COMMON="packages/common"
+echo
+echo "Creating Common directory"
+mkdir -vp "$TARGET/$COMMON"
+echo
+echo "Copying Common files"
+cp -vr \
+  "$COMMON/build" \
+  "$COMMON/package.json" \
+  "$TARGET/$COMMON"
+
+LITEL="packages/litel"
+echo
+echo "Creating litel directory"
+mkdir -vp "$TARGET/$LITEL"
+echo
+echo "Copying litel files"
+cp -vr \
+  "$LITEL/build" \
+  "$LITEL/package.json" \
+  "$TARGET/$LITEL"
+
 DB="packages/db"
 echo
 echo "Creating DB directory"
@@ -37,17 +59,6 @@ cp -vr \
   "$DB/.env" \
   "$DB/package.json" \
   "$TARGET/$DB"
-
-COMMON="packages/common"
-echo
-echo "Creating DB directory"
-mkdir -vp "$TARGET/$COMMON"
-echo
-echo "Copying DB files"
-cp -vr \
-  "$COMMON/build" \
-  "$COMMON/package.json" \
-  "$TARGET/$COMMON"
 
 DHCPD="packages/dhcpd"
 echo
@@ -85,6 +96,7 @@ echo "1: ssh <user>@<server> 'mkdir neat-dhcpd'  # ...if dir doesn't exist yet"
 echo "2: scp build.tar.bz2 <user>@<server>:~/neat-dhcpd"
 echo "3: ssh <user>@<server>"
 echo "4: cd neat-dhcpd && tar -xzf build.tar.bz2 && cd build"
-echo "5: pnpm i -P"
+echo "5: pnpm i -P --frozen-lockfile"
 echo "(optional) 6: tmux  # ...or some other command, like screen"
-echo "7: pnpm start"
+echo "either: 7a: pnpm start"
+echo "or 7b: ./startWithAuthbind.sh

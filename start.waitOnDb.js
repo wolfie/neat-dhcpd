@@ -1,22 +1,23 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
 /** @param {string} path  */
 const waitForFileUpdate = (path) =>
   new Promise((resolve, reject) => {
+    const interval = setInterval(() => console.log('still waiting for db...'), 5000);
     const watcher = fs.watch(path, (e) => {
-      if (e === "change") {
-        watcher.close();
-        resolve();
-      }
+      clearInterval(interval);
+      watcher.close();
+      resolve();
     });
 
-    watcher.on("error", (e) => {
+    watcher.on('error', (e) => {
+      clearInterval(interval);
       watcher.close();
       reject(e);
     });
   });
 
-console.log("waiting for db.sqlite to be updated...");
-waitForFileUpdate(path.resolve(__dirname, "db.sqlite"));
-console.log("db.sqlite got updated!");
+const dbPath = path.resolve(__dirname, 'db.sqlite');
+console.log(`waiting for ${dbPath} to be updated...`);
+waitForFileUpdate(dbPath).then(() => console.log('db.sqlite got updated!'));

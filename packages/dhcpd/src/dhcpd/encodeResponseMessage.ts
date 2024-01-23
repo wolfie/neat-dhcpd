@@ -1,6 +1,6 @@
-import type { DhcpResponse } from './createResponse';
-import { htypeForString, opForString } from './numberStrings';
-import type { BootpMessage } from './splitBootpMessage';
+import type { DhcpResponse } from './createResponse.js';
+import { htypeForString, opForString } from './numberStrings.js';
+import type { BootpMessage } from './splitBootpMessage.js';
 
 const encodeResponseMessage = (
   message: DhcpResponse,

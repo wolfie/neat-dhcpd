@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { enhance } from '$app/forms';
-  import type { PageData } from './$types';
+  import type { PageData } from './$types.js';
   import Alert from '$lib/components/Alert.svelte';
   import Select from '$lib/components/Select.svelte';
   import Input from '$lib/components/Input.svelte';
   import Label from '$lib/components/Label.svelte';
   import Checkbox from '$lib/components/Checkbox.svelte';
   import Button from '$lib/components/Button.svelte';
-  import type { AliasPutBody } from './api/alias/+server';
+  import type { AliasPutBody } from './api/alias/+server.js';
   import { ipFromString } from '@neat-dhcpd/common';
   import Textarea from '$lib/components/Textarea.svelte';
   import NetworkDevice from '$lib/components/NetworkDevice.svelte';

@@ -1,0 +1,96 @@
+<!doctype html>
+<body>
+  <div id="root" />
+  <script>
+    window.data = []; // this will be injected
+    console.log(window.data);
+  </script>
+  <script>
+    const scaled = (min, max, n) => {
+      const scaledMax = max - min;
+      const scaledN = n - min;
+      return scaledN / scaledMax;
+    };
+
+    const findEnd = (span) =>
+      span.children.reduce(
+        (max, span) =>
+          Math.max(
+            max,
+            span.children.length > 0
+              ? Math.max(...span.children.map(findEnd))
+              : span.start + span.durationMs
+          ),
+        Number.NEGATIVE_INFINITY
+      );
+
+    const getDiv = (span) => {
+      const minTime = span.start;
+      const maxTime = Math.max(findEnd(span), span.start + span.durationMs);
+
+      const div = document.createElement('div');
+      div.innerHTML = `<div class="span" style="width:${
+        scaled(minTime, maxTime, minTime + span.durationMs) * 100
+      }%">${span.system}: ${span.name} (${span.durationMs}ms)</div>`;
+
+      const sortedChildren = span.children.toSorted((a, b) => a.start - b.start);
+      sortedChildren.forEach((span) => {
+        const child = getDiv(span);
+        child.style = `margin-left:${scaled(minTime, maxTime, span.start) * 100}%; width:${
+          scaled(minTime, maxTime, minTime + span.durationMs) * 100
+        }%`;
+        div.appendChild(child);
+      });
+
+      return div;
+    };
+
+    const root = document.getElementById('root');
+    window.data.forEach((trace) => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'group';
+      const traceDiv = getDiv(trace);
+
+      groupDiv.appendChild(traceDiv);
+
+      const div = document.createElement('div');
+      div.className = 'time';
+      div.innerHTML = `<div>${new Date(trace.start).toISOString()}</div><div>${
+        Math.round(Math.max(findEnd(trace) - trace.start, trace.durationMs) * 1000) / 1000
+      }ms</div>`;
+      groupDiv.appendChild(div);
+
+      root.appendChild(groupDiv);
+    });
+  </script>
+
+  <style>
+    div {
+      box-sizing: border-box;
+    }
+
+    .group {
+      border: 1px solid black;
+      border-radius: 4px;
+      padding: 4px;
+    }
+
+    #root {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .span {
+      border-left: 2px solid black;
+      padding-left: 4px;
+      background-color: rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+    }
+
+    .time {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</body>

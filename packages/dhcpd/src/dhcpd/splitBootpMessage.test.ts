@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { splitBootpMessage } from './splitBootpMessage';
+import splitBootpMessage from './splitBootpMessage.js';
 
 describe('splitBootpMessage', () => {
   it('splits our response', () => {

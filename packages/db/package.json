@@ -2,6 +2,7 @@
   "name": "@neat-dhcpd/db",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -10,14 +11,15 @@
   "scripts": {
     "dev": "nodemon -e ts --watch src --exec \"pnpm dev:compile\"",
     "dev:compile": "tsc && node -r dotenv/config build",
-    "redoMigration": "npx -y ts-node src/bin/redoMigration",
-    "migrateToLatest": "npx -y ts-node src/bin/migrateToLatest",
-    "build": "rm -rf build && tsc -b",
+    "redoMigration": "cross-env LITEL_DISABLE=1 tsx src/bin/redoMigration",
+    "migrateToLatest": "cross-env LITEL_DISABLE=1 tsx src/bin/migrateToLatest",
+    "build": "rm -rf build && cross-env NODE_ENV=production tsc -b",
     "lint": "eslint . && prettier --check src/**/*.ts",
-    "start": "node -r dotenv/config build",
+    "start": "cross-env NODE_ENV=production node -r dotenv/config build",
     "start:migrateToLatest": "node build/bin/migrateToLatest"
   },
   "dependencies": {
+    "@neat-dhcpd/litel": "workspace:*",
     "@trpc/server": "^10.45.0",
     "better-sqlite3": "^9.2.2",
     "kysely": "^0.26.3",
@@ -26,7 +28,9 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.8",
     "@types/find-package-json": "^1.2.6",
+    "cross-env": "*",
     "nodemon": "^3.0.3",
-    "prettier": "*"
+    "prettier": "*",
+    "tsx": "*"
   }
 }

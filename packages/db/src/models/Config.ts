@@ -1,10 +1,10 @@
 import type { InsertObject } from 'kysely';
-import type { Database } from './types';
-import db from '../db';
-import { publicProcedure, router } from '../trpc';
+import type { Database } from './types.js';
+import db from '../db.js';
+import { publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
-import zIpString from '../lib/zIpString';
-import { zLogLevel } from './Log';
+import zIpString from '../lib/zIpString.js';
+import { zLogLevel } from './Log.js';
 
 const Config = z.object({
   ip_start: zIpString,

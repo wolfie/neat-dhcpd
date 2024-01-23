@@ -2,18 +2,27 @@
   "name": "@neat-dhcpd/dhcpd",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "npx -y ts-node-dev -r dotenv/config ./src/index",
-    "build": "rm -rf build && tsc -b",
+    "_dev": "nodemon -r dotenv/config ./src/index",
+    "dev": "tsx --watch -r dotenv/config ./src/index",
+    "build": "cross-env NODE_ENV=production rm -rf build && tsc -b",
     "test": "vitest --run",
     "lint": "eslint . && prettier --check src/**/*.ts",
-    "start": "node -r dotenv/config build"
+    "start": "cross-env NODE_ENV=production node -r dotenv/config build"
   },
   "dependencies": {
-    "@trpc/client": "^10.45.0",
-    "@neat-dhcpd/db": "workspace:*",
     "@neat-dhcpd/common": "workspace:*",
+    "@neat-dhcpd/db": "workspace:*",
+    "@neat-dhcpd/litel": "workspace:*",
+    "@trpc/client": "^10.45.0",
     "date-fns": "^3.1.0",
     "vitest": "*"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
+    "typescript": "*"
   }
 }

@@ -1,4 +1,4 @@
-import { getBroadcastAddr, ipFromString, readUint32BE, writeUint32BE } from './ip';
+import { getBroadcastAddr, ipFromString, readUint32BE, writeUint32BE } from './ip.js';
 import { expect, describe, it, test } from 'vitest';
 
 describe('writeUint32BE', () => {

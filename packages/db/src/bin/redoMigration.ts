@@ -1,4 +1,4 @@
-import getMigrator from '../getMigrator';
+import getMigrator from '../getMigrator.js';
 
 (async () => {
   const migrator = getMigrator();

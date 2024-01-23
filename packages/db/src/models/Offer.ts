@@ -1,8 +1,8 @@
-import db from '../db';
-import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampAfter } from '../lib/sqlTimestamps';
-import { publicProcedure, router } from '../trpc';
+import db from '../db.js';
+import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampAfter } from '../lib/sqlTimestamps.js';
+import { publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
-import zIpString from '../lib/zIpString';
+import zIpString from '../lib/zIpString.js';
 
 const DEFAULT_OFFER_DURATION_MINS = 5;
 
