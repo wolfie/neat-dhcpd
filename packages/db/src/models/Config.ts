@@ -1,7 +1,7 @@
 import type { InsertObject } from 'kysely';
 import type { Database } from './types.js';
 import db from '../db.js';
-import { publicProcedure, router } from '../trpc.js';
+import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString.js';
 import { zLogLevel } from './Log.js';
@@ -34,8 +34,8 @@ const get = () =>
     );
 
 const configRouter = router({
-  set: publicProcedure.input(Config).mutation((ctx) => set(ctx.input)),
-  get: publicProcedure.query(get),
+  set: publicProcedure.input(WithTraceId(Config)).mutation((ctx) => set(ctx.input)),
+  get: publicProcedure.input(WithTraceId()).query(get),
 });
 
 export default configRouter;

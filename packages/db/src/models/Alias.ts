@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import db from '../db.js';
-import { publicProcedure, router } from '../trpc.js';
+import { WithTraceId, publicProcedure, router } from '../trpc.js';
 
 const getAll = () => db.selectFrom('alias').selectAll().execute();
 
@@ -25,8 +25,8 @@ const del = ({ mac }: DeleteInput) =>
     .then(() => undefined);
 
 const aliasRouter = router({
-  getAll: publicProcedure.query(getAll),
-  set: publicProcedure.input(SetInput).mutation((ctx) => set(ctx.input)),
-  delete: publicProcedure.input(DeleteInput).mutation((ctx) => del(ctx.input)),
+  getAll: publicProcedure.input(WithTraceId()).query(getAll),
+  set: publicProcedure.input(WithTraceId(SetInput)).mutation((ctx) => set(ctx.input)),
+  delete: publicProcedure.input(WithTraceId(DeleteInput)).mutation((ctx) => del(ctx.input)),
 });
 export default aliasRouter;

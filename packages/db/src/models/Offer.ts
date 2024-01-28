@@ -1,6 +1,6 @@
 import db from '../db.js';
 import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampAfter } from '../lib/sqlTimestamps.js';
-import { publicProcedure, router } from '../trpc.js';
+import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString.js';
 
@@ -60,9 +60,9 @@ const del = ({ mac }: DeleteInput) =>
     .then(() => undefined);
 
 const offerRouter = router({
-  getAll: publicProcedure.query(getAll),
-  get: publicProcedure.input(GetInput).query((ctx) => get(ctx.input)),
-  add: publicProcedure.input(AddInput).mutation((ctx) => add(ctx.input)),
-  delete: publicProcedure.input(DeleteInput).mutation((ctx) => del(ctx.input)),
+  getAll: publicProcedure.input(WithTraceId()).query(getAll),
+  get: publicProcedure.input(WithTraceId(GetInput)).query((ctx) => get(ctx.input)),
+  add: publicProcedure.input(WithTraceId(AddInput)).mutation((ctx) => add(ctx.input)),
+  delete: publicProcedure.input(WithTraceId(DeleteInput)).mutation((ctx) => del(ctx.input)),
 });
 export default offerRouter;
