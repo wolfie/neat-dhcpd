@@ -53,7 +53,7 @@ type DisplayTrace = {
   remote: string | undefined;
   children: DisplayTrace[];
 };
-const foo =
+const mapWithRemoteRoots =
   (remoteRoots: HierarchicalTrace[]) =>
   (trace: HierarchicalTrace): DisplayTrace => ({
     id: trace.id,
@@ -63,10 +63,10 @@ const foo =
     durationMs: getDuration(trace),
     remote: trace.remote?.parentId,
     children: [
-      ...trace.children.map(foo(remoteRoots)),
+      ...trace.children.map(mapWithRemoteRoots(remoteRoots)),
       ...remoteRoots
         .filter((remoteRoot) => remoteRoot.remote?.parentId === trace.id)
-        .map(foo(remoteRoots)),
+        .map(mapWithRemoteRoots(remoteRoots)),
     ],
   });
 
@@ -77,8 +77,7 @@ httpServer.get('/', (_req, res) => {
     (trace) => trace.parentId === null && !!trace.remote
   );
 
-  const tree = roots.map(foo(remoteRoots)).sort((a, b) => b.start - a.start);
-
+  const tree = roots.map(mapWithRemoteRoots(remoteRoots)).sort((a, b) => b.start - a.start);
   res.header({ 'content-type': 'text/html; charset=utf-8' }).send(createHtmlText(tree));
 });
 httpServer.listen(12346, () => {
