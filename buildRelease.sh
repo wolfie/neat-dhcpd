@@ -99,4 +99,4 @@ echo "4: cd neat-dhcpd && tar -xzf build.tar.bz2 && cd build"
 echo "5: pnpm i -P --frozen-lockfile"
 echo "(optional) 6: tmux  # ...or some other command, like screen"
 echo "either: 7a: pnpm start"
-echo "or 7b: ./startWithAuthbind.sh
+echo "or 7b: ./startWithAuthbind.sh"
