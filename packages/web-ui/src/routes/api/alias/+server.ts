@@ -2,18 +2,31 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
 import z from 'zod';
 import trpc from '$lib/server/trpcClient';
+import { startTraceRoot } from '@neat-dhcpd/litel';
 
 const AliasPutBody = z.object({ mac: z.string(), alias: z.string() });
 export type AliasPutBody = z.TypeOf<typeof AliasPutBody>;
 
 export const PUT: RequestHandler = async ({ request }) => {
-  const body = await request.json().then(AliasPutBody.parse);
+  const trace = startTraceRoot('/api/alias:PUT');
+  // eslint-disable-next-line functional/no-try-statements
+  try {
+    const body = await request.json().then(AliasPutBody.parse);
 
-  if (body.alias) {
-    trpc.alias.set.mutate(body);
-  } else {
-    trpc.alias.delete.mutate({ mac: body.mac });
+    if (body.alias) {
+      trpc.alias.set.mutate({
+        ...body,
+        remoteTracing: { parentId: trace.id, system: trace.system },
+      });
+    } else {
+      trpc.alias.delete.mutate({
+        mac: body.mac,
+        remoteTracing: { parentId: trace.id, system: trace.system },
+      });
+    }
+
+    return json({ ok: true });
+  } finally {
+    trace.end();
   }
-
-  return json({ ok: true });
 };

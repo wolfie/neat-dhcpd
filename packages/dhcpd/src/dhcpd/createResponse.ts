@@ -5,6 +5,7 @@ import type { Config } from '@neat-dhcpd/db';
 import createOfferResponse from './createOfferResponse.js';
 import createAckResponse from './createAckResponse.js';
 import type { Ip } from '@neat-dhcpd/common';
+import type { Trace } from '@neat-dhcpd/litel';
 
 export type ResponseResult =
   | {
@@ -53,24 +54,31 @@ export type Address = {
 const createResponse = async (
   request: DhcpRequest,
   serverAddress: Address,
-  config: Config
+  config: Config,
+  parentTrace: Trace
 ): Promise<ResponseResult> => {
-  const typeOption = request.options.options.find(
-    (o): o is ParsedRequestOption<53> => o.isParsed && o.name === 'DHCP Message Type'
-  );
-  if (!typeOption) return { success: false, error: 'no-type-option' } as const;
+  const trace = parentTrace.startSubTrace('createResponse');
+  // eslint-disable-next-line functional/no-try-statements
+  try {
+    const typeOption = request.options.options.find(
+      (o): o is ParsedRequestOption<53> => o.isParsed && o.name === 'DHCP Message Type'
+    );
+    if (!typeOption) return { success: false, error: 'no-type-option' } as const;
 
-  switch (typeOption.value) {
-    case 'DHCPDISCOVER':
-      return await createOfferResponse(request, serverAddress, config);
-    case 'DHCPREQUEST':
-      return await createAckResponse(request, serverAddress, config);
-    default:
-      return {
-        success: false,
-        error: 'unhandled-type-option',
-        id: typeOption.value,
-      };
+    switch (typeOption.value) {
+      case 'DHCPDISCOVER':
+        return await createOfferResponse(request, serverAddress, config, trace);
+      case 'DHCPREQUEST':
+        return await createAckResponse(request, serverAddress, config, trace);
+      default:
+        return {
+          success: false,
+          error: 'unhandled-type-option',
+          id: typeOption.value,
+        };
+    }
+  } finally {
+    trace.end();
   }
 };
 

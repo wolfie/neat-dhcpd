@@ -1,4 +1,4 @@
-import { TraceId } from '@neat-dhcpd/litel';
+import type { TraceId } from '@neat-dhcpd/litel';
 import trpc from '../trpcClient.js';
 
 const log = (level: 'error' | 'log' | 'debug', json: unknown, parentTraceId?: TraceId) => {
