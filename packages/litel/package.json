@@ -16,6 +16,7 @@
     "test": "vitest --run"
   },
   "dependencies": {
+    "cross-env": "*",
     "express": "^4.18.2",
     "superjson": "^1.13.3",
     "uuid": "^9.0.1"

@@ -8,4 +8,4 @@ sudo touch /etc/authbind/byport/80 && sudo chmod 700 /etc/authbind/byport/80 && 
 echo "Creating /etc/authbind/byport/67 with chown $USER and chmod 700"
 sudo touch /etc/authbind/byport/67 && sudo chmod 700 /etc/authbind/byport/67 && sudo chown $USER /etc/authbind/byport/67
 
-authbind --deep pnpm start
+authbind --deep node start.js

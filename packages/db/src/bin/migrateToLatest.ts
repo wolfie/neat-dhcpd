@@ -1,6 +1,6 @@
 import getMigrator from '../getMigrator.js';
 
-const handleMigration = async () => {
+const migrateToLatest = async () => {
   const migrator = getMigrator();
   const migrations = await migrator.migrateToLatest();
   const resultStrings = migrations.results
@@ -18,4 +18,7 @@ const handleMigration = async () => {
   console.log(resultStrings?.join('\n') || 'None required', '\n');
 };
 
-handleMigration();
+const isBeingImported = import.meta.url === `file://${process.argv[1]}`;
+if (!isBeingImported) migrateToLatest();
+
+export default migrateToLatest;

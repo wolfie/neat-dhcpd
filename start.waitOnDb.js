@@ -1,5 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 /** @param {string} path  */
 const waitForFileUpdate = (path) =>
@@ -18,6 +19,7 @@ const waitForFileUpdate = (path) =>
     });
   });
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.resolve(__dirname, 'db.sqlite');
 console.log(`waiting for ${dbPath} to be updated...`);
 waitForFileUpdate(dbPath).then(() => console.log('db.sqlite got updated!'));

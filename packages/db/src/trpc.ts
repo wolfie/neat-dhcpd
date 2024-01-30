@@ -1,7 +1,7 @@
 import { TRPCError, initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import zTraceId from './lib/zTraceId.js';
-import type { Trace, System, TraceId } from '@neat-dhcpd/litel';
+import type { Trace } from '@neat-dhcpd/litel';
 import { startTraceRootFromRemote } from '@neat-dhcpd/litel';
 
 const t = initTRPC.context<{ trace: Trace | undefined }>().create();
@@ -17,14 +17,10 @@ const zTracing = z.object({
 
 type ZTracing = typeof zTracing;
 
-type WithTraceId<T extends object = Record<never, unknown>> = T & {
-  remoteTracing?: { parentId: TraceId; system: System };
-};
-
-type WithTraceIdC<T extends z.ZodObject<z.ZodRawShape>> = z.ZodIntersection<ZTracing, T>;
-
 export function WithTraceId(): z.ZodOptional<ZTracing>;
-export function WithTraceId<T extends z.ZodObject<z.ZodRawShape>>(obj: T): WithTraceIdC<T>;
+export function WithTraceId<T extends z.ZodObject<z.ZodRawShape>>(
+  obj: T
+): z.ZodIntersection<ZTracing, T>;
 export function WithTraceId(obj?: z.ZodObject<z.ZodRawShape>) {
   return obj ? z.intersection(zTracing, obj) : zTracing.optional();
 }

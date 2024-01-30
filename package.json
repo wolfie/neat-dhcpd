@@ -2,6 +2,7 @@
   "name": "neat-dhcpd",
   "version": "0.0.0",
   "license": "ISC",
+  "type": "module",
   "engines": {
     "node": "20.10.0",
     "pnpm": ">=8.14"
@@ -20,16 +21,13 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
-    "start": "cross-env LITEL_DISABLE=1 pnpm --filter \"@neat-dhcpd/db\" start:migrateToLatest && concurrently --kill-others --prefix-colors auto pnpm:start:*",
-    "start:db": "pnpm --filter \"@neat-dhcpd/db\" start",
-    "start:litel": "pnpm --filter \"@neat-dhcpd/litel\" start",
-    "start:dhcpd": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/dhcpd\" start",
-    "start:web-ui": "node start.waitOnDb.js && pnpm --filter \"@neat-dhcpd/web-ui\" start"
+    "start": "node start.js"
   },
   "workspaces": [
     "packages/*"
   ],
   "dependencies": {
+    "chalk": "^5.3.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
@@ -40,9 +38,9 @@
     "@typescript-eslint/eslint-plugin": "^6.18.0",
     "@typescript-eslint/parser": "^6.18.0",
     "date-fns": "^3.1.0",
+    "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-functional": "6.0.0",
-    "eslint": "8.56.0",
     "prettier": "3.1.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",

@@ -16,6 +16,7 @@
     "@neat-dhcpd/db": "workspace:*",
     "@neat-dhcpd/litel": "workspace:*",
     "@trpc/client": "^10.45.0",
+    "cross-env": "*",
     "date-fns": "^3.1.0",
     "vitest": "*"
   },

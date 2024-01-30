@@ -25,3 +25,4 @@
 - assign reserved ips for clients (outside and inside the DHCP range)
 - download "all" configs as json (at least aliases + reserved ips)
 - disable `@neat-dhpcd/litel` by default, and enable with some simple trick (env var?)
+- don't crash if client can't connect to `@neat-dhpcd/litel` server

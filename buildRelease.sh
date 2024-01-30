@@ -18,6 +18,7 @@ cp -v \
   package.json \
   pnpm-lock.yaml \
   pnpm-workspace.yaml \
+  start.js \
   start.waitOnDb.js \
   startWithAuthbind.sh \
   $TARGET
@@ -98,5 +99,5 @@ echo "3: ssh <user>@<server>"
 echo "4: cd neat-dhcpd && tar -xzf build.tar.bz2 && cd build"
 echo "5: pnpm i -P --frozen-lockfile"
 echo "(optional) 6: tmux  # ...or some other command, like screen"
-echo "either: 7a: pnpm start"
+echo "either: 7a: node start"
 echo "or 7b: ./startWithAuthbind.sh"
