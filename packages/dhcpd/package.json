@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "_dev": "nodemon -r dotenv/config ./src/index",
     "dev": "tsx --watch -r dotenv/config ./src/index",
     "build": "cross-env NODE_ENV=production rm -rf build && tsc -b",
     "test": "vitest --run",
