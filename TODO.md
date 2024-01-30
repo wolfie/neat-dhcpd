@@ -3,16 +3,10 @@
 - sensible ENV configs (address and netmask)
 - secure DB tRPC from non-localhost queries
 - use client id instead of mac as primary key
-- Check if trpc could talk over sockets instead of HTTP
-- store hostname as a fallback for aliases
-- run migrations on startup
-- add "log level" config, and don't write anything in e.g. debug
-- make sure that db service runs first
 - send DHCPNAK
 - handle DHCPINFO
 - define IP from app?
 - add Zod typings to DB level
-- common package for things like `ip.ts` etc
 - support other MAC formats than just ':'-separated
 - broadcast DHCP replies to any and all interfaces, instead of asking for a specific NIC?
 - responsive design (for mobile phone)
@@ -26,3 +20,4 @@
 - download "all" configs as json (at least aliases + reserved ips)
 - disable `@neat-dhpcd/litel` by default, and enable with some simple trick (env var?)
 - don't crash if client can't connect to `@neat-dhpcd/litel` server
+- **BUG:** seems like the inserting of log lines gets overly filtered - the fancy insert is probably broken
