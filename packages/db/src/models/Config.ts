@@ -5,6 +5,7 @@ import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString.js';
 import { zLogLevel } from './Log.js';
+import passInputWithoutTracing from '../lib/passInput.js';
 
 const Config = z.object({
   ip_start: zIpString,
@@ -34,7 +35,7 @@ const get = () =>
     );
 
 const configRouter = router({
-  set: publicProcedure.input(WithTraceId(Config)).mutation((ctx) => set(ctx.input)),
+  set: publicProcedure.input(WithTraceId(Config)).mutation(passInputWithoutTracing(set)),
   get: publicProcedure.input(WithTraceId()).query(get),
 });
 

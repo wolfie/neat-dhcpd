@@ -2,6 +2,7 @@ import { z } from 'zod';
 import db from '../db.js';
 import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
 import { WithTraceId, publicProcedure, router } from '../trpc.js';
+import passInputWithoutTracing from '../lib/passInput.js';
 
 const UpsertInput = z.object({ mac: z.string(), hostname: z.string() });
 type UpsertInput = z.TypeOf<typeof UpsertInput>;
@@ -18,6 +19,6 @@ const upsert = (input: UpsertInput) =>
     .then(() => undefined);
 
 const seenHostnameRouter = router({
-  set: publicProcedure.input(WithTraceId(UpsertInput)).mutation((ctx) => upsert(ctx.input)),
+  set: publicProcedure.input(WithTraceId(UpsertInput)).mutation(passInputWithoutTracing(upsert)),
 });
 export default seenHostnameRouter;

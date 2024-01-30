@@ -3,6 +3,7 @@ import db from '../db.js';
 import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
 import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import zIpString from '../lib/zIpString.js';
+import passInputWithoutTracing from '../lib/passInput.js';
 
 // TODO run only if an offer has been added within the last DEFAULT_OFFER_DURATION_MINS
 setInterval(async () => {
@@ -48,7 +49,7 @@ const leaseRouter = router({
   get: publicProcedure
     .input(WithTraceId(z.object({ mac: z.string() })))
     .query((ctx) => get(ctx.input)),
-  set: publicProcedure.input(WithTraceId(SetInput)).mutation((ctx) => set(ctx.input)),
+  set: publicProcedure.input(WithTraceId(SetInput)).mutation(passInputWithoutTracing(set)),
 });
 
 export default leaseRouter;

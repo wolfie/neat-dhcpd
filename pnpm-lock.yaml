@@ -82,8 +82,8 @@ importers:
         specifier: '*'
         version: 7.0.3
       kysely:
-        specifier: ^0.26.3
-        version: 0.26.3
+        specifier: ^0.27.2
+        version: 0.27.2
       zod:
         specifier: '*'
         version: 3.22.4
@@ -2329,8 +2329,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /kysely@0.26.3:
-    resolution: {integrity: sha512-yWSgGi9bY13b/W06DD2OCDDHQmq1kwTGYlQ4wpZkMOJqMGCstVCFIvxCCVG4KfY1/3G0MhDAcZsip/Lw8/vJWw==}
+  /kysely@0.27.2:
+    resolution: {integrity: sha512-DmRvEfiR/NLpgsTbSxma2ldekhsdcd65+MNiKXyd/qj7w7X5e3cLkXxcj+MypsRDjPhHQ/CD5u3Eq1sBYzX0bw==}
     engines: {node: '>=14.0.0'}
     dev: false
 

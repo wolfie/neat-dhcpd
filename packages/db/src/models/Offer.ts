@@ -3,6 +3,7 @@ import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampAfter } from '../lib/sqlTimesta
 import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString.js';
+import passInputWithoutTracing from '../lib/passInput.js';
 
 const DEFAULT_OFFER_DURATION_MINS = 5;
 
@@ -62,7 +63,7 @@ const del = ({ mac }: DeleteInput) =>
 const offerRouter = router({
   getAll: publicProcedure.input(WithTraceId()).query(getAll),
   get: publicProcedure.input(WithTraceId(GetInput)).query((ctx) => get(ctx.input)),
-  add: publicProcedure.input(WithTraceId(AddInput)).mutation((ctx) => add(ctx.input)),
-  delete: publicProcedure.input(WithTraceId(DeleteInput)).mutation((ctx) => del(ctx.input)),
+  add: publicProcedure.input(WithTraceId(AddInput)).mutation(passInputWithoutTracing(add)),
+  delete: publicProcedure.input(WithTraceId(DeleteInput)).mutation(passInputWithoutTracing(del)),
 });
 export default offerRouter;

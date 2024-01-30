@@ -2,6 +2,7 @@ import { z } from 'zod';
 import db from '../db.js';
 import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
 import { WithTraceId, publicProcedure, router } from '../trpc.js';
+import passInputWithoutTracing from '../lib/passInput.js';
 
 const getAllWithAliases = () =>
   db
@@ -36,6 +37,6 @@ const seenMacRouter = router({
   getAll: publicProcedure.input(WithTraceId()).query(getAllWithAliases),
   add: publicProcedure
     .input(WithTraceId(z.object({ mac: z.string() })))
-    .mutation((ctx) => addSighting(ctx.input)),
+    .mutation(passInputWithoutTracing(addSighting)),
 });
 export default seenMacRouter;
