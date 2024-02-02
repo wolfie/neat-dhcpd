@@ -11,12 +11,12 @@
   import type { AliasPutBody } from './api/alias/+server.js';
   import { ipFromString } from '@neat-dhcpd/common';
   import Textarea from '$lib/components/Textarea.svelte';
-  import NetworkDevice from '$lib/components/NetworkDevice.svelte';
   import type { PolledData } from '$lib/server/getPolledData';
+  import NetworkDevice from '$lib/components/NetworkDevice.svelte';
 
   export let data: PageData;
 
-  let latestData: Pick<PageData, 'leases' | 'logs' | 'offers' | 'seenMacs'> = data;
+  let latestData: PolledData = data;
 
   onMount(() => {
     const interval = setInterval(async () => {
@@ -50,27 +50,25 @@
   };
 
   let savingAlias = false;
-  const setAlias =
-    (mac: string, oldValue: string | null) => (e: CustomEvent<{ alias: string }>) => {
-      const newValue = e.detail.alias.trim();
-      if (newValue === (oldValue || '')) return;
-      savingAlias = true;
-      // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
-      fetch('/api/alias', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mac,
-          alias: e.detail.alias,
-        } satisfies AliasPutBody),
-      }).finally(() => {
-        savingAlias = false;
-      });
-    };
+  const setAlias = (mac: string, oldValue: string | undefined) => (e: CustomEvent<string>) => {
+    const newValue = e.detail.trim();
+    if (newValue === (oldValue || '')) return;
+    savingAlias = true;
+    // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
+    fetch('/api/alias', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mac,
+        alias: e.detail,
+      } satisfies AliasPutBody),
+    }).finally(() => {
+      savingAlias = false;
+    });
+  };
 
-  $: sortedLeases = latestData.leases
-    .map((lease) => ({ ...lease, ip: ipFromString(lease.ip) }))
-    .toSorted((a, b) => a.ip.num - b.ip.num);
+  const localeCompare = (a: string | undefined, b: string | undefined): number =>
+    a && b ? a.localeCompare(b) : a ? -1 : b ? 1 : 0;
 </script>
 
 <svelte:head>
@@ -171,75 +169,12 @@
 </form>
 
 <section>
-  <h2>Current offers</h2>
-  {#if latestData.offers.length === 0}
-    No DHCP offers active
-  {:else}
-    <table>
-      <thead>
-        <tr>
-          <th>Mac</th>
-          <th>IP</th>
-          <th>Offered at</th>
-          <th>Expires at</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each latestData.offers as offer (offer.mac)}
-          <tr>
-            <td><pre>{offer.mac}</pre></td>
-            <td><pre>{offer.ip}</pre></td>
-            <td class="timestamp">{offer.offered_at}</td>
-            <td class="timestamp">{offer.expires_at}</td>
-          </tr>{/each}
-      </tbody>
-    </table>
-  {/if}
-</section>
-
-<section>
-  <h2>Active leases</h2>
-  {#if sortedLeases.length === 0}
-    No DHCP leases active
-  {:else}
-    <table>
-      <thead>
-        <tr>
-          <th>Mac</th>
-          <th>IP</th>
-          <th>Leased at</th>
-          <th>Expires at</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each sortedLeases as lease (lease.mac)}
-          <tr>
-            <td><pre>{lease.mac}</pre></td>
-            <td><pre>{lease.ip.str}</pre></td>
-            <td class="timestamp">{lease.leased_at}</td>
-            <td class="timestamp">{lease.expires_at}</td>
-          </tr>{/each}
-      </tbody>
-    </table>
-  {/if}
-</section>
-
-<section>
-  <h2>Seen MAC addresses</h2>
+  <h2>Test</h2>
   <div class="network-devices">
-    {#if latestData.seenMacs.length === 0}
-      No MAC addresses seen yet
-    {/if}
-    {#each latestData.seenMacs as seenMac (seenMac.mac)}
-      <NetworkDevice
-        mac={seenMac.mac}
-        vendor={seenMac.vendor}
-        alias={seenMac.alias}
-        firstSeen={seenMac.first_seen}
-        lastSeen={seenMac.last_seen}
-        hostname={seenMac.hostname}
-        on:aliasChanged={setAlias(seenMac.mac, seenMac.alias)}
-      />
+    {#each latestData.devices
+      .toSorted((a, b) => a.mac.address.localeCompare(b.mac.address))
+      .toSorted((a, b) => localeCompare(a.alias, b.alias)) as device (device.mac.address)}
+      <NetworkDevice {device} on:aliasChange={setAlias(device.mac.address, device.alias)} />
     {/each}
   </div>
 </section>
@@ -273,10 +208,9 @@
 
 <style lang="scss">
   .network-devices {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    grid-column-gap: 1em;
-    grid-row-gap: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
   }
 
   .container {

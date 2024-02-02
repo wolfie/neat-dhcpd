@@ -1,107 +1,90 @@
 <script lang="ts">
-  import type { MacVendor } from '$lib/server/getMacVendor';
-  import { formatRelative } from 'date-fns/formatRelative';
+  import Computer from 'lucide-svelte/icons/computer';
+  // import Laptop from 'lucide-svelte/icons/laptop';
+  // import Server from 'lucide-svelte/icons/server';
+  // import Smartphone from 'lucide-svelte/icons/smartphone';
+  // import Countdown from './Countdown.svelte';
+  import Badge from './Badge.svelte';
   import Input from './Input.svelte';
-  import Pencil from 'lucide-svelte/icons/pencil';
-  import XSquare from 'lucide-svelte/icons/x-square';
+  import type { Device } from '$lib/server/getPolledData';
   import { createEventDispatcher } from 'svelte';
 
-  export let mac: string;
-  export let vendor: MacVendor | undefined;
-  export let alias: string | null;
-  export let firstSeen: string;
-  export let lastSeen: string;
-  export let hostname: string | null = null;
+  export let device: Device;
 
-  let editing = false;
-
-  const dispatch = createEventDispatcher<{ aliasChanged: { alias: string } }>();
+  const dispatch = createEventDispatcher<{ aliasChange: string }>();
 </script>
 
-<div class="box">
-  <div class="name">
-    {#if editing}
-      <Input
-        value={alias}
-        placeholder="Device alias"
-        on:blurOrEnter={(e) => {
-          dispatch('aliasChanged', e.detail);
-        }}
-      />
-    {:else if alias}
-      <span class="named-device">{alias}</span>
-    {:else}
-      <span class="unnamed-device">Unnamed Device</span>
-    {/if}
+<div class="root">
+  <div class="icon">
+    <Computer />
   </div>
-  <div class="mac">{mac}</div>
-  {#if vendor}<div>MAC Vendor: {vendor['Organization Name']}</div>{/if}
-  {#if hostname}<div>Hostname: {hostname}</div>{/if}
-  <div>Last seen: {formatRelative(lastSeen, Date.now())}</div>
-  <div>First seen: {formatRelative(firstSeen, Date.now())}</div>
-  <div class="editing-panel" class:editing>
-    {#if !editing}
-      <button on:click={() => (editing = true)} title="edit"><Pencil /></button>
-    {:else}
-      <button on:click={() => (editing = false)} title="close"><XSquare /></button>
-    {/if}
+  <div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <Input
+        placeholder="Unnamed device"
+        value={device.alias}
+        on:blurOrEnter={(e) => dispatch('aliasChange', e.detail.alias)}
+      />
+      <!-- TODO -->
+      <Input placeholder="No reserved IP" value={undefined} />
+    </div>
+  </div>
+  <div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div>
+        <Badge
+          name="MAC"
+          value={[
+            device.mac.address,
+            device.mac.vendor ? device.mac.vendor['Organization Name'] : undefined,
+          ]}
+        />
+      </div>
+      {#if device.hostname}
+        <div><Badge name="Hostname" value="Calvin" /></div>
+      {/if}
+    </div>
+  </div>
+  <div style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      {#if device.offer}<div><Badge name="Offered" value={device.offer} /></div>{/if}
+      {#if device.lease}<div><Badge name="Leased" value={device.lease} /></div>{/if}
+    </div>
+  </div>
+  <div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div><Badge name="Last seen" value={device.lastSeen} /></div>
+      {#if device.lastSeen !== device.firstSeen}
+        <div>
+          <Badge name="First seen" value={device.firstSeen} />
+        </div>
+      {/if}
+    </div>
   </div>
 </div>
 
 <style lang="scss">
-  .box {
-    --border-radius: 8px;
+  .root {
+    display: flex;
+    gap: 20px;
+    background-color: #eee;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding-right: 10px;
 
-    position: relative;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
-    border-radius: var(--border-radius);
-    padding: 1em;
-
-    .name {
-      height: 2em;
-
-      .named-device {
-        font-weight: 600;
-      }
-
-      .unnamed-device {
-        filter: opacity(0.5);
-      }
-    }
-
-    &:hover .editing-panel,
-    & .editing-panel.editing {
+    > * {
+      padding: 10px 0;
+      white-space: nowrap;
       display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    & .editing-panel {
-      display: none;
+    .icon {
+      background-color: #ddd;
+      padding: 10px;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
     }
-
-    .editing-panel {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.1);
-      border-top-right-radius: var(--border-radius);
-      border-bottom-right-radius: var(--border-radius);
-
-      button {
-        background-color: transparent;
-        border: 0;
-        color: rgba(0, 0, 0, 0.75);
-        cursor: pointer;
-
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.1);
-        }
-      }
-    }
-  }
-
-  .mac {
-    font-family: 'Roboto Mono Variable', monospace;
   }
 </style>
