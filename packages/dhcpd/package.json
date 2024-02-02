@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx --watch -r dotenv/config ./src/index",
+    "dev": "tsx watch --clear-screen=false -r dotenv/config ./src/index",
     "build": "rm -rf build && cross-env NODE_ENV=production tsc -b",
     "test": "vitest --run",
     "lint": "eslint . && prettier --check src/**/*.ts",

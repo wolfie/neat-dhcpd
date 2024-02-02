@@ -4,6 +4,10 @@
 
 I made this because I wanted to assign known IPs to my home network, but all DHCP servers come bundled with an entire firewall ecosystem, and I didn't want it to be like that.
 
+## ⚠️ In development ⚠️
+
+A lot of wild development is being done atm until the project is getting its 1.0.0 MVP status. Moderate efforts are being done to keep changes backwards compatible, but if things break, it's best to just delete the `db.sqlite` file and start from scratch for now.
+
 ## Installing and Running
 
 ```bash
@@ -25,7 +29,7 @@ I made this because I wanted to assign known IPs to my home network, but all DHC
 > ./startWithAuthbind.sh
 
 # ...but on Windows, you can just run it no sweat
-> pnpm start
+> node start.js
 ```
 
 ## Litel o11y
