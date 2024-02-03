@@ -8,7 +8,7 @@
   export let small: boolean = false;
   export let placeholder: string | undefined = undefined;
 
-  const dispatch = createEventDispatcher<{ blurOrEnter: { alias: string } }>();
+  const dispatch = createEventDispatcher<{ blurOrEnter: { value: string } }>();
 
   const EMPTY_VALUE = { text: '', number: 0 };
   const valueOrEmpty = value !== null && typeof value !== 'undefined' ? value : EMPTY_VALUE[type];
@@ -22,7 +22,7 @@
   {placeholder}
   class:small
   on:keydown={(e) => e.code === 'Enter' && e.currentTarget.blur()}
-  on:blur={(e) => dispatch('blurOrEnter', { alias: e.currentTarget.value })}
+  on:blur={(e) => dispatch('blurOrEnter', { value: e.currentTarget.value })}
 />
 
 <style lang="scss">

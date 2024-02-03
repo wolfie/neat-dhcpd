@@ -14,12 +14,12 @@ export const PUT: RequestHandler = async ({ request }) => {
     const body = await request.json().then(AliasPutBody.parse);
 
     if (body.alias) {
-      trpc.alias.set.mutate({
+      await trpc.alias.set.mutate({
         ...body,
         remoteTracing: { parentId: trace.id, system: trace.system },
       });
     } else {
-      trpc.alias.delete.mutate({
+      await trpc.alias.delete.mutate({
         mac: body.mac,
         remoteTracing: { parentId: trace.id, system: trace.system },
       });

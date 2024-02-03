@@ -9,10 +9,11 @@
   import Checkbox from '$lib/components/Checkbox.svelte';
   import Button from '$lib/components/Button.svelte';
   import type { AliasPutBody } from './api/alias/+server.js';
-  import { ipFromString } from '@neat-dhcpd/common';
+  import { ipFromString, type IpString } from '@neat-dhcpd/common';
   import Textarea from '$lib/components/Textarea.svelte';
   import type { PolledData } from '$lib/server/getPolledData';
   import NetworkDevice from '$lib/components/NetworkDevice.svelte';
+  import type { ReservedIpPutBody } from './api/reserved-ip/+server.js';
 
   export let data: PageData;
 
@@ -66,6 +67,25 @@
       savingAlias = false;
     });
   };
+
+  let savingIp = false;
+  const setReservedIp =
+    (mac: string, oldValue: IpString | undefined) => (e: CustomEvent<IpString>) => {
+      const newValue = e.detail;
+      if (newValue === oldValue) return;
+      savingIp = true;
+      // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
+      fetch('/api/reserved-ip', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mac,
+          reservedIp: e.detail,
+        } satisfies ReservedIpPutBody),
+      }).finally(() => {
+        savingAlias = false;
+      });
+    };
 
   const localeCompare = (a: string | undefined, b: string | undefined): number =>
     a && b ? a.localeCompare(b) : a ? -1 : b ? 1 : 0;
@@ -174,7 +194,11 @@
     {#each latestData.devices
       .toSorted((a, b) => a.mac.address.localeCompare(b.mac.address))
       .toSorted((a, b) => localeCompare(a.alias, b.alias)) as device (device.mac.address)}
-      <NetworkDevice {device} on:aliasChange={setAlias(device.mac.address, device.alias)} />
+      <NetworkDevice
+        {device}
+        on:aliasChange={setAlias(device.mac.address, device.alias)}
+        on:reservedIpChange={setReservedIp(device.mac.address, device.reservedIp)}
+      />
     {/each}
   </div>
 </section>

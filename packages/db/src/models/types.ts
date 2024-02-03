@@ -59,6 +59,12 @@ export type SeenHostnameTable = {
   last_updated: Generated<string>;
 };
 
+export type ReservedIpTable = {
+  mac: string;
+  ip: ZIpString;
+  last_updated: Generated<string>;
+};
+
 export type Database = {
   log: LogTable;
   config: ConfigTable;
@@ -68,4 +74,5 @@ export type Database = {
   seen_mac: SeenMacTable;
   meta: MetaTable;
   seen_hostname: SeenHostnameTable;
+  reserved_ip: ReservedIpTable;
 };

@@ -14,6 +14,7 @@ import leaseRouter from './models/Lease.js';
 import offerRouter from './models/Offer.js';
 import seenMacRouter from './models/SeenMac.js';
 import seenHostnameRouter from './models/SeenHostname.js';
+import reservedIpRouter from './models/ReservedIp.js';
 
 const appRouter = router({
   log: logRouter,
@@ -23,6 +24,7 @@ const appRouter = router({
   offer: offerRouter,
   seenMac: seenMacRouter,
   seenHostname: seenHostnameRouter,
+  reservedIp: reservedIpRouter,
 });
 
 export type AppRouter = typeof appRouter;

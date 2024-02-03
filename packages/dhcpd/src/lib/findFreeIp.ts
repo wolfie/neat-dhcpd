@@ -26,7 +26,10 @@ const findFreeIp = async (
       trpc.offer.getAll
         .query({ remoteTracing: { parentId: trace.id, system: trace.system } })
         .then((offers) => offers.map((o) => ({ mac: o.mac, ip: o.ip }))),
-    ]).then(([leases, offers]) => leases.concat(offers));
+      trpc.reservedIp.getAll
+        .query({ remoteTracing: { parentId: trace.id, system: trace.system } })
+        .then((reservedIps) => reservedIps.map((r) => ({ mac: r.mac, ip: r.ip }))),
+    ]).then((arrays) => arrays.flat());
 
     if (
       requestedAddress &&

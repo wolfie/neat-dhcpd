@@ -12,6 +12,7 @@ export type Device = {
   hostname: string | undefined;
   offer: IpString | undefined;
   lease: IpString | undefined;
+  reservedIp: IpString | undefined;
 };
 
 export type PolledData = Awaited<ReturnType<typeof getPolledData>>;
@@ -19,7 +20,7 @@ const getPolledData = async (parentTrace: Trace) => {
   const trace = parentTrace.startSubTrace('getPolledData');
   // eslint-disable-next-line functional/no-try-statements
   try {
-    const [seenMacs, logs, leases, offers] = await Promise.all([
+    const [seenMacs, logs, leases, offers, reservedIps] = await Promise.all([
       getSeenMacs(trace),
       trpc.log.get.query({
         limit: 50,
@@ -28,6 +29,7 @@ const getPolledData = async (parentTrace: Trace) => {
       }),
       trpc.lease.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
       trpc.offer.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
+      trpc.reservedIp.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
     ]);
 
     const devices = seenMacs.map<Device>((seenMac) => {
@@ -42,6 +44,7 @@ const getPolledData = async (parentTrace: Trace) => {
         hostname: seenMac.hostname ?? undefined,
         offer: offers.find((o) => o.mac === seenMac.mac)?.ip,
         lease: leases.find((l) => l.mac === seenMac.mac)?.ip,
+        reservedIp: reservedIps.find((r) => r.mac === seenMac.mac)?.ip,
       };
     });
 
