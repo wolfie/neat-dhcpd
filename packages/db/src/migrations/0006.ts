@@ -1,5 +1,5 @@
 import type { Kysely } from 'kysely';
-import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps';
+import { CURRENT_TIMESTAMP_WITH_MILLIS } from '../lib/sqlTimestamps.js';
 
 export const up = async (db: Kysely<unknown>) => {
   await db.schema

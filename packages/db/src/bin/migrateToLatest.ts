@@ -18,7 +18,4 @@ const migrateToLatest = async () => {
   console.log(resultStrings?.join('\n') || 'None required', '\n');
 };
 
-const isBeingImported = import.meta.url === `file://${process.argv[1]}`;
-if (!isBeingImported) migrateToLatest();
-
-export default migrateToLatest;
+migrateToLatest();
