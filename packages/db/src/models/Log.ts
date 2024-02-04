@@ -9,9 +9,9 @@ export type zLogLevel = z.TypeOf<typeof zLogLevel>;
 export const zLogLevel = z.union([z.literal('log'), z.literal('error'), z.literal('debug')]);
 
 const LOG_LEVELS: Record<zLogLevel, RawBuilder<unknown>> = {
-  error: sql.raw("'error'"),
-  log: sql.raw("'error', 'log'"),
-  debug: sql.raw("'error', 'log', 'debug'"),
+  error: sql.raw("'error', 'log', 'debug'"),
+  log: sql.raw("'log', 'debug'"),
+  debug: sql.raw("'debug'"),
 };
 
 const InsertInput = z.object({ level: zLogLevel, system: z.string(), json: z.unknown() });

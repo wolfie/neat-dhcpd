@@ -20,4 +20,4 @@
 - download "all" configs as json (at least aliases + reserved ips)
 - disable `@neat-dhpcd/litel` by default, and enable with some simple trick (env var?)
 - don't crash if client can't connect to `@neat-dhpcd/litel` server
-- **BUG:** seems like the inserting of log lines gets overly filtered - the fancy insert is probably broken
+- remove unnecessary `system` param from remote tracking
