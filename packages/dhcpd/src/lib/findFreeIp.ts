@@ -1,9 +1,10 @@
-import type { Ip } from '@neat-dhcpd/common';
+import type { Ip, IpString } from '@neat-dhcpd/common';
 import { ipFromNumber, ipFromString } from '@neat-dhcpd/common';
 import type { Config } from '@neat-dhcpd/db';
 import rand from './rand.js';
 import trpc from '../trpcClient.js';
 import type { Trace } from '@neat-dhcpd/litel';
+import uniq from './uniq.js';
 
 const findFreeIp = async (
   requestedAddress: { mac: string; ip: Ip } | undefined,
@@ -19,36 +20,41 @@ const findFreeIp = async (
       return 'malformatted-ip-start-or-end' as const;
     }
 
-    const reservedIps = await Promise.all([
-      trpc.lease.getAll
-        .query({ remoteTracing: { parentId: trace.id, system: trace.system } })
-        .then((leases) => leases.map((l) => ({ mac: l.mac, ip: l.ip }))),
-      trpc.offer.getAll
-        .query({ remoteTracing: { parentId: trace.id, system: trace.system } })
-        .then((offers) => offers.map((o) => ({ mac: o.mac, ip: o.ip }))),
-      trpc.reservedIp.getAll
-        .query({ remoteTracing: { parentId: trace.id, system: trace.system } })
-        .then((reservedIps) => reservedIps.map((r) => ({ mac: r.mac, ip: r.ip }))),
-    ]).then((arrays) => arrays.flat());
+    const { getReservedIpForMac, unavailableIpNumbers } = await Promise.all([
+      trpc.reservedIp.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
+      trpc.lease.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
+      trpc.offer.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
+    ]).then(([reservedIps, leasedIps, offeredIps]) => {
+      const matchingMac =
+        (macToFind: string) =>
+        ({ mac }: { mac: string }) =>
+          mac === macToFind;
 
-    if (
-      requestedAddress &&
-      ipStartN.num <= requestedAddress.ip.num &&
-      requestedAddress.ip.num <= ipEndN.num
-    ) {
-      const occupiedLease = reservedIps.find((l) => l.ip === requestedAddress.ip.str);
-      if (!occupiedLease || occupiedLease.mac === requestedAddress.mac) {
-        return requestedAddress.ip;
+      return {
+        getReservedIpForMac: (mac: string): { ip: IpString; mac: string } | undefined =>
+          reservedIps.find(matchingMac(mac)) ??
+          leasedIps.find(matchingMac(mac)) ??
+          offeredIps.find(matchingMac(mac)),
+        unavailableIpNumbers: uniq(
+          [...reservedIps, ...leasedIps, ...offeredIps].map(({ ip }) => ipFromString(ip).num)
+        ),
+      };
+    });
+
+    if (requestedAddress) {
+      const reservedForThisClient = getReservedIpForMac(requestedAddress.mac);
+      if (reservedForThisClient) {
+        return ipFromString(reservedForThisClient.ip);
       }
     }
 
-    const reservedIpNs = reservedIps.map((l) => ipFromString(l.ip).num);
-
-    let candidate = rand(ipFromString('169.254.0.0').num, ipFromString('169.254.255.255').num);
+    // TODO This stops working if there are a lot of assigned IPs in a big IP range.
+    // Instead, create a list of valid ips and pick one randomly.
+    let candidate = rand(ipStartN.num, ipEndN.num);
     let triesLeft = 5000;
     for (; triesLeft > 0; triesLeft--) {
       candidate = rand(ipStartN.num, ipEndN.num);
-      if (!reservedIpNs.includes(candidate)) break;
+      if (!unavailableIpNumbers.includes(candidate)) break;
     }
     if (triesLeft <= 0) {
       return 'no-ips-left' as const;
