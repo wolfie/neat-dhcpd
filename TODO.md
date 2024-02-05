@@ -2,6 +2,7 @@
 
 - sensible ENV configs (address and netmask)
 - secure DB tRPC from non-localhost queries
+- authentication and authorization
 - use client id instead of mac as primary key
 - handle DHCPINFORM
 - handle DHCPRELEASE
@@ -11,7 +12,6 @@
 - broadcast DHCP replies to any and all interfaces, instead of asking for a specific NIC?
 - responsive design (for mobile phone)
 - support handling aliases for macs that aren't in the logs (adding and/or removing)
-- authentication and authorization
 - add mDNS for easy access to aliased computers
 - either fix the "report db errors into db" bug, or remove it completely
 - option to clean up log after some time
@@ -22,3 +22,4 @@
 - remove unnecessary `system` param from remote tracking
 - make a functional wrapper for `@neat-dhpcd/litel` to avoid try/catch
 - make an even more automated version of `buildRelease.sh` - less manual steps after building
+- enable reserving IPs for (and aliasing) clients that haven't been seen yet
