@@ -91,11 +91,19 @@ const createAckResponse = async (
       assignedIp = freeIp.str;
     }
 
-    const getOption = createGetResponseOption(serverAddress, config);
+    // TODO: clean up, deduplicate from `createOfferResponse`
+    const getOption = createGetResponseOption(serverAddress, config, trace);
     const options =
-      request.options.options
-        .find(isParsedRequestOption(55))
-        ?.value.map<[number, Uint8Array | undefined]>(({ id }) => [id, getOption(id)])
+      (
+        await Promise.all(
+          request.options.options
+            .find(isParsedRequestOption(55))
+            ?.value.map<Promise<[number, Uint8Array | undefined]>>(async ({ id }) => [
+              id,
+              await getOption(id),
+            ]) ?? []
+        )
+      )
         .map(
           tap(
             (options) =>

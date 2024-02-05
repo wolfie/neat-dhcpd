@@ -25,14 +25,19 @@ export const load: PageServerLoad = async () => {
   const trace = startTraceRoot('/:load');
   // eslint-disable-next-line functional/no-try-statements
   try {
-    const [config, polledData] = await Promise.all([
+    const [config, polledData, dnsIps] = await Promise.all([
       trpc.config.get.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
       getPolledData(trace),
+      trpc.dhcpOption.get.query({
+        option: 6,
+        remoteTracing: { parentId: trace.id, system: trace.system },
+      }),
     ]);
 
     return {
       config,
       ifaces: IFACES,
+      dnsIps: (dnsIps ?? []) as IpString[],
       ...polledData,
     };
   } finally {
@@ -55,22 +60,26 @@ export const actions: Actions = {
       const broadcastCidr = (formdata.get('broadcastCidr') as string) || null;
       const logLevel = formdata.get('logLevel') as 'log' | 'error' | 'debug';
 
-      const [dns1, dns2, dns3, dns4] = dns.split(/\r\n|\n/, 4) as IpString[];
+      // TODO extract to separate action
+      const dnsIps = dns.split(/\r\n|\n/) as IpString[];
 
-      await trpc.config.set.mutate({
-        ip_start: ipStart,
-        ip_end: ipEnd,
-        lease_time_minutes: leaseTimeMinutes,
-        gateway_ip: gatewayIp,
-        dns1,
-        dns2,
-        dns3,
-        dns4,
-        send_replies: sendReplies,
-        broadcast_cidr: broadcastCidr,
-        log_level: logLevel,
-        remoteTracing: { parentId: trace.id, system: trace.system },
-      });
+      await Promise.all([
+        trpc.config.set.mutate({
+          ip_start: ipStart,
+          ip_end: ipEnd,
+          lease_time_minutes: leaseTimeMinutes,
+          gateway_ip: gatewayIp,
+          send_replies: sendReplies,
+          broadcast_cidr: broadcastCidr,
+          log_level: logLevel,
+          remoteTracing: { parentId: trace.id, system: trace.system },
+        }),
+        trpc.dhcpOption.set.mutate({
+          option: 6,
+          value_json: JSON.stringify(dnsIps),
+          remoteTracing: { parentId: trace.id, system: trace.system },
+        }),
+      ]);
 
       return { success: true };
     } finally {

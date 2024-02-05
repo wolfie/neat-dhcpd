@@ -41,12 +41,19 @@ const createOfferResponse = async (
     const maxMessageLength =
       request.options.options.find(isParsedRequestOption(57))?.value ?? DEFAULT_MAX_MESSAGE_LENGTH;
 
-    const getOption = createGetResponseOption(serverAddress, config);
-
+    // TODO: clean up, deduplicate from `createAckResponse`
+    const getOption = createGetResponseOption(serverAddress, config, trace);
     const options =
-      request.options.options
-        .find(isParsedRequestOption(55))
-        ?.value.map<[number, Uint8Array | undefined]>(({ id }) => [id, getOption(id)])
+      (
+        await Promise.all(
+          request.options.options
+            .find(isParsedRequestOption(55))
+            ?.value.map<Promise<[number, Uint8Array | undefined]>>(async ({ id }) => [
+              id,
+              await getOption(id),
+            ]) ?? []
+        )
+      )
         .map(
           tap(
             (options) =>

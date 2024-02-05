@@ -6,6 +6,7 @@ import * as m0003 from './migrations/0003.js';
 import * as m0004 from './migrations/0004.js';
 import * as m0005 from './migrations/0005.js';
 import * as m0006 from './migrations/0006.js';
+import * as m0007 from './migrations/0007.js';
 
 const getMigrator = () =>
   new Migrator({
@@ -19,6 +20,7 @@ const getMigrator = () =>
         m0004,
         m0005,
         m0006,
+        m0007,
       }),
     },
   });

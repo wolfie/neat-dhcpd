@@ -1,25 +1,36 @@
 import type { Config } from '@neat-dhcpd/db';
 import type { Address } from './createResponse.js';
+import type { IpString } from '@neat-dhcpd/common';
 import { getBroadcastAddr, ipFromString } from '@neat-dhcpd/common';
 import log from '../lib/log.js';
+import trpc from '../trpcClient.js';
+import type { Trace } from '@neat-dhcpd/litel';
+
+const DOMAIN_NAME_SERVER = 6;
 
 const createGetResponseOption =
-  (serverAddress: Address, config: Config) =>
-  (id: number): Uint8Array | undefined => {
+  (serverAddress: Address, config: Config, parentTrace: Trace) =>
+  async (id: number): Promise<Uint8Array | undefined> => {
     switch (id) {
       case 1:
         return serverAddress.netmask.buf;
       case 3:
         return ipFromString(config.gateway_ip)?.buf;
-      case 6:
-        return Buffer.concat([
-          ipFromString(config.dns1)?.buf ?? Buffer.alloc(0),
-          (config.dns2 && ipFromString(config.dns2)?.buf) || Buffer.alloc(0),
-          (config.dns3 && ipFromString(config.dns3)?.buf) || Buffer.alloc(0),
-          (config.dns4 && ipFromString(config.dns4)?.buf) || Buffer.alloc(0),
-        ]); // TODO take into account if not multiple DNS configs
+      case DOMAIN_NAME_SERVER:
+        const trace = parentTrace.startSubTrace('createGetResponseOption:DOMAIN_NAME_SERVER');
+        // eslint-disable-next-line functional/no-try-statements
+        try {
+          const dnsServerIps = (await trpc.dhcpOption.get.query({
+            option: DOMAIN_NAME_SERVER,
+          })) as undefined | IpString[];
+          return dnsServerIps
+            ? Buffer.concat(dnsServerIps.map((ipString) => ipFromString(ipString).buf))
+            : Buffer.alloc(0);
+        } finally {
+          trace.end();
+        }
       case 15:
-        return Buffer.from('NeatDhcpd', 'ascii'); // TODO
+        return Buffer.from('local', 'ascii'); // TODO
       case 28:
         const ip_start = ipFromString(config.ip_start);
         if (!ip_start) {

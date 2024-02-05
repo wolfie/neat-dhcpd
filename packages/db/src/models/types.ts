@@ -13,10 +13,6 @@ export type ConfigTable = {
   ip_end: ZIpString;
   lease_time_minutes: number;
   gateway_ip: ZIpString;
-  dns1: ZIpString;
-  dns2: ZIpString | null;
-  dns3: ZIpString | null;
-  dns4: ZIpString | null;
   send_replies: number;
   broadcast_cidr: string | null;
   log_level: string;
@@ -65,6 +61,11 @@ export type ReservedIpTable = {
   last_updated: Generated<string>;
 };
 
+export type DhcpOptionTable = {
+  option: number;
+  value_json: string;
+};
+
 export type Database = {
   log: LogTable;
   config: ConfigTable;
@@ -75,4 +76,5 @@ export type Database = {
   meta: MetaTable;
   seen_hostname: SeenHostnameTable;
   reserved_ip: ReservedIpTable;
+  dhcp_option: DhcpOptionTable;
 };

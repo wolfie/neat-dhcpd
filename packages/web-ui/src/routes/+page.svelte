@@ -155,14 +155,12 @@
         >
       {/if}
       <Label>
-        DNS (4 max) <!-- TODO remove limit by handling options "differently" (see TODO.md)-->
+        DNS
         <Textarea
           rows={4}
           name="dns"
           on:blur={(e) => validateDns(e.detail)}
-          value={[data.config?.dns1, data.config?.dns2, data.config?.dns3, data.config?.dns4]
-            .filter(Boolean)
-            .join('\n')}
+          value={data.dnsIps.join('\n')}
         />
       </Label>
     </div>

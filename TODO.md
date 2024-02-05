@@ -14,10 +14,11 @@
 - authentication and authorization
 - add mDNS for easy access to aliased computers
 - either fix the "report db errors into db" bug, or remove it completely
-- convert DHCP options (such as default gateway and DNS) into an options table and have each option handler just query it from the DB
 - option to clean up log after some time
 - assign reserved ips for clients (outside and inside the DHCP range)
 - download "all" configs as json (at least aliases + reserved ips)
 - disable `@neat-dhpcd/litel` by default, and enable with some simple trick (env var?)
 - don't crash if client can't connect to `@neat-dhpcd/litel` server
 - remove unnecessary `system` param from remote tracking
+- make a functional wrapper for `@neat-dhpcd/litel` to avoid try/catch
+- make an even more automated version of `buildRelease.sh` - less manual steps after building
