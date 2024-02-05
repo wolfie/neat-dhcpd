@@ -41,9 +41,3 @@ You can see some timing traces if you open `http://<server-ip>:12346`.
 It seems like the Raspberry Pi 3b+ is unable to build the web UI without grinding to a halt. Presumably this is due to lack of sufficient RAM. I have not tested on a RPi4 2gb (or better) yet.
 
 **However!** You can run `./buildRelease.sh` on a _more capable_ machine to build the project then copy the result over to a Raspberry.
-
-## Why did you...?
-
-### ...Deploy the sqlite behind trpc instead of a library?
-
-Because I wanted to use Kysley, and it wants to use `better_sqlite3`, and SvelteKit (or Vite) doesn't want to bundle that. Since I can't import `@neat-dhcpd/db` as a library, I decided to do a low-effort-yet-typesafe separation.

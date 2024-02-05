@@ -3,8 +3,8 @@
 - sensible ENV configs (address and netmask)
 - secure DB tRPC from non-localhost queries
 - use client id instead of mac as primary key
-- send DHCPNAK
-- handle DHCPINFO
+- handle DHCPINFORM
+- handle DHCPRELEASE
 - define IP from app?
 - add Zod typings to DB level
 - support other MAC formats than just ':'-separated
