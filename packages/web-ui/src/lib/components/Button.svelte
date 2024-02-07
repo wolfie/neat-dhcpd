@@ -2,7 +2,9 @@
   export let disabled: unknown = false;
 </script>
 
-<button disabled={Boolean(disabled)}><slot /></button>
+<button disabled={Boolean(disabled)} class:with-icon={$$slots.icon} on:click>
+  <slot name="icon" /><slot />
+</button>
 
 <style lang="scss">
   @use 'sass:color';
@@ -16,6 +18,13 @@
     color: rgba(0, 0, 0, 0.7);
     border-radius: 8px;
     padding: 0 1em;
+
+    &.with-icon {
+      display: inline-flex;
+      align-items: center;
+      padding-left: 0.5em;
+      gap: 0.25em;
+    }
 
     &:focus {
       border-color: black;

@@ -23,3 +23,4 @@
 - make a functional wrapper for `@neat-dhpcd/litel` to avoid try/catch
 - make an even more automated version of `buildRelease.sh` - less manual steps after building
 - enable reserving IPs for (and aliasing) clients that haven't been seen yet
+- validate MAC strings

@@ -22,7 +22,11 @@
   {placeholder}
   class:small
   on:keydown={(e) => e.code === 'Enter' && e.currentTarget.blur()}
-  on:blur={(e) => dispatch('blurOrEnter', { value: e.currentTarget.value })}
+  on:blur={(e) => {
+    const newValue = e.currentTarget.value;
+    dispatch('blurOrEnter', { value: newValue });
+    value = newValue;
+  }}
 />
 
 <style lang="scss">

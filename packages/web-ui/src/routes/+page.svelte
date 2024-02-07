@@ -14,6 +14,8 @@
   import type { PolledData } from '$lib/server/getPolledData';
   import NetworkDevice from '$lib/components/NetworkDevice.svelte';
   import type { ReservedIpPutBody } from './api/reserved-ip/+server.js';
+  import NetworkDeviceInput from '$lib/components/NetworkDeviceInput.svelte';
+  import Plus from 'lucide-svelte/icons/plus';
 
   export let data: PageData;
 
@@ -51,44 +53,44 @@
   };
 
   let savingAlias = false;
-  const setAlias = (mac: string, oldValue: string | undefined) => (e: CustomEvent<string>) => {
-    const newValue = e.detail.trim();
-    if (newValue === (oldValue || '')) return;
+  const saveAlias = (mac: string, alias: string) => {
     savingAlias = true;
     // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
     fetch('/api/alias', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mac,
-        alias: e.detail,
-      } satisfies AliasPutBody),
-    }).finally(() => {
-      savingAlias = false;
-    });
+      body: JSON.stringify({ mac, alias } satisfies AliasPutBody),
+    }).finally(() => (savingAlias = false));
+  };
+
+  const setAlias = (mac: string, oldValue: string | undefined) => (e: CustomEvent<string>) => {
+    const newValue = e.detail.trim();
+    if (newValue === (oldValue || '')) return;
+    saveAlias(mac, e.detail);
   };
 
   let savingIp = false;
+  const saveReservedIp = (mac: string, reservedIp: IpString) => {
+    savingIp = true;
+    // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
+    fetch('/api/reserved-ip', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mac, reservedIp } satisfies ReservedIpPutBody),
+    }).finally(() => (savingAlias = false));
+  };
+
   const setReservedIp =
     (mac: string, oldValue: IpString | undefined) => (e: CustomEvent<IpString>) => {
       const newValue = e.detail;
       if (newValue === oldValue) return;
-      savingIp = true;
-      // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
-      fetch('/api/reserved-ip', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mac,
-          reservedIp: e.detail,
-        } satisfies ReservedIpPutBody),
-      }).finally(() => {
-        savingAlias = false;
-      });
+      saveReservedIp(mac, e.detail);
     };
 
   const localeCompare = (a: string | undefined, b: string | undefined): number =>
     a && b ? a.localeCompare(b) : a ? -1 : b ? 1 : 0;
+
+  let addingNewDevice = false;
 </script>
 
 <svelte:head>
@@ -187,8 +189,25 @@
 </form>
 
 <section>
-  <h2>Test</h2>
+  <div style:display="flex" style:align-items="center" style:gap="5px" style:margin-bottom="1em">
+    <h2 style:margin="0">Network devices</h2>
+    {#if !addingNewDevice}
+      <Button on:click={() => (addingNewDevice = true)}>
+        <Plus slot="icon" />Add unseen device
+      </Button>
+    {/if}
+  </div>
   <div class="network-devices">
+    {#if addingNewDevice}
+      <NetworkDeviceInput
+        on:cancel={() => (addingNewDevice = false)}
+        on:add={(e) => {
+          addingNewDevice = false;
+          if (e.detail.name) saveAlias(e.detail.mac, e.detail.name);
+          if (e.detail.ip) saveReservedIp(e.detail.mac, e.detail.ip);
+        }}
+      />
+    {/if}
     {#each latestData.devices
       .toSorted((a, b) => a.mac.address.localeCompare(b.mac.address))
       .toSorted((a, b) => localeCompare(a.alias, b.alias)) as device (device.mac.address)}
