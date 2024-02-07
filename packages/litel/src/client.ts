@@ -13,11 +13,18 @@ const getClient = (retries = 0): Promise<Socket> =>
   new Promise<Socket>((resolve, reject) => {
     const socket: Socket = createConnection(PORT, 'localhost', () => resolve(socket));
     socket.on('error', async (e) => {
-      if (retries < MAX_RETRIES && 'code' in e && e.code === 'ECONNREFUSED') {
+      if (
+        retries < MAX_RETRIES &&
+        'code' in e &&
+        ['ETIMEDOUT', 'ECONNREFUSED'].includes(e.code as string)
+      ) {
         console.log('retrying soon...');
         setTimeout(() => {
           console.log('...retrying now');
-          getClient(retries + 1).then(resolve);
+          getClient(retries + 1).then((socket) => {
+            console.log('GOT IT!');
+            resolve(socket);
+          });
         }, RETRY_SLEEP_MS);
       } else reject(e);
     });
