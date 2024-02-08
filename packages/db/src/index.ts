@@ -16,6 +16,7 @@ import seenMacRouter from './models/SeenMac.js';
 import seenHostnameRouter from './models/SeenHostname.js';
 import reservedIpRouter from './models/ReservedIp.js';
 import dhcpOptionRouter from './models/DhcpOption.js';
+import aggregateRouter from './models/Aggregate.js';
 
 const appRouter = router({
   log: logRouter,
@@ -27,6 +28,7 @@ const appRouter = router({
   seenHostname: seenHostnameRouter,
   reservedIp: reservedIpRouter,
   dhcpOption: dhcpOptionRouter,
+  aggregate: aggregateRouter,
 });
 
 export type AppRouter = typeof appRouter;

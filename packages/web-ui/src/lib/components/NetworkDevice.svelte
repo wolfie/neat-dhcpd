@@ -6,15 +6,19 @@
   // import Countdown from './Countdown.svelte';
   import Badge from './Badge.svelte';
   import Input from './Input.svelte';
-  import type { Device } from '$lib/server/getPolledData';
   import { createEventDispatcher } from 'svelte';
   import { ipFromString, type IpString } from '@neat-dhcpd/common';
+  import type { Device2 } from '$lib/server/getPolledData';
 
-  export let device: Device;
+  export let device: Device2;
 
-  const dispatch = createEventDispatcher<{ aliasChange: string; reservedIpChange: IpString }>();
+  const dispatch = createEventDispatcher<{
+    aliasChange: string;
+    reservedIpChange: IpString | undefined;
+  }>();
 
   const validateAndChangeReservedIp = (ipString: string) => {
+    if (!ipString.trim()) dispatch('reservedIpChange', null);
     const ip = ipFromString(ipString);
     // TODO show validation error
     if (ip?.str) dispatch('reservedIpChange', ip.str);
@@ -34,7 +38,7 @@
       />
       <Input
         placeholder="No reserved IP"
-        value={device.reservedIp}
+        value={device.reserved_ip}
         on:blurOrEnter={(e) => validateAndChangeReservedIp(e.detail.value)}
       />
     </div>
@@ -57,17 +61,19 @@
   </div>
   <div style="flex:1">
     <div style="display:flex;flex-direction:column;gap:2px">
-      {#if device.offer}<div><Badge name="Offered" value={device.offer} /></div>{/if}
-      {#if device.lease}<div><Badge name="Leased" value={device.lease} /></div>{/if}
+      {#if device.offer_ip}<div><Badge name="Offered" value={device.offer_ip} /></div>{/if}
+      {#if device.lease_ip}<div><Badge name="Leased" value={device.lease_ip} /></div>{/if}
     </div>
   </div>
   <div>
     <div style="display:flex;flex-direction:column;gap:2px">
-      <div><Badge name="Last seen" value={device.lastSeen} /></div>
-      {#if device.lastSeen !== device.firstSeen}
-        <div>
-          <Badge name="First seen" value={device.firstSeen} />
-        </div>
+      {#if device.last_seen && device.first_seen}
+        <div><Badge name="Last seen" value={device.last_seen} /></div>
+        {#if device.last_seen !== device.first_seen}
+          <div>
+            <Badge name="First seen" value={device.first_seen} />
+          </div>
+        {/if}
       {/if}
     </div>
   </div>

@@ -63,31 +63,33 @@
     }).finally(() => (savingAlias = false));
   };
 
-  const setAlias = (mac: string, oldValue: string | undefined) => (e: CustomEvent<string>) => {
-    const newValue = e.detail.trim();
-    if (newValue === (oldValue || '')) return;
-    saveAlias(mac, e.detail);
-  };
+  const setAlias =
+    (mac: string, oldValue: string | undefined | null) => (e: CustomEvent<string>) => {
+      const newValue = e.detail.trim();
+      if (newValue === (oldValue || '')) return;
+      saveAlias(mac, e.detail);
+    };
 
   let savingIp = false;
-  const saveReservedIp = (mac: string, reservedIp: IpString) => {
+  const saveReservedIp = (mac: string, reservedIp: IpString | undefined) => {
     savingIp = true;
     // TODO extract typesafe util fn (I would've expected that this would be provided by sveltekit?!)
     fetch('/api/reserved-ip', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mac, reservedIp } satisfies ReservedIpPutBody),
+      body: JSON.stringify({ mac, reservedIp: reservedIp ?? '' } satisfies ReservedIpPutBody),
     }).finally(() => (savingAlias = false));
   };
 
   const setReservedIp =
-    (mac: string, oldValue: IpString | undefined) => (e: CustomEvent<IpString>) => {
+    (mac: string, oldValue: IpString | undefined | null) =>
+    (e: CustomEvent<IpString | undefined>) => {
       const newValue = e.detail;
       if (newValue === oldValue) return;
       saveReservedIp(mac, e.detail);
     };
 
-  const localeCompare = (a: string | undefined, b: string | undefined): number =>
+  const localeCompare = (a: string | undefined | null, b: string | undefined | null): number =>
     a && b ? a.localeCompare(b) : a ? -1 : b ? 1 : 0;
 
   let addingNewDevice = false;
@@ -214,7 +216,7 @@
       <NetworkDevice
         {device}
         on:aliasChange={setAlias(device.mac.address, device.alias)}
-        on:reservedIpChange={setReservedIp(device.mac.address, device.reservedIp)}
+        on:reservedIpChange={setReservedIp(device.mac.address, device.reserved_ip)}
       />
     {/each}
   </div>

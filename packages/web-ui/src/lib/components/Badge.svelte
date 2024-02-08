@@ -4,7 +4,7 @@
     | string
     | number
     | boolean
-    | [string | number | boolean, string | number | boolean | undefined];
+    | [string | number | boolean, string | number | boolean | undefined | null];
 
   let line1 = Array.isArray(value) ? value[0] : value;
   let line2 = Array.isArray(value) ? value[1] : undefined;
