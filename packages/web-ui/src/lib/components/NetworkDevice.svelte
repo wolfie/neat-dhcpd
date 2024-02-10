@@ -49,7 +49,7 @@
         />
       </div>
       {#if device.hostname}
-        <div><Badge name="Hostname" value="Calvin" /></div>
+        <div><Badge name="Hostname" value={device.hostname} /></div>
       {/if}
     </div>
   </div>
