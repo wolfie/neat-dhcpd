@@ -1,20 +1,12 @@
-import trpc from '$lib/server/trpcClient';
 import { startTraceRoot } from '@neat-dhcpd/litel';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
+import getLogs, { type Log } from '$lib/server/getLogs';
 
-export type LogsGetResponse = Awaited<ReturnType<typeof trpc.log.get.query>>;
+export type LogsGetResponse = Log[];
 export const GET: RequestHandler = async () => {
   const trace = startTraceRoot('/api/logs:GET');
-  // eslint-disable-next-line functional/no-try-statements
-  try {
-    const logs = await trpc.log.get.query({
-      limit: 50,
-      offset: 0,
-      remoteTracing: { parentId: trace.id, system: trace.system },
-    });
-    return json(logs);
-  } finally {
-    trace.end();
-  }
+  return getLogs(trace)
+    .then(json)
+    .finally(() => trace.end());
 };

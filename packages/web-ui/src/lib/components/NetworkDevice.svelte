@@ -8,10 +8,10 @@
   import Input from './Input.svelte';
   import { createEventDispatcher } from 'svelte';
   import type { IpString } from '@neat-dhcpd/common';
-  import type { Device2 } from '$lib/server/getPolledData';
+  import type { Device } from '$lib/server/getDevices';
   import IpInput from './IpInput.svelte';
 
-  export let device: Device2;
+  export let device: Device;
 
   const dispatch = createEventDispatcher<{
     aliasChange: string;

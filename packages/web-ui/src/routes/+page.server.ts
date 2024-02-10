@@ -3,8 +3,9 @@ import type { Actions, PageServerLoad } from './$types.js';
 import os from 'node:os';
 import type { IpString } from '@neat-dhcpd/common';
 import { ipFromString, isLanIp } from '@neat-dhcpd/common';
-import getPolledData from '$lib/server/getPolledData';
-import { startTraceRoot } from '@neat-dhcpd/litel';
+import { startTraceRoot, type Trace } from '@neat-dhcpd/litel';
+import getDevices from '$lib/server/getDevices.js';
+import getLogs from '$lib/server/getLogs.js';
 
 const IFACES = Object.entries(os.networkInterfaces()).flatMap(
   ([nic, ifaces]) =>
@@ -25,9 +26,10 @@ export const load: PageServerLoad = async () => {
   const trace = startTraceRoot('/:load');
   // eslint-disable-next-line functional/no-try-statements
   try {
-    const [config, polledData, dnsIps] = await Promise.all([
+    const [config, logs, devices, dnsIps] = await Promise.all([
       trpc.config.get.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
-      getPolledData(trace),
+      getLogs(trace),
+      getDevices(trace),
       trpc.dhcpOption.get.query({
         option: 6,
         remoteTracing: { parentId: trace.id, system: trace.system },
@@ -38,7 +40,8 @@ export const load: PageServerLoad = async () => {
       config,
       ifaces: IFACES,
       dnsIps: (dnsIps ?? []) as IpString[],
-      ...polledData,
+      logs,
+      devices,
     };
   } finally {
     trace.end();
