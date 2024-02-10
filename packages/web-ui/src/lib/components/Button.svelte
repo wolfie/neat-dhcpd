@@ -2,7 +2,12 @@
   export let disabled: unknown = false;
 </script>
 
-<button disabled={Boolean(disabled)} class:with-icon={$$slots.icon} on:click>
+<button
+  disabled={Boolean(disabled)}
+  class:with-icon={$$slots.icon}
+  class:without-text={!$$slots.default}
+  on:click
+>
   <slot name="icon" /><slot />
 </button>
 
@@ -24,6 +29,10 @@
       align-items: center;
       padding-left: 0.5em;
       gap: 0.25em;
+
+      &.without-text {
+        padding-right: 0.5em;
+      }
     }
 
     &:focus {

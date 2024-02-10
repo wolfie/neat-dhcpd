@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { enhance } from '$app/forms';
   import type { PageData } from './$types.js';
   import Alert from '$lib/components/Alert.svelte';
@@ -16,21 +15,27 @@
   import type { ReservedIpPutBody } from './api/reserved-ip/+server.js';
   import NetworkDeviceInput from '$lib/components/NetworkDeviceInput.svelte';
   import Plus from 'lucide-svelte/icons/plus';
+  import RefreshCw from 'lucide-svelte/icons/refresh-cw';
+  import type { DevicesGetResponse } from './api/devices/+server.js';
 
   export let data: PageData;
 
   let latestData: PolledData = data;
+  let latestDevices = data.devices;
 
-  onMount(() => {
-    const interval = setInterval(async () => {
-      fetch('/api/updates')
+  let fetchingData = false;
+  const refreshData = async () => {
+    fetchingData = true;
+    try {
+      await fetch('/api/devices')
         .then((response) => response.json())
-        .then((json: PolledData) => {
-          latestData = json;
+        .then((json: DevicesGetResponse) => {
+          latestDevices = json;
         });
-    }, 10_000);
-    return () => clearInterval(interval);
-  });
+    } finally {
+      fetchingData = false;
+    }
+  };
 
   let dnsValidationErrors: string[] = [];
   const validateDns = (text: string) => {
@@ -193,6 +198,7 @@
 <section>
   <div style:display="flex" style:align-items="center" style:gap="5px" style:margin-bottom="1em">
     <h2 style:margin="0">Network devices</h2>
+    <Button on:click={refreshData} disabled={fetchingData}><RefreshCw slot="icon" /></Button>
     {#if !addingNewDevice}
       <Button on:click={() => (addingNewDevice = true)}>
         <Plus slot="icon" />Add unseen device
@@ -210,7 +216,7 @@
         }}
       />
     {/if}
-    {#each latestData.devices
+    {#each latestDevices
       .toSorted((a, b) => a.mac.address.localeCompare(b.mac.address))
       .toSorted((a, b) => localeCompare(a.alias, b.alias)) as device (device.mac.address)}
       <NetworkDevice

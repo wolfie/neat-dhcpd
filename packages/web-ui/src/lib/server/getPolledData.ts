@@ -20,6 +20,7 @@ export type Device2 = Omit<$Device2, 'mac'> & {
   mac: { address: string; vendor: MacVendor | undefined };
 };
 
+// TODO this is not polled anymore, so we should remove/rename this
 export type PolledData = Awaited<ReturnType<typeof getPolledData>>;
 const getPolledData = async (parentTrace: Trace) => {
   const trace = parentTrace.startSubTrace('getPolledData');
