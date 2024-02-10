@@ -7,8 +7,9 @@
   import Badge from './Badge.svelte';
   import Input from './Input.svelte';
   import { createEventDispatcher } from 'svelte';
-  import { ipFromString, type IpString } from '@neat-dhcpd/common';
+  import type { IpString } from '@neat-dhcpd/common';
   import type { Device2 } from '$lib/server/getPolledData';
+  import IpInput from './IpInput.svelte';
 
   export let device: Device2;
 
@@ -16,13 +17,6 @@
     aliasChange: string;
     reservedIpChange: IpString | undefined;
   }>();
-
-  const validateAndChangeReservedIp = (ipString: string) => {
-    if (!ipString.trim()) dispatch('reservedIpChange', null);
-    const ip = ipFromString(ipString);
-    // TODO show validation error
-    if (ip?.str) dispatch('reservedIpChange', ip.str);
-  };
 </script>
 
 <div class="root">
@@ -36,10 +30,10 @@
         value={device.alias}
         on:blurOrEnter={(e) => dispatch('aliasChange', e.detail.value)}
       />
-      <Input
+      <IpInput
         placeholder="No reserved IP"
         value={device.reserved_ip}
-        on:blurOrEnter={(e) => validateAndChangeReservedIp(e.detail.value)}
+        on:blurOrEnter={(e) => dispatch('reservedIpChange', e.detail.value)}
       />
     </div>
   </div>

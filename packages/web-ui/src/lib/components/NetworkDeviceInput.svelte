@@ -4,8 +4,9 @@
   import Plus from 'lucide-svelte/icons/plus';
   import X from 'lucide-svelte/icons/x';
   import Button from './Button.svelte';
-  import { createEventDispatcher, SvelteComponent } from 'svelte';
-  import { ipFromString, type IpString } from '@neat-dhcpd/common';
+  import { createEventDispatcher } from 'svelte';
+  import type { IpString } from '@neat-dhcpd/common';
+  import IpInput from './IpInput.svelte';
 
   const dispatch = createEventDispatcher<{
     cancel: undefined;
@@ -13,44 +14,18 @@
   }>();
 
   let name: string | undefined = undefined;
-  let ipString = '';
   let ip: IpString | undefined = undefined;
   let mac: string | undefined = undefined;
-
-  let ipElement: Input;
-
-  const validateIp = (e: CustomEvent<{ value: string }>) => {
-    const value = e.detail.value.trim();
-    if (!value) {
-      ip = undefined;
-      return;
-    }
-
-    const _ip = ipFromString(value)?.str;
-    if (!_ip) {
-      ipString = '';
-      window.alert(`"${value}" is not a valid IP`);
-      setTimeout(() => ipElement.focus(), 50);
-    } else {
-      ip = _ip;
-    }
-  };
 </script>
 
 <div class="root">
-  <Button on:click={() => (ipString = 'hello')}>x</Button>
   <div class="icon">
     <Computer />
   </div>
   <div>
     <div style="display:flex;flex-direction:column;gap:2px">
       <Input placeholder="Unnamed device" bind:value={name} />
-      <Input
-        bind:this={ipElement}
-        placeholder="No reserved IP"
-        bind:value={ipString}
-        on:blurOrEnter={validateIp}
-      />
+      <IpInput placeholder="No reserved IP" bind:value={ip} />
     </div>
   </div>
   <div>
@@ -85,6 +60,7 @@
     border-radius: 10px;
     border: 1px solid #ddd;
     padding-right: 10px;
+    opacity: 0.75;
 
     > * {
       padding: 10px 0;
