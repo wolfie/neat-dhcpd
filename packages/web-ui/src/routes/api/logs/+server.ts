@@ -3,6 +3,7 @@ import { startTraceRoot } from '@neat-dhcpd/litel';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 
+export type LogsGetResponse = Awaited<ReturnType<typeof trpc.log.get.query>>;
 export const GET: RequestHandler = async () => {
   const trace = startTraceRoot('/api/logs:GET');
   // eslint-disable-next-line functional/no-try-statements

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { enhance } from '$app/forms';
   import type { PageData } from './$types.js';
   import Alert from '$lib/components/Alert.svelte';
@@ -10,19 +11,17 @@
   import type { AliasPutBody } from './api/alias/+server.js';
   import { ipFromString, type IpString } from '@neat-dhcpd/common';
   import Textarea from '$lib/components/Textarea.svelte';
-  import type { PolledData } from '$lib/server/getPolledData';
   import NetworkDevice from '$lib/components/NetworkDevice.svelte';
   import type { ReservedIpPutBody } from './api/reserved-ip/+server.js';
   import NetworkDeviceInput from '$lib/components/NetworkDeviceInput.svelte';
   import Plus from 'lucide-svelte/icons/plus';
   import RefreshCw from 'lucide-svelte/icons/refresh-cw';
   import type { DevicesGetResponse } from './api/devices/+server.js';
+  import type { LogsGetResponse } from './api/logs/+server.js';
 
   export let data: PageData;
 
-  let latestData: PolledData = data;
   let latestDevices = data.devices;
-
   let fetchingData = false;
   const refreshData = async () => {
     fetchingData = true;
@@ -36,6 +35,24 @@
       fetchingData = false;
     }
   };
+
+  let latestLogs = data.logs;
+  let fetchingLogs = false;
+  onMount(() => {
+    const interval = setInterval(async () => {
+      fetchingLogs = true;
+      try {
+        await fetch('/api/logs')
+          .then((response) => response.json())
+          .then((json: LogsGetResponse) => {
+            latestLogs = json;
+          });
+      } finally {
+        fetchingLogs = false;
+      }
+    }, 10_000);
+    return () => clearInterval(interval);
+  });
 
   let dnsValidationErrors: string[] = [];
   const validateDns = (text: string) => {
@@ -83,7 +100,7 @@
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mac, reservedIp: reservedIp ?? '' } satisfies ReservedIpPutBody),
-    }).finally(() => (savingAlias = false));
+    }).finally(() => (savingIp = false));
   };
 
   const setReservedIp =
@@ -240,7 +257,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each latestData.logs as log (log.timestamp)}
+      {#each latestLogs as log (log.timestamp)}
         <tr
           class:error={log.level === 'error'}
           class:log={log.level === 'log'}
