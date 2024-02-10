@@ -8,25 +8,28 @@
   export let small: boolean = false;
   export let placeholder: string | undefined = undefined;
 
+  let element: HTMLInputElement;
+
+  export const focus: (typeof element)['focus'] = () => element.focus();
+
   const dispatch = createEventDispatcher<{ blurOrEnter: { value: string } }>();
 
   const EMPTY_VALUE = { text: '', number: 0 };
-  const valueOrEmpty = value !== null && typeof value !== 'undefined' ? value : EMPTY_VALUE[type];
 </script>
 
 <input
+  bind:this={element}
   {name}
-  value={valueOrEmpty}
+  value={value !== null && typeof value !== 'undefined' ? value : EMPTY_VALUE[type]}
   {type}
   {disabled}
   {placeholder}
   class:small
-  on:keydown={(e) => e.code === 'Enter' && e.currentTarget.blur()}
-  on:blur={(e) => {
-    const newValue = e.currentTarget.value;
-    dispatch('blurOrEnter', { value: newValue });
-    value = newValue;
+  on:keydown={(e) => {
+    value = e.currentTarget.value;
+    e.code === 'Enter' && e.currentTarget.blur();
   }}
+  on:blur={(e) => dispatch('blurOrEnter', { value: e.currentTarget.value })}
 />
 
 <style lang="scss">
