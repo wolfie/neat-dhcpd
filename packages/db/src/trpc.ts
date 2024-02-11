@@ -9,12 +9,12 @@ const t = initTRPC.context<{ trace: Trace | undefined }>().create();
 const zTracing = z.object({ remoteTracingId: zTraceId.optional() });
 type ZTracing = typeof zTracing;
 
-export function WithTraceId(): ZTracing;
+export function WithTraceId(): z.ZodOptional<ZTracing>;
 export function WithTraceId<T extends z.ZodObject<z.ZodRawShape>>(
   obj: T
 ): z.ZodIntersection<ZTracing, T>;
 export function WithTraceId(obj?: z.ZodObject<z.ZodRawShape>) {
-  return obj ? z.intersection(zTracing, obj) : zTracing;
+  return obj ? z.intersection(zTracing, obj) : zTracing.optional();
 }
 
 const UnkonwnWithTraceId = WithTraceId();
