@@ -39,7 +39,7 @@ const server = createServer((socket) => {
 });
 
 const PORT = 12345;
-server.listen(PORT, 'localhost', () => {
+server.listen(PORT, undefined, () => {
   console.log(`Server started on port ${PORT}`);
 });
 

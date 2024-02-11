@@ -13,14 +13,14 @@ const RETRY_SLEEP_MS = 1000;
 const getClient = (retries = 0): Promise<Socket> => {
   if (!isEnabled()) throw new Error('Unexpected client created, even though litel is not enabled');
   return new Promise<Socket>((resolve, reject) => {
-    const socket: Socket = createConnection(PORT, 'localhost', () => resolve(socket));
+    const socket: Socket = createConnection(PORT, undefined, () => resolve(socket));
     socket.on('error', async (e) => {
       if (
         retries < MAX_RETRIES &&
         'code' in e &&
         ['ETIMEDOUT', 'ECONNREFUSED'].includes(e.code as string)
       ) {
-        console.log('retrying soon...');
+        console.log('could not connect to litel server, retrying soon...');
         setTimeout(() => {
           console.log('...retrying now');
           getClient(retries + 1).then((socket) => {
