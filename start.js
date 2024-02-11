@@ -58,7 +58,7 @@ process.on('uncaughtException', (e) => {
 // migrate database
 await sspawn('migrateToLatest', 'node', ['build/bin/migrateToLatest.js'], {
   cwd: 'packages/db',
-  env: { LITEL_DISABLE: '1' },
+  env: { LITEL_ENABLE: '' },
 });
 
 // litel
