@@ -56,7 +56,7 @@
   <div style="flex:1">
     <div style="display:flex;flex-direction:column;gap:2px">
       {#if device.offer_ip}<div><Badge name="Offered" value={device.offer_ip} /></div>{/if}
-      {#if device.lease_ip}<div><Badge name="Leased" value={device.lease_ip} /></div>{/if}
+      {#if device.leased_ip}<div><Badge name="Leased" value={device.leased_ip} /></div>{/if}
     </div>
   </div>
   <div>

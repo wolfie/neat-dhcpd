@@ -24,7 +24,7 @@ const getAll = () =>
       fn.coalesce('sh.mac', 'a.mac', 'o.mac', 'ri.mac', 'sm.mac').as('mac'),
       'a.alias',
       'sh.hostname',
-      'l.ip as lease_ip',
+      'l.ip as leased_ip',
       'o.ip as offer_ip',
       'ri.ip as reserved_ip',
       'sm.first_seen',

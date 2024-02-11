@@ -237,6 +237,7 @@
       .toSorted((a, b) => localeCompare(a.mac.address, b.mac.address))
       .toSorted((a, b) => localeCompare(a.hostname, b.hostname))
       .toSorted((a, b) => localeCompare(a.alias, b.alias))
+      .toSorted((a, b) => localeCompare(a.leased_ip, b.leased_ip))
       .toSorted( (a, b) => localeCompare(a.reserved_ip, b.reserved_ip) ) as device (device.mac.address)}
       <NetworkDevice
         {device}
