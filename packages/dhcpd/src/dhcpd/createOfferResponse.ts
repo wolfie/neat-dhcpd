@@ -95,7 +95,7 @@ const createOfferResponse = async (
         ip: offeredIp.str,
         mac: request.chaddr,
         lease_time_secs: leaseTimeSecs,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       });
     }
 

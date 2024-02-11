@@ -41,7 +41,7 @@ const createAckResponse = async (
         log('debug', { deletingOfferFor: request.chaddr });
         await trpc.offer.delete.mutate({
           mac: request.chaddr,
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         });
       }
 
@@ -52,11 +52,11 @@ const createAckResponse = async (
     const [offer, existingLease] = await Promise.all([
       trpc.offer.get.query({
         mac: request.chaddr,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       }),
       trpc.lease.get.query({
         mac: request.chaddr,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       }),
     ]);
     log('debug', { ipsOnOffer: { offer, existingLease } });
@@ -130,13 +130,13 @@ const createAckResponse = async (
       await Promise.all([
         trpc.offer.delete.mutate({
           mac: request.chaddr,
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         }),
         trpc.lease.set.mutate({
           ip: assignedIp,
           expires_at: addSeconds(Date.now(), leaseTimeSeconds).toISOString(),
           mac: request.chaddr,
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         }),
       ]);
     }

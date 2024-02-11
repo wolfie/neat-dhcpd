@@ -5,20 +5,21 @@
 import { v4 as uuid } from 'uuid';
 import { partition } from './lib/partition.js';
 import { consume } from './client.js';
+import { z } from 'zod';
+import isEnabled from './isEnabled.js';
 
 // TODO rewrite code so that a crash does not leave the entire queue unsent.
 // The receiving end should help with merging the durations.
 // - Maybe always send always unfinished spans, and then patch the durations later
 // - And if they haven't been sent yet, just append the objects.
 
-export type System = 'db' | 'dhcpd' | 'web-ui';
+const System = z.union([z.literal('db'), z.literal('dhcpd'), z.literal('web-ui')]);
+export type System = z.TypeOf<typeof System>;
 
 let unsentTracesQueue: TraceStub[] = [];
 
-let currentSystem: System | undefined = process.env.LITEL_SYSTEM as System | undefined;
+let currentSystem = System.optional().parse(process.env.LITEL_SYSTEM);
 export const setCurrentSystem = (system: System) => (currentSystem = system);
-
-export const isEnabled = () => !process.env.LITEL_DISABLE;
 
 // TODO a checker that there aren't long-lived unsent traces (more than couple minutes?)
 let senderTimeout: NodeJS.Timeout | undefined = undefined;
@@ -48,10 +49,7 @@ export type Trace = {
   id: TraceId;
   name: string;
   parentId: TraceId | null;
-  remote?: {
-    parentId: TraceId;
-    system: System; // TODO: this should be dropped and could be deduced from the found traceId
-  };
+  remoteParentId?: TraceId;
   system: System;
   start: number;
   duration: [start: bigint] | [start: bigint, end: bigint, total: bigint];
@@ -83,7 +81,7 @@ const getCurrentSystem = () => {
 const createTrace = (
   name: string,
   parentId: TraceId | null,
-  remote: Trace['remote']
+  remoteParentId?: TraceId
 ): Readonly<Trace> => {
   if (!isEnabled()) return getNullTrace();
 
@@ -94,12 +92,13 @@ const createTrace = (
     start: Date.now(),
     duration: [process.hrtime.bigint()],
     system: getCurrentSystem(),
-    remote,
+    remoteParentId,
   } satisfies TraceStub;
 
   unsentTracesQueue.push(trace);
 
-  const startSubTrace: Trace['startSubTrace'] = (name) => createTrace(name, trace.id, remote);
+  const startSubTrace: Trace['startSubTrace'] = (name) =>
+    createTrace(name, trace.id, remoteParentId);
 
   const wrapCall: Trace['wrapCall'] = (fn) => {
     const wrappedFn = (...args: Parameters<typeof fn>) => {
@@ -150,7 +149,5 @@ const createTrace = (
 
 export const startTraceRoot = (name: string): Readonly<Trace> => createTrace(name, null, undefined);
 
-export const startTraceRootFromRemote = (
-  name: string,
-  remote: NonNullable<Trace['remote']>
-): Readonly<Trace> => createTrace(name, null, remote);
+export const startTraceRootFromRemote = (name: string, remoteParentId: TraceId): Readonly<Trace> =>
+  createTrace(name, null, remoteParentId);

@@ -8,7 +8,7 @@ const getLogs = (parentTrace: Trace) => {
     .query({
       limit: 50,
       offset: 0,
-      remoteTracing: { parentId: trace.id, system: trace.system },
+      remoteTracingId: trace.id,
     })
     .finally(() => trace.end());
 };

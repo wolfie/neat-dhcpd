@@ -6,7 +6,7 @@ const passInputWithoutTracing =
   ) =>
   (t: T): ReturnType<FN> => {
     const clone = structuredClone(t.input);
-    delete clone['remoteTracing'];
+    delete clone['remoteTracingId'];
     return fn(clone);
   };
 

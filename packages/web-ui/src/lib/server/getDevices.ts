@@ -8,7 +8,7 @@ const getDevices = (parentTrace: Trace) => {
   const trace = parentTrace.startSubTrace('getDevices');
   return trpc.aggregate.getAll
     .query({
-      remoteTracing: { parentId: trace.id, system: trace.system },
+      remoteTracingId: trace.id,
     })
     .then((devices) =>
       devices.map((d) => ({

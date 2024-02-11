@@ -16,12 +16,12 @@ export const PUT: RequestHandler = async ({ request }) => {
     if (body.alias) {
       await trpc.alias.set.mutate({
         ...body,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       });
     } else {
       await trpc.alias.delete.mutate({
         mac: body.mac,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       });
     }
 

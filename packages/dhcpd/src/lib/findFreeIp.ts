@@ -21,9 +21,9 @@ const findFreeIp = async (
     }
 
     const { getReservedIpForMac, unavailableIpNumbers } = await Promise.all([
-      trpc.reservedIp.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
-      trpc.lease.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
-      trpc.offer.getAll.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
+      trpc.reservedIp.getAll.query({ remoteTracingId: trace.id }),
+      trpc.lease.getAll.query({ remoteTracingId: trace.id }),
+      trpc.offer.getAll.query({ remoteTracingId: trace.id }),
     ]).then(([reservedIps, leasedIps, offeredIps]) => {
       const matchingMac =
         (macToFind: string) =>

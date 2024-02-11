@@ -6,23 +6,15 @@ import { startTraceRootFromRemote } from '@neat-dhcpd/litel';
 
 const t = initTRPC.context<{ trace: Trace | undefined }>().create();
 
-const zTracing = z.object({
-  remoteTracing: z
-    .object({
-      parentId: zTraceId,
-      system: z.union([z.literal('dhcpd'), z.literal('db'), z.literal('web-ui')]),
-    })
-    .optional(),
-});
-
+const zTracing = z.object({ remoteTracingId: zTraceId.optional() });
 type ZTracing = typeof zTracing;
 
-export function WithTraceId(): z.ZodOptional<ZTracing>;
+export function WithTraceId(): ZTracing;
 export function WithTraceId<T extends z.ZodObject<z.ZodRawShape>>(
   obj: T
 ): z.ZodIntersection<ZTracing, T>;
 export function WithTraceId(obj?: z.ZodObject<z.ZodRawShape>) {
-  return obj ? z.intersection(zTracing, obj) : zTracing.optional();
+  return obj ? z.intersection(zTracing, obj) : zTracing;
 }
 
 const UnkonwnWithTraceId = WithTraceId();
@@ -39,8 +31,8 @@ export const publicProcedure = t.procedure.use(({ next, path, rawInput, ctx }) =
 
   const inputParse = UnkonwnWithTraceId.safeParse(rawInput);
   let trace: Trace | undefined = undefined;
-  if (inputParse.success && inputParse.data?.remoteTracing)
-    trace = startTraceRootFromRemote(path, inputParse.data.remoteTracing);
+  if (inputParse.success && inputParse.data?.remoteTracingId)
+    trace = startTraceRootFromRemote(path, inputParse.data.remoteTracingId);
 
   return next({ ctx: { trace } }).finally(() => trace?.end());
 });

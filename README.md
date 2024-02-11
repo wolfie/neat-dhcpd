@@ -6,7 +6,7 @@ I made this because I wanted to assign known IPs to my home network, but all DHC
 
 ## ⚠️ In development ⚠️
 
-A lot of wild development is being done atm until the project is getting its 1.0.0 MVP status. Moderate efforts are being done to keep changes backwards compatible, but if things break, it's best to just delete the `db.sqlite` file and start from scratch for now.
+A lot of wild development is being done atm until the project is getting its 1.0.0 MVP status (see `TODO.md` for more info on this). Moderate efforts are being done to keep changes backwards compatible, but if things break, it's best to just delete the `db.sqlite` file and start from scratch for now.
 
 ## Installing and Running
 
@@ -34,7 +34,7 @@ A lot of wild development is being done atm until the project is getting its 1.0
 
 ## Litel o11y
 
-You can see some timing traces if you open `http://<server-ip>:12346`.
+You can see some timing traces if you set the environment variable `LITEL_ENABLE=1` when running the application, and then open `http://<server-ip>:12346` in your browser.
 
 ## ⚠️ Won't build on a RPi 3
 

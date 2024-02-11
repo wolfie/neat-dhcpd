@@ -4,13 +4,15 @@ import { createConnection } from 'net';
 import partition from './lib/partition.js';
 import * as SuperJSON from 'superjson';
 import type { TraceStub } from './index.js';
+import isEnabled from './isEnabled.js';
 
 const PORT = 12345;
 const MAX_RETRIES = 5;
 const RETRY_SLEEP_MS = 1000;
 
-const getClient = (retries = 0): Promise<Socket> =>
-  new Promise<Socket>((resolve, reject) => {
+const getClient = (retries = 0): Promise<Socket> => {
+  if (!isEnabled()) throw new Error('Unexpected client created, even though litel is not enabled');
+  return new Promise<Socket>((resolve, reject) => {
     const socket: Socket = createConnection(PORT, 'localhost', () => resolve(socket));
     socket.on('error', async (e) => {
       if (
@@ -29,6 +31,7 @@ const getClient = (retries = 0): Promise<Socket> =>
       } else reject(e);
     });
   });
+};
 let unhandledTraces: TraceStub[] = [];
 
 export type HierarchicalTrace = TraceStub & { children: HierarchicalTrace[] };

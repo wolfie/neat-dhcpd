@@ -7,7 +7,7 @@ const getSeenMacs = async (parentTrace: Trace) => {
   // eslint-disable-next-line functional/no-try-statements
   try {
     const seenMacs = await trpc.seenMac.getAll.query({
-      remoteTracing: { parentId: trace.id, system: trace.system },
+      remoteTracingId: trace.id,
     });
     return seenMacs.map((seenMac) => ({
       ...seenMac,

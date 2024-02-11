@@ -21,12 +21,12 @@ export const PUT: RequestHandler = async ({ request }) => {
       await trpc.reservedIp.add.mutate({
         mac: body.mac,
         ip: body.reservedIp,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       });
     } else {
       await trpc.reservedIp.delete.mutate({
         mac: body.mac,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       });
     }
 

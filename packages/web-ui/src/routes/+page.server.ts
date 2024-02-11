@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types.js';
 import os from 'node:os';
 import type { IpString } from '@neat-dhcpd/common';
 import { ipFromString, isLanIp } from '@neat-dhcpd/common';
-import { startTraceRoot, type Trace } from '@neat-dhcpd/litel';
+import { startTraceRoot } from '@neat-dhcpd/litel';
 import getDevices from '$lib/server/getDevices.js';
 import getLogs from '$lib/server/getLogs.js';
 
@@ -27,12 +27,12 @@ export const load: PageServerLoad = async () => {
   // eslint-disable-next-line functional/no-try-statements
   try {
     const [config, logs, devices, dnsIps] = await Promise.all([
-      trpc.config.get.query({ remoteTracing: { parentId: trace.id, system: trace.system } }),
+      trpc.config.get.query({ remoteTracingId: trace.id }),
       getLogs(trace),
       getDevices(trace),
       trpc.dhcpOption.get.query({
         option: 6,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       }),
     ]);
 
@@ -75,12 +75,12 @@ export const actions: Actions = {
           send_replies: sendReplies,
           broadcast_cidr: broadcastCidr,
           log_level: logLevel,
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         }),
         trpc.dhcpOption.set.mutate({
           option: 6,
           value_json: JSON.stringify(dnsIps),
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         }),
       ]);
 
@@ -102,7 +102,7 @@ export const actions: Actions = {
         await trpc.alias.set.mutate({
           mac,
           alias,
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         });
       }
 

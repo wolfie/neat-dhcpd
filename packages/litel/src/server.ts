@@ -7,12 +7,14 @@ import partition from './lib/partition.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import isEnabled, { ENV_NAME } from './isEnabled.js';
 
 // TODO if not disabled, show link to the output in the UI
 
-if (process.env.LITEL_DISABLE) {
-  console.error('litel is disabled, not starting server');
-  process.exit(1);
+if (!isEnabled()) {
+  console.log('litel is not enabled, not starting server.');
+  console.log(`To enable, pass in ${ENV_NAME}=1 as an environment`);
+  process.exit(0);
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -61,11 +63,11 @@ const mapWithRemoteRoots =
     start: trace.start,
     system: trace.system,
     durationMs: getDuration(trace),
-    remote: trace.remote?.parentId,
+    remote: trace.remoteParentId,
     children: [
       ...trace.children.map(mapWithRemoteRoots(remoteRoots)),
       ...remoteRoots
-        .filter((remoteRoot) => remoteRoot.remote?.parentId === trace.id)
+        .filter((remoteRoot) => remoteRoot.remoteParentId === trace.id)
         .map(mapWithRemoteRoots(remoteRoots)),
     ],
   });
@@ -74,7 +76,7 @@ const httpServer = express();
 httpServer.get('/', (_req, res) => {
   const { pass: remoteRoots, fail: roots } = partition(
     traces,
-    (trace) => trace.parentId === null && !!trace.remote
+    (trace) => trace.parentId === null && !!trace.remoteParentId
   );
 
   const tree = roots.map(mapWithRemoteRoots(remoteRoots)).sort((a, b) => b.start - a.start);

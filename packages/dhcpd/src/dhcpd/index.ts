@@ -85,14 +85,14 @@ export const createDhcpServer = async () => {
 
       trpc.seenMac.add.mutate({
         mac: request.chaddr,
-        remoteTracing: { parentId: trace.id, system: trace.system },
+        remoteTracingId: trace.id,
       });
       const hostname = request.options.options.find(isParsedRequestOption(12))?.value;
       if (hostname)
         trpc.seenHostname.set.mutate({
           mac: request.chaddr,
           hostname,
-          remoteTracing: { parentId: trace.id, system: trace.system },
+          remoteTracingId: trace.id,
         });
 
       const response = await createResponse(request, currentAddress, config, trace);

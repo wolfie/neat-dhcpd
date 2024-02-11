@@ -6,7 +6,6 @@
 
 ## Missing functionality for 1.0
 
-- disable `@neat-dhpcd/litel` by default, and enable with some simple trick (env var?)
 - "remove" button for devices that haven't been seen
 - refresh list after adding a new device
 - validate MAC strings
