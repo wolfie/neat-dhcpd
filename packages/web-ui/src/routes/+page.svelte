@@ -234,8 +234,10 @@
       />
     {/if}
     {#each latestDevices
-      .toSorted((a, b) => a.mac.address.localeCompare(b.mac.address))
-      .toSorted((a, b) => localeCompare(a.alias, b.alias)) as device (device.mac.address)}
+      .toSorted((a, b) => localeCompare(a.mac.address, b.mac.address))
+      .toSorted((a, b) => localeCompare(a.hostname, b.hostname))
+      .toSorted((a, b) => localeCompare(a.alias, b.alias))
+      .toSorted( (a, b) => localeCompare(a.reserved_ip, b.reserved_ip) ) as device (device.mac.address)}
       <NetworkDevice
         {device}
         on:aliasChange={setAlias(device.mac.address, device.alias)}

@@ -7,16 +7,17 @@
 ## Missing functionality for 1.0
 
 - disable `@neat-dhpcd/litel` by default, and enable with some simple trick (env var?)
-- sort clients based by ip -> alias -> hostname
 - "remove" button for devices that haven't been seen
 - refresh list after adding a new device
+- validate MAC strings
 - handle DHCPINFORM
 - handle DHCPRELEASE
+- rename "send replies" to something more understandable
+- rename "sugmit" to "submit"
 
 ## MAC address handling
 
 - support other MAC formats than just `:`-separated
-- validate MAC strings
 - make MAC addresses case insensitive
 - make a MAC input template (autofill the separators)
 
