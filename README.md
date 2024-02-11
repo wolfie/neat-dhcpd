@@ -36,6 +36,10 @@ A lot of wild development is being done atm until the project is getting its 1.0
 
 You can see some timing traces if you set the environment variable `LITEL_ENABLE=1` when running the application, and then open `http://<server-ip>:12346` in your browser.
 
+## ⚠️ Use static IP for server
+
+Note that you must have a static IP configured for the host server, otherwise the clients cannot reach the server and your entire network will go down due to not having an IP.
+
 ## ⚠️ Won't build on a RPi 3
 
 It seems like the Raspberry Pi 3b+ is unable to build the web UI without grinding to a halt. Presumably this is due to lack of sufficient RAM. I have not tested on a RPi4 2gb (or better) yet.

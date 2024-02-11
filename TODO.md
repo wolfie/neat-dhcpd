@@ -22,6 +22,7 @@
 
 ## Misc
 
+- detect and warn about DHCP being on for the server
 - sensible ENV configs (address and netmask)
 - secure DB tRPC from non-localhost queries
 - authentication and authorization
@@ -38,3 +39,4 @@
 - remove unnecessary `system` param from remote tracking
 - make a functional wrapper for `@neat-dhpcd/litel` to avoid try/catch
 - make an even more automated version of `buildRelease.sh` - less manual steps after building
+- make it configurable whether "reserved IP" means an infinite lease time or not
