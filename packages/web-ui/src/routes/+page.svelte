@@ -18,6 +18,7 @@
   import RefreshCw from 'lucide-svelte/icons/refresh-cw';
   import type { DevicesGetResponse } from './api/devices/+server.js';
   import type { LogsGetResponse } from './api/logs/+server.js';
+  import Trash from 'lucide-svelte/icons/trash-2';
 
   export let data: PageData;
 
@@ -113,6 +114,8 @@
 
   const localeCompare = (a: string | undefined | null, b: string | undefined | null): number =>
     a && b ? a.localeCompare(b) : a ? -1 : b ? 1 : 0;
+
+  const clearOverDayOldLogs = () => fetch('/api/clear-logs', { method: 'POST' });
 
   let addingNewDevice = false;
 </script>
@@ -248,7 +251,12 @@
 </section>
 
 <section class="logs">
-  <h2>Logs</h2>
+  <div style:display="flex" style:align-items="center" style:gap="5px" style:margin-bottom="1em">
+    <h2 style:margin="0">Logs</h2>
+    <Button on:click={clearOverDayOldLogs} disabled={fetchingData}
+      ><Trash slot="icon" /> Clear over 1 day old entries</Button
+    >
+  </div>
   <!-- TODO add log level filtering-->
   <table>
     <thead>

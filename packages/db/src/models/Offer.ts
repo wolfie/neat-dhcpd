@@ -1,5 +1,5 @@
 import db from '../db.js';
-import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampAfter } from '../lib/sqlTimestamps.js';
+import { CURRENT_TIMESTAMP_WITH_MILLIS, timestampWithOffset } from '../lib/sqlTimestamps.js';
 import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
 import zIpString from '../lib/zIpString.js';
@@ -44,7 +44,7 @@ const add = ({ mac, ip, lease_time_secs }: AddInput) =>
     .values({
       mac,
       ip,
-      expires_at: timestampAfter(DEFAULT_OFFER_DURATION_MINS, 'minutes'),
+      expires_at: timestampWithOffset(DEFAULT_OFFER_DURATION_MINS, 'minutes'),
       lease_time_secs,
     })
     .onConflict((oc) => oc.column('mac').doUpdateSet({ ip, lease_time_secs }))

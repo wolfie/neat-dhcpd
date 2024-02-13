@@ -4,6 +4,7 @@ import db from '../db.js';
 import { WithTraceId, publicProcedure, router } from '../trpc.js';
 import { z } from 'zod';
 import passInputWithoutTracing from '../lib/passInput.js';
+import { Magnitude, timestampWithOffset } from '../lib/sqlTimestamps.js';
 
 export type zLogLevel = z.TypeOf<typeof zLogLevel>;
 export const zLogLevel = z.union([z.literal('log'), z.literal('error'), z.literal('debug')]);
@@ -26,6 +27,18 @@ const insert = (values: InsertInput) =>
 const get = ({ offset, limit }: { offset: number; limit: number }) =>
   db.selectFrom('log').orderBy('timestamp desc').offset(offset).limit(limit).selectAll().execute();
 
+const ClearBeforeInput = z.object({
+  unit: z.number(),
+  magnitude: Magnitude,
+});
+type ClearBeforeInput = z.TypeOf<typeof ClearBeforeInput>;
+const clearBefore = ({ magnitude, unit }: ClearBeforeInput) =>
+  db
+    .deleteFrom('log')
+    .where('log.timestamp', '<', timestampWithOffset(-unit, magnitude)) // need to negate unit, since inputs are given in "before 1 day" ==> "< -1 day"
+    .execute()
+    .then(() => undefined);
+
 const logRouter = router({
   insert: publicProcedure.input(WithTraceId(InsertInput)).mutation(
     passInputWithoutTracing(async ({ level, system, json }) => {
@@ -41,6 +54,9 @@ const logRouter = router({
         )
       )
     ),
+  clearBefore: publicProcedure
+    .input(WithTraceId(ClearBeforeInput))
+    .mutation(passInputWithoutTracing(clearBefore)),
 });
 
 export default logRouter;
