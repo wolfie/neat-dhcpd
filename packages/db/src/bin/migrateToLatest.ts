@@ -8,7 +8,7 @@ const migrateToLatest = async () => {
     .map((r) => `[${r.status}] [${r.direction}] ${r.migrationName}`);
   if (migrations.error) {
     console.error('DB migration failed');
-    console.error('error', JSON.stringify(migrations.error));
+    console.error('error', migrations.error);
     console.error('results');
     console.error(resultStrings?.join('\n'));
     process.exit(1);

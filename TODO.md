@@ -3,6 +3,7 @@
 ## BUGS!
 
 - BUG: last character might be missed when adding new devices
+- BUG: `pnpm dev` does not always run nicely, needs `pnpm build` sometimes due to some package
 
 ## Missing functionality for 1.0
 
