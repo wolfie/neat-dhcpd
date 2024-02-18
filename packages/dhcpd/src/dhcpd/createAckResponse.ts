@@ -8,10 +8,10 @@ import tap from '../lib/tap.js';
 import { messageTypesForString } from './numberStrings.js';
 import log from '../lib/log.js';
 import type { Ip } from '@neat-dhcpd/common';
-import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromNumber, ipFromString } from '@neat-dhcpd/common';
+import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from '@neat-dhcpd/common';
 import { addSeconds } from 'date-fns';
 import type { Trace } from '@neat-dhcpd/litel';
-import rand from '../lib/rand.js';
+import getRandomAvailableIp from '../lib/getRandomAvailableIp.js';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -78,27 +78,18 @@ const createAckResponse = async (
       leasedIp: previouslyLeasedIp,
     };
   } else {
-    const unavailableIpNumbers = offeredOrLeasedForOthers.map(
-      (ipString) => ipFromString(ipString).num
-    );
-    const ipStart = ipFromString(config.ip_start);
-    const ipEnd = ipFromString(config.ip_end);
-    // TODO This stops working if there are a lot of assigned IPs in a big IP range.
-    // Instead, create a list of valid ips and pick one randomly.
-    let candidate = rand(ipStart.num, ipEnd.num);
-    let triesLeft = 5000;
-    for (; triesLeft > 0; triesLeft--) {
-      candidate = rand(ipStart.num, ipEnd.num);
-      if (!unavailableIpNumbers.includes(candidate)) break;
-    }
-    if (triesLeft <= 0) {
+    const result = getRandomAvailableIp({
+      start: ipFromString(config.ip_start),
+      end: ipFromString(config.ip_end),
+      unavailableIps: offeredOrLeasedForOthers,
+    });
+    if (result === 'no-ips-left') {
       return {
         success: false,
         error: 'no-ips-left',
       };
-    } else {
-      assignedIp = ipFromNumber(candidate);
     }
+    assignedIp = result;
   }
 
   // TODO: clean up, deduplicate from `createOfferResponse`

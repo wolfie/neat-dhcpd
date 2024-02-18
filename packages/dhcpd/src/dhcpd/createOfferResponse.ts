@@ -8,14 +8,9 @@ import trpc from '../trpcClient.js';
 import createGetResponseOption from './createGetResponseOption.js';
 import log from '../lib/log.js';
 import type { Ip } from '@neat-dhcpd/common';
-import {
-  ZERO_ZERO_ZERO_ZERO,
-  ipFromNumber,
-  ipFromString,
-  ipIsWithinRange,
-} from '@neat-dhcpd/common';
+import { ZERO_ZERO_ZERO_ZERO, ipFromString, ipIsWithinRange } from '@neat-dhcpd/common';
 import type { Trace } from '@neat-dhcpd/litel';
-import rand from '../lib/rand.js';
+import getRandomAvailableIp from '../lib/getRandomAvailableIp.js';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -97,22 +92,11 @@ const createOfferResponse = async (
   ) {
     offeredIp = requestedIp;
   } else {
-    const unavailableIpNumbers = ipOfferInfo.offeredOrLeasedForOthers.map(
-      (ipString) => ipFromString(ipString).num
-    );
-    // TODO This stops working if there are a lot of assigned IPs in a big IP range.
-    // Instead, create a list of valid ips and pick one randomly.
-    let candidate = rand(ipStart.num, ipEnd.num);
-    let triesLeft = 5000;
-    for (; triesLeft > 0; triesLeft--) {
-      candidate = rand(ipStart.num, ipEnd.num);
-      if (!unavailableIpNumbers.includes(candidate)) break;
-    }
-    if (triesLeft <= 0) {
-      offeredIp = 'no-ips-left';
-    } else {
-      offeredIp = ipFromNumber(candidate);
-    }
+    offeredIp = getRandomAvailableIp({
+      start: ipStart,
+      end: ipEnd,
+      unavailableIps: ipOfferInfo.offeredOrLeasedForOthers,
+    });
   }
 
   if (typeof offeredIp === 'string') return { success: false, error: offeredIp };
