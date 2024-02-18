@@ -11,7 +11,15 @@ module.exports = {
   root: true,
   rules: {
     '@typescript-eslint/consistent-type-imports': 'error',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
     '@typescript-eslint/no-restricted-imports': [
       'error',
       {
