@@ -41,3 +41,4 @@
 - make a functional wrapper for `@neat-dhpcd/litel` to avoid try/catch
 - make an even more automated version of `buildRelease.sh` - less manual steps after building
 - make it configurable whether "reserved IP" means an infinite lease time or not
+- use [Option 61 (client identifier)](https://datatracker.ietf.org/doc/html/rfc2132#section-9.14) instead of MAC

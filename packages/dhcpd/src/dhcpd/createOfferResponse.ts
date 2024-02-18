@@ -32,12 +32,6 @@ const createOfferResponse = async (
       };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const clientIdentifier = (() => {
-      const cid = request.options.options.find(isParsedRequestOption(61));
-      return cid ? `${cid.value.type}:${cid.value.content}` : request.chaddr;
-    })();
-
     const maxMessageLength =
       request.options.options.find(isParsedRequestOption(57))?.value ?? DEFAULT_MAX_MESSAGE_LENGTH;
 
