@@ -69,6 +69,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@neat-dhcpd/common':
+        specifier: workspace:*
+        version: link:../common
       '@neat-dhcpd/litel':
         specifier: workspace:*
         version: link:../litel

@@ -7,9 +7,15 @@ import tap from '../lib/tap.js';
 import trpc from '../trpcClient.js';
 import createGetResponseOption from './createGetResponseOption.js';
 import log from '../lib/log.js';
-import { ZERO_ZERO_ZERO_ZERO } from '@neat-dhcpd/common';
-import findFreeIp from '../lib/findFreeIp.js';
+import type { Ip } from '@neat-dhcpd/common';
+import {
+  ZERO_ZERO_ZERO_ZERO,
+  ipFromNumber,
+  ipFromString,
+  ipIsWithinRange,
+} from '@neat-dhcpd/common';
 import type { Trace } from '@neat-dhcpd/litel';
+import rand from '../lib/rand.js';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -70,11 +76,46 @@ const createOfferResponse = async (
   options.push([255, Buffer.alloc(0)]);
 
   const requestedIp = request.options.options.find(isParsedRequestOption(50))?.value;
-  const offeredIp = await findFreeIp(
-    requestedIp ? { mac: request.chaddr, ip: requestedIp } : undefined,
-    config,
-    trace
-  );
+  const ipOfferInfo = await trpc.aggregate.getIpOfferInfo.query({
+    mac: request.chaddr,
+    requestedIp: requestedIp?.str,
+    remoteTracingId: trace.id,
+  });
+
+  const ipStart = ipFromString(config.ip_start);
+  const ipEnd = ipFromString(config.ip_end);
+  let offeredIp: Ip | 'no-ips-left';
+
+  if (ipOfferInfo.reservedIp) {
+    offeredIp = ipFromString(ipOfferInfo.reservedIp);
+  } else if (ipOfferInfo.previousOffer) {
+    offeredIp = ipFromString(ipOfferInfo.previousOffer.ip);
+  } else if (ipOfferInfo.previouslyLeasedIp) {
+    offeredIp = ipFromString(ipOfferInfo.previouslyLeasedIp);
+  } else if (
+    requestedIp &&
+    ipIsWithinRange(requestedIp, { start: ipStart, end: ipEnd }) &&
+    ipOfferInfo.offeredOrLeasedForOthers.every((ipInUse) => ipInUse !== requestedIp.str)
+  ) {
+    offeredIp = requestedIp;
+  } else {
+    const unavailableIpNumbers = ipOfferInfo.offeredOrLeasedForOthers.map(
+      (ipString) => ipFromString(ipString).num
+    );
+    // TODO This stops working if there are a lot of assigned IPs in a big IP range.
+    // Instead, create a list of valid ips and pick one randomly.
+    let candidate = rand(ipStart.num, ipEnd.num);
+    let triesLeft = 5000;
+    for (; triesLeft > 0; triesLeft--) {
+      candidate = rand(ipStart.num, ipEnd.num);
+      if (!unavailableIpNumbers.includes(candidate)) break;
+    }
+    if (triesLeft <= 0) {
+      offeredIp = 'no-ips-left';
+    } else {
+      offeredIp = ipFromNumber(candidate);
+    }
+  }
 
   if (typeof offeredIp === 'string') return { success: false, error: offeredIp };
 

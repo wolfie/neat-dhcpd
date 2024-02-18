@@ -35,8 +35,9 @@ export const ipFromNumber = (num: number): Ip => {
 };
 
 export function ipFromString(str: IpString): Ip;
-export function ipFromString(str: string): Ip | undefined;
-export function ipFromString(str: string): Ip | undefined {
+export function ipFromString(str?: string): Ip | undefined;
+export function ipFromString(str?: string): Ip | undefined {
+  if (!str) return undefined;
   const match = str.match(/^\d+\.\d+\.\d+\.\d+$/);
   if (!match) return undefined;
   const [a, b, c, d] = str.split('.').map((x) => parseInt(x));
@@ -85,3 +86,6 @@ const LAN_ADDRESSES = [
 ] as [Ip, Ip][];
 export const isLanIp = (ip: Ip) =>
   LAN_ADDRESSES.flatMap(([from, to]) => from.num <= ip.num && ip.num <= to.num).some(Boolean);
+
+export const ipIsWithinRange = (ip: Ip, range: { start: Ip; end: Ip }) =>
+  range.start.num <= ip.num && ip.num <= range.end.num;

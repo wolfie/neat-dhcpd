@@ -16,7 +16,7 @@ export type ResponseResult =
     }
   | {
       success: false;
-      error: 'no-type-option' | 'no-ips-left' | 'not-for-me' | 'malformatted-ip-start-or-end';
+      error: 'no-type-option' | 'no-ips-left' | 'not-for-me';
     }
   | {
       success: false;

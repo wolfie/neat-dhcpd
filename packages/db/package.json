@@ -19,6 +19,7 @@
     "start:migrateToLatest": "node build/bin/migrateToLatest"
   },
   "dependencies": {
+    "@neat-dhcpd/common": "workspace:*",
     "@neat-dhcpd/litel": "workspace:*",
     "@trpc/server": "^10.45.0",
     "better-sqlite3": "^9.2.2",

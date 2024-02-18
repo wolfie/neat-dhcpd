@@ -7,11 +7,11 @@ import createGetResponseOption from './createGetResponseOption.js';
 import tap from '../lib/tap.js';
 import { messageTypesForString } from './numberStrings.js';
 import log from '../lib/log.js';
-import type { IpString } from '@neat-dhcpd/common';
-import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromString } from '@neat-dhcpd/common';
+import type { Ip } from '@neat-dhcpd/common';
+import { ZERO_ZERO_ZERO_ZERO, ipFromBuffer, ipFromNumber, ipFromString } from '@neat-dhcpd/common';
 import { addSeconds } from 'date-fns';
-import findFreeIp from '../lib/findFreeIp.js';
 import type { Trace } from '@neat-dhcpd/litel';
+import rand from '../lib/rand.js';
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 1500;
 
@@ -46,47 +46,59 @@ const createAckResponse = async (
     return { success: false, error: 'not-for-me' };
   }
 
-  // TODO renew lease if a valid lease already exists
-  const [offer, existingLease] = await Promise.all([
-    trpc.offer.get.query({
+  const { previousOffer, previouslyLeasedIp, offeredOrLeasedForOthers } =
+    await trpc.aggregate.getIpOfferInfo.query({
       mac: request.chaddr,
+      requestedIp: requestedIp?.str,
       remoteTracingId: trace.id,
-    }),
-    trpc.lease.get.query({
-      mac: request.chaddr,
-      remoteTracingId: trace.id,
-    }),
-  ]);
-  log('debug', { ipsOnOffer: { offer, existingLease } });
+    });
 
-  let assignedIp: IpString;
+  let assignedIp: Ip;
   if (requestedIp) {
-    if (requestedIp.str === offer?.ip) assignedIp = requestedIp.str;
+    if (requestedIp.str === previousOffer?.ip) assignedIp = requestedIp;
     else
       return {
         success: false,
         error: 'requested-invalid-ip',
         details:
           `Client requested ${requestedIp.str}, but was ` +
-          (offer ? `previously offered ${offer.ip}.` : 'not offered anything before.'),
+          (previousOffer
+            ? `previously offered ${previousOffer.ip}.`
+            : 'not offered anything before.'),
         requestedIp: requestedIp?.str,
-        offeredIp: offer?.ip,
-        leasedIp: existingLease?.ip,
+        offeredIp: previousOffer?.ip,
+        leasedIp: previouslyLeasedIp,
       };
-  } else if (offer) {
+  } else if (previousOffer) {
     return {
       success: false,
       error: 'requested-invalid-ip',
-      details: `Client didn't have a requested IP - was previously offered ${offer.ip}.`,
-      offeredIp: offer?.ip,
-      leasedIp: existingLease?.ip,
+      details: `Client didn't have a requested IP - was previously offered ${previousOffer.ip}.`,
+      offeredIp: previousOffer.ip,
+      leasedIp: previouslyLeasedIp,
     };
   } else {
-    const freeIp = await findFreeIp(undefined, config, trace);
-    if (freeIp === 'no-ips-left') return { success: false, error: 'no-ips-left' };
-    if (freeIp === 'malformatted-ip-start-or-end')
-      return { success: false, error: 'malformatted-ip-start-or-end' };
-    assignedIp = freeIp.str;
+    const unavailableIpNumbers = offeredOrLeasedForOthers.map(
+      (ipString) => ipFromString(ipString).num
+    );
+    const ipStart = ipFromString(config.ip_start);
+    const ipEnd = ipFromString(config.ip_end);
+    // TODO This stops working if there are a lot of assigned IPs in a big IP range.
+    // Instead, create a list of valid ips and pick one randomly.
+    let candidate = rand(ipStart.num, ipEnd.num);
+    let triesLeft = 5000;
+    for (; triesLeft > 0; triesLeft--) {
+      candidate = rand(ipStart.num, ipEnd.num);
+      if (!unavailableIpNumbers.includes(candidate)) break;
+    }
+    if (triesLeft <= 0) {
+      return {
+        success: false,
+        error: 'no-ips-left',
+      };
+    } else {
+      assignedIp = ipFromNumber(candidate);
+    }
   }
 
   // TODO: clean up, deduplicate from `createOfferResponse`
@@ -112,7 +124,7 @@ const createAckResponse = async (
       .filter((t): t is [number, Uint8Array] => typeof t[1] !== 'undefined') ?? [];
   options.unshift([53, Buffer.of(messageTypesForString('DHCPACK'))]);
 
-  const leaseTimeSeconds = offer?.lease_time_secs ?? config.lease_time_minutes * 60;
+  const leaseTimeSeconds = previousOffer?.lease_time_secs ?? config.lease_time_minutes * 60;
   options.push([
     51,
     (() => {
@@ -131,7 +143,7 @@ const createAckResponse = async (
         remoteTracingId: trace.id,
       }),
       trpc.lease.set.mutate({
-        ip: assignedIp,
+        ip: assignedIp.str,
         expires_at: addSeconds(Date.now(), leaseTimeSeconds).toISOString(),
         mac: request.chaddr,
         remoteTracingId: trace.id,
@@ -156,7 +168,7 @@ const createAckResponse = async (
       secs: 0,
       broadcastFlag: false,
       ciaddr: ZERO_ZERO_ZERO_ZERO,
-      yiaddr: ipFromString(assignedIp),
+      yiaddr: assignedIp,
       siaddr: serverAddress.address,
       giaddr: ZERO_ZERO_ZERO_ZERO,
       chaddr: request.chaddr,

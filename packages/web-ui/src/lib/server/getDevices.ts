@@ -6,7 +6,7 @@ export type Device = Awaited<ReturnType<typeof getDevices>>[number];
 
 const getDevices = (parentTrace: Trace) => {
   const trace = parentTrace.startSubTrace('getDevices');
-  return trpc.aggregate.getAll
+  return trpc.aggregate.getAllDevices
     .query({
       remoteTracingId: trace.id,
     })

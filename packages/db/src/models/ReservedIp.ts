@@ -25,10 +25,22 @@ const del = ({ mac }: DeleteInput) =>
 
 const getAll = () => db.selectFrom('reserved_ip').selectAll().execute();
 
+const GetInput = z.object({ mac: z.string() });
+type GetInput = z.TypeOf<typeof GetInput>;
+const get = ({ mac }: GetInput) =>
+  db
+    .selectFrom('reserved_ip')
+    .selectAll()
+    .where('mac', '=', mac)
+    .limit(1)
+    .execute()
+    .then((result) => result.at(0));
+
 const reservedIpRouter = router({
   add: publicProcedure.input(WithTraceId(AddInput)).mutation(passInputWithoutTracing(add)),
   delete: publicProcedure.input(WithTraceId(DeleteInput)).mutation(passInputWithoutTracing(del)),
   getAll: publicProcedure.input(WithTraceId()).query(passInputWithoutTracing(getAll)),
+  get: publicProcedure.input(WithTraceId(GetInput)).query(passInputWithoutTracing(get)),
 });
 
 export default reservedIpRouter;
