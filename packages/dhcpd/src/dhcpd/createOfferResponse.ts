@@ -61,8 +61,6 @@ const createOfferResponse = async (
       )
       .filter((t): t is [number, Uint8Array] => typeof t[1] !== 'undefined') ?? [];
 
-  // TODO make sure option 1 is ordered before option 3
-
   options.unshift([53, Buffer.of(messageTypesForString('DHCPOFFER'))]);
 
   const configLeaseTimeSecs = config.lease_time_minutes * 60;
@@ -154,7 +152,7 @@ const createOfferResponse = async (
       sname: '',
       options: {
         magicCookie: request.options.magicCookie,
-        options,
+        options: options.sort((a) => (a[0] === 1 ? -1 : 0)), // makes sure that option 1 is always before option 3: https://datatracker.ietf.org/doc/html/rfc2132#section-3.3
       },
     },
   };
