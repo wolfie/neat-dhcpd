@@ -17,18 +17,13 @@ const createGetResponseOption =
       case 3:
         return ipFromString(config.gateway_ip)?.buf;
       case DOMAIN_NAME_SERVER:
-        const trace = parentTrace.startSubTrace('createGetResponseOption:DOMAIN_NAME_SERVER');
-        // eslint-disable-next-line functional/no-try-statements
-        try {
-          const dnsServerIps = (await trpc.dhcpOption.get.query({
-            option: DOMAIN_NAME_SERVER,
-          })) as undefined | IpString[];
-          return dnsServerIps
-            ? Buffer.concat(dnsServerIps.map((ipString) => ipFromString(ipString).buf))
-            : Buffer.alloc(0);
-        } finally {
-          trace.end();
-        }
+        using _trace = parentTrace.startSubTrace('createGetResponseOption:DOMAIN_NAME_SERVER');
+        const dnsServerIps = (await trpc.dhcpOption.get.query({
+          option: DOMAIN_NAME_SERVER,
+        })) as undefined | IpString[];
+        return dnsServerIps
+          ? Buffer.concat(dnsServerIps.map((ipString) => ipFromString(ipString).buf))
+          : Buffer.alloc(0);
       case 15:
         return Buffer.from('local', 'ascii'); // TODO
       case 28:

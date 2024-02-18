@@ -11,7 +11,7 @@ const loopDetection = [0];
 const LOOP_DETECTION_LIMIT = 2;
 
 const initializeDb = () => {
-  const trace = startTraceRoot('initializeDb');
+  using _trace = startTraceRoot('initializeDb');
   const DB_PATH = path.resolve(env.SQLITE_PATH);
   console.log(`sqlite path: ${DB_PATH}`);
 
@@ -51,7 +51,6 @@ const initializeDb = () => {
       }
     },
   });
-  trace.end();
   return db;
 };
 

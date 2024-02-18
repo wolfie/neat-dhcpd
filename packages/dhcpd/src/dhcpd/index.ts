@@ -59,80 +59,75 @@ export const createDhcpServer = async () => {
 
   const socket = dgram.createSocket({ type: 'udp4' });
   socket.on('message', async (msg: Buffer, rinfo: RemoteInfo) => {
-    const trace = startTraceRoot('handleMessage');
-    // eslint-disable-next-line functional/no-try-statements
-    try {
-      const config = await trpc.config.get.query();
-      if (!config) {
-        log('error', 'No config found', trace.id);
-        return;
-      }
-      if (!config.broadcast_cidr) {
-        log('error', 'No broadcast CIDR configured', trace.id);
-        return;
-      }
+    using trace = startTraceRoot('handleMessage');
+    const config = await trpc.config.get.query();
+    if (!config) {
+      log('error', 'No config found', trace.id);
+      return;
+    }
+    if (!config.broadcast_cidr) {
+      log('error', 'No broadcast CIDR configured', trace.id);
+      return;
+    }
 
-      log('debug', { msg: msg.toString('base64') }, trace.id);
-      const requestBootp = trace.wrapCall(splitBootpMessage)(msg);
-      log('debug', { requestBootp: omit(requestBootp, '__original') }, trace.id);
-      const messageParseResult = trace.wrapCall(parseMessage)(requestBootp);
-      log('debug', { messageParseResult }, trace.id);
-      if (!messageParseResult.success) return; // logged above, should be enough
-      const requestParseResult = trace.wrapCall(parseRequestMessage)(messageParseResult.message);
-      log('log', { requestParseResult, rinfo }, trace.id);
-      if (!requestParseResult.success) return; // logged above, should be enough
-      const request = requestParseResult.request;
+    log('debug', { msg: msg.toString('base64') }, trace.id);
+    const requestBootp = trace.wrapCall(splitBootpMessage)(msg);
+    log('debug', { requestBootp: omit(requestBootp, '__original') }, trace.id);
+    const messageParseResult = trace.wrapCall(parseMessage)(requestBootp);
+    log('debug', { messageParseResult }, trace.id);
+    if (!messageParseResult.success) return; // logged above, should be enough
+    const requestParseResult = trace.wrapCall(parseRequestMessage)(messageParseResult.message);
+    log('log', { requestParseResult, rinfo }, trace.id);
+    if (!requestParseResult.success) return; // logged above, should be enough
+    const request = requestParseResult.request;
 
-      trpc.seenMac.add.mutate({
+    trpc.seenMac.add.mutate({
+      mac: request.chaddr,
+      remoteTracingId: trace.id,
+    });
+    const hostname = request.options.options.find(isParsedRequestOption(12))?.value;
+    if (hostname)
+      trpc.seenHostname.set.mutate({
         mac: request.chaddr,
+        hostname,
         remoteTracingId: trace.id,
       });
-      const hostname = request.options.options.find(isParsedRequestOption(12))?.value;
-      if (hostname)
-        trpc.seenHostname.set.mutate({
-          mac: request.chaddr,
-          hostname,
-          remoteTracingId: trace.id,
-        });
 
-      const response = await createResponse(request, currentAddress, config, trace);
-      log('log', { response }, trace.id);
+    const response = await createResponse(request, currentAddress, config, trace);
+    log('log', { response }, trace.id);
 
-      if (!response.success) return;
-      const responseBuffer = trace.wrapCall(encodeResponseMessage)(
-        response.message,
-        requestBootp,
-        response.maxMessageLength
+    if (!response.success) return;
+    const responseBuffer = trace.wrapCall(encodeResponseMessage)(
+      response.message,
+      requestBootp,
+      response.maxMessageLength
+    );
+
+    const broadcastAddress = getBroadcastAddr(config.broadcast_cidr);
+    if (!broadcastAddress) {
+      log('error', { error: 'Broadcast address is not a valid CIDR', config }, trace.id);
+      return;
+    }
+    log('debug', { broadcastAddress }, trace.id);
+
+    if (config.send_replies) {
+      log(
+        'debug',
+        `replying to ${broadcastAddress.str}:68: ${responseBuffer.toString('base64')}`,
+        trace.id
       );
-
-      const broadcastAddress = getBroadcastAddr(config.broadcast_cidr);
-      if (!broadcastAddress) {
-        log('error', { error: 'Broadcast address is not a valid CIDR', config }, trace.id);
-        return;
-      }
-      log('debug', { broadcastAddress }, trace.id);
-
-      if (config.send_replies) {
-        log(
-          'debug',
-          `replying to ${broadcastAddress.str}:68: ${responseBuffer.toString('base64')}`,
-          trace.id
-        );
-        socket.send(
-          responseBuffer,
-          0,
-          responseBuffer.length,
-          68,
-          broadcastAddress.str, // TODO send to CIADDR in case it's within our range
-          (error, b) => {
-            if (error) log('error', `${format(error)}\nbytes: ${b}`, trace.id);
-          }
-        );
-      } else {
-        log('debug', 'not sending message, config.sendReplies is false', trace.id);
-      }
-    } finally {
-      trace.end();
+      socket.send(
+        responseBuffer,
+        0,
+        responseBuffer.length,
+        68,
+        broadcastAddress.str, // TODO send to CIADDR in case it's within our range
+        (error, b) => {
+          if (error) log('error', `${format(error)}\nbytes: ${b}`, trace.id);
+        }
+      );
+    } else {
+      log('debug', 'not sending message, config.sendReplies is false', trace.id);
     }
   });
   socket.on('listening', () => {

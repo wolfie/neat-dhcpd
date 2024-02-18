@@ -56,8 +56,9 @@ export type Trace = {
   startSubTrace: (name: string) => Readonly<Trace>;
   wrapCall: <FN extends (...args: any[]) => any>(fn: FN) => FN;
   end: () => void;
+  [Symbol.dispose]: () => void;
 };
-export type TraceStub = Omit<Trace, 'startSubTrace' | 'wrapCall' | 'end'>;
+export type TraceStub = Omit<Trace, typeof Symbol.dispose | 'startSubTrace' | 'wrapCall' | 'end'>;
 
 const getNullTrace = (): Trace => ({
   id: 'null:trace-id',
@@ -69,6 +70,7 @@ const getNullTrace = (): Trace => ({
   wrapCall: (fn) => fn,
   startSubTrace: () => getNullTrace(),
   end: () => undefined,
+  [Symbol.dispose]: () => undefined,
 });
 
 const getCurrentSystem = () => {
@@ -102,7 +104,7 @@ const createTrace = (
 
   const wrapCall: Trace['wrapCall'] = (fn) => {
     const wrappedFn = (...args: Parameters<typeof fn>) => {
-      const subTrace = startSubTrace(fn.name ?? '__unknownInlineFunction');
+      using subTrace = startSubTrace(fn.name ?? '__unknownInlineFunction');
       let endIsHandled = false;
       try {
         const result = fn(...args);
@@ -144,6 +146,7 @@ const createTrace = (
     startSubTrace,
     wrapCall,
     end,
+    [Symbol.dispose]: end,
   };
 };
 

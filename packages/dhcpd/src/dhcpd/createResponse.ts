@@ -57,28 +57,23 @@ const createResponse = async (
   config: Config,
   parentTrace: Trace
 ): Promise<ResponseResult> => {
-  const trace = parentTrace.startSubTrace('createResponse');
-  // eslint-disable-next-line functional/no-try-statements
-  try {
-    const typeOption = request.options.options.find(
-      (o): o is ParsedRequestOption<53> => o.isParsed && o.name === 'DHCP Message Type'
-    );
-    if (!typeOption) return { success: false, error: 'no-type-option' } as const;
+  using trace = parentTrace.startSubTrace('createResponse');
+  const typeOption = request.options.options.find(
+    (o): o is ParsedRequestOption<53> => o.isParsed && o.name === 'DHCP Message Type'
+  );
+  if (!typeOption) return { success: false, error: 'no-type-option' } as const;
 
-    switch (typeOption.value) {
-      case 'DHCPDISCOVER':
-        return await createOfferResponse(request, serverAddress, config, trace);
-      case 'DHCPREQUEST':
-        return await createAckResponse(request, serverAddress, config, trace);
-      default:
-        return {
-          success: false,
-          error: 'unhandled-type-option',
-          id: typeOption.value,
-        };
-    }
-  } finally {
-    trace.end();
+  switch (typeOption.value) {
+    case 'DHCPDISCOVER':
+      return await createOfferResponse(request, serverAddress, config, trace);
+    case 'DHCPREQUEST':
+      return await createAckResponse(request, serverAddress, config, trace);
+    default:
+      return {
+        success: false,
+        error: 'unhandled-type-option',
+        id: typeOption.value,
+      };
   }
 };
 
