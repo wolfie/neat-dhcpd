@@ -1,5 +1,5 @@
 import { ipFromNumber, type Ip, type IpString, ipFromString } from '@neat-dhcpd/common';
-import rand from './rand';
+import rand from './rand.js';
 
 const getRandomAvailableIp = ({
   unavailableIps,
