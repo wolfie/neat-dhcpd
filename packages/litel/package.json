@@ -9,7 +9,7 @@
     "build/**/*"
   ],
   "scripts": {
-    "build": "rm -rf build && cross-env NODE_ENV=production tsc -b && cp src/index.html build/index.html",
+    "build": "cross-env NODE_ENV=production tsc -b && cp src/index.html build/index.html",
     "dev": "concurrently --kill-others-on-fail --prefix-colors auto -n watch-tsc,server \"tsc -b --watch --preserveWatchOutput\" \"tsx src/server\"",
     "start": "cross-env NODE_ENV=production node build/server",
     "lint": "eslint . && prettier --check src/**/*.ts",

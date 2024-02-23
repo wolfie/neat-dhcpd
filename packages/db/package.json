@@ -13,7 +13,7 @@
     "dev:compile": "tsc -b && node -r dotenv/config build",
     "redoMigration": "cross-env LITEL_DISABLE=1 tsx src/bin/redoMigration",
     "migrateToLatest": "cross-env LITEL_DISABLE=1 tsx src/bin/migrateToLatest",
-    "build": "rm -rf build && cross-env NODE_ENV=production tsc -b",
+    "build": "cross-env NODE_ENV=production tsc -b",
     "lint": "eslint . && prettier --check src/**/*.ts",
     "start": "cross-env NODE_ENV=production node -r dotenv/config build",
     "start:migrateToLatest": "node build/bin/migrateToLatest"
