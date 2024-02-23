@@ -6,6 +6,7 @@ import createOfferResponse from './createOfferResponse.js';
 import createAckResponse from './createAckResponse.js';
 import type { Ip } from '@neat-dhcpd/common';
 import type { Trace } from '@neat-dhcpd/litel';
+import type { DhcpMessageType } from './numberStrings.js';
 
 export type ResponseResult =
   | {
@@ -17,11 +18,12 @@ export type ResponseResult =
   | {
       success: false;
       error: 'no-type-option' | 'no-ips-left' | 'not-for-me';
+      details?: string;
     }
   | {
       success: false;
       error: 'unhandled-type-option';
-      id: ParsedRequestOption<53>['value'];
+      id: DhcpMessageType;
     }
   | {
       success: false;
@@ -34,7 +36,7 @@ export type ResponseResult =
   | {
       success: false;
       error: 'unexpected-option-53';
-      expected: ParsedRequestOption<53>['value'];
+      expected: DhcpMessageType | DhcpMessageType[];
       value: string | undefined;
     };
 
@@ -61,12 +63,13 @@ const createResponse = async (
   const typeOption = request.options.options.find(
     (o): o is ParsedRequestOption<53> => o.isParsed && o.name === 'DHCP Message Type'
   );
-  if (!typeOption) return { success: false, error: 'no-type-option' } as const;
+  if (!typeOption?.value) return { success: false, error: 'no-type-option' } as const;
 
   switch (typeOption.value) {
     case 'DHCPDISCOVER':
       return await createOfferResponse(request, serverAddress, config, trace);
     case 'DHCPREQUEST':
+    case 'DHCPINFORM':
       return await createAckResponse(request, serverAddress, config, trace);
     default:
       return {

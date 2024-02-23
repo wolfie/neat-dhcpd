@@ -22,6 +22,7 @@ const HTYPE = [
   [20, 'Serial Line'],
 ] as const;
 
+export type DhcpMessageType = TypeOf<typeof DHCP_MESSAGE_TYPES>;
 const DHCP_MESSAGE_TYPES = [
   [1, 'DHCPDISCOVER'],
   [2, 'DHCPOFFER'],
