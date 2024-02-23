@@ -84,6 +84,9 @@ cp -vr \
   "$WEBUI/.env" \
   "$WEBUI/package.json" \
   "$TARGET/$WEBUI"
+COMMIT_SHA="$(git rev-parse HEAD)"
+echo "Appending $TARGET/$WEBUI/.env: GIT_COMMIT_SHA=$COMMIT_SHA"
+echo "GIT_COMMIT_SHA=$COMMIT_SHA" >> $TARGET/$WEBUI/.env
 
 echo
 echo "Compressing build.tar.bz2"
