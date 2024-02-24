@@ -27,14 +27,6 @@ export type ResponseResult =
     }
   | {
       success: false;
-      error: 'requested-invalid-ip';
-      details?: string;
-      requestedIp?: string;
-      offeredIp: string | undefined;
-      leasedIp: string | undefined;
-    }
-  | {
-      success: false;
       error: 'unexpected-option-53';
       expected: DhcpMessageType | DhcpMessageType[];
       value: string | undefined;

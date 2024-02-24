@@ -9,6 +9,35 @@ import { addSeconds } from 'date-fns';
 import { isParsedRequestOption } from './mapRequestOptions.js';
 import createAckOptions from './createAckOptions.js';
 import { DEFAULT_MAX_MESSAGE_LENGTH } from './createAckResponse.js';
+import { messageTypesForString } from './numberStrings.js';
+import log from '../lib/log.js';
+
+const getNak = (request: DhcpRequest): ResponseResult => ({
+  success: true,
+  maxMessageLength: 1500,
+  responseIp:
+    request.options.options.find(isParsedRequestOption(50))?.value.str ?? '255.255.255.255',
+  message: {
+    op: 'BOOTREPLY',
+    htype: request.htype,
+    hlen: request.hlen,
+    hops: 0,
+    xid: request.xid,
+    secs: 0,
+    broadcastFlag: false,
+    ciaddr: ZERO_ZERO_ZERO_ZERO,
+    yiaddr: ZERO_ZERO_ZERO_ZERO,
+    siaddr: ZERO_ZERO_ZERO_ZERO,
+    giaddr: ZERO_ZERO_ZERO_ZERO,
+    chaddr: request.chaddr,
+    file: '',
+    sname: '',
+    options: {
+      magicCookie: request.options.magicCookie,
+      options: [[53, Buffer.of(messageTypesForString('DHCPNAK'))]],
+    },
+  },
+});
 
 async function createAckResponseForRequest({
   request,
@@ -35,29 +64,34 @@ async function createAckResponseForRequest({
 
   let assignedIp: Ip;
   if (requestedIp) {
-    if (requestedIp.str === previousOffer?.ip || requestedIp.str === reservedIp)
+    if ([previousOffer?.ip, reservedIp, previouslyLeasedIp].includes(requestedIp.str))
       assignedIp = requestedIp;
-    else
-      return {
-        success: false,
-        error: 'requested-invalid-ip',
-        details:
-          `Client requested ${requestedIp.str}, but was ` +
+    else {
+      log(
+        'debug',
+        `Client requested ${requestedIp.str}, but was ` +
           (previousOffer
-            ? `previously offered ${previousOffer.ip}.`
-            : 'not offered anything before.'),
-        requestedIp: requestedIp?.str,
-        offeredIp: previousOffer?.ip,
-        leasedIp: previouslyLeasedIp,
-      };
+            ? `previously offered ${previousOffer.ip}. `
+            : 'not offered anything before. ') +
+          JSON.stringify({
+            offeredIp: previousOffer?.ip ?? null,
+            leasedIp: previouslyLeasedIp ?? null,
+            reservedIp: reservedIp ?? null,
+          })
+      );
+      return getNak(request);
+    }
   } else if (previousOffer) {
-    return {
-      success: false,
-      error: 'requested-invalid-ip',
-      details: `Client didn't have a requested IP - was previously offered ${previousOffer.ip}.`,
-      offeredIp: previousOffer.ip,
-      leasedIp: previouslyLeasedIp,
-    };
+    log(
+      'debug',
+      `Client didn't have a requested IP - was previously offered ${previousOffer.ip}. ` +
+        JSON.stringify({
+          offeredIp: previousOffer?.ip ?? null,
+          leasedIp: previouslyLeasedIp ?? null,
+          reservedIp: reservedIp ?? null,
+        })
+    );
+    return getNak(request);
   } else {
     const result = getRandomAvailableIp({
       start: ipFromString(config.ip_start),
