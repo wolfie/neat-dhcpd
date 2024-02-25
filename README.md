@@ -1,3 +1,7 @@
+### Nonfunctional
+
+DO NOT USE - ABANDONED PROJECT. For some unresearched reason, some clients are not happy with the packets sent by the server, and start soon enough spamming the server with a constant stream of requests over and over again.
+
 # NeatDHCPD
 
 "Neat" as in tidy, as in nice to use.
